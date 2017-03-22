@@ -1,4 +1,4 @@
-Django
-PyMySQL
-requests
-shellvars-py
+Django==1.10.6
+PyMySQL==0.7.10
+requests==2.13.0
+shellvars-py==0.1.2
