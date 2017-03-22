@@ -3,7 +3,7 @@
 from __future__ import unicode_literals
 from django.conf.urls import include, url
 from django.views.generic import RedirectView
-from app_x import views
+from tech_services_reports import views
 
 urlpatterns = [
 

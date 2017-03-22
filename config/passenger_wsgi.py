@@ -15,7 +15,7 @@ Prepares application environment.
 Variables assume project setup like:
 stuff
     reporting_project
-        app_x
+        tech_services_reports
         config
     env_min_djng
 """
