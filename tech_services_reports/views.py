@@ -27,6 +27,7 @@ def index( request ):
 
 # @bul_login
 def index( request, response_format=None ):
+    log.debug( 'starting index()' )
     # import time
     # from datetime import date
     # from django.db import connection, transaction
@@ -54,5 +55,7 @@ def index( request, response_format=None ):
     context['cat_years'] = cat_years
 
     # context['settings_app'] = settings_app
+    log.debug( 'context, ```{}```'.format(pprint.pformat(context)) )
     resp = render( request, u'tech_services_reports_templates/index.html', context )
     # return render_to_response('index.html', context)
+    return resp
