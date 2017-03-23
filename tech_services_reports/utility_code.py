@@ -228,6 +228,13 @@ class AcquisitionMethod:
 		split = split.replace('"', '').title()
 		#Remove 'd' for purchased, exchanged, etc.
 		split = split.rstrip('d').title().strip()
+        #Brute force cleaning
+        if split == 'Gifts':
+            split = 'Gift'
+        elif split == 'exchange':
+            split == 'Exchange'
+        elif split == 'Puchase':
+            split == 'Purchase'
                 if split in self.possible_notes:
                     self.note = split
                     note_found = True
@@ -559,7 +566,10 @@ class CatalogingReport(object):
         distinct_formats = self.distinct_formats()
         cross = defaultdict(int)
         for edit in edits:
-            cataloger = settings_app.CATALOGERS[edit.editor.upper()]
+            try:
+                cataloger = settings_app.CATALOGERS[edit.editor.upper()]
+            except KeyError:
+                cataloger = edit.editor.upper()
             summary[cataloger] = summary.get(cataloger, {})
             for df in distinct_formats:
                 format = self._material_string(df)
@@ -591,7 +601,10 @@ class CatalogingReport(object):
         cross = defaultdict(int)
         for dt in distinct:
             for edit in edits:
-                cataloger = settings_app.CATALOGERS[edit.editor.upper()]
+                try:
+                    cataloger = settings_app.CATALOGERS[edit.editor.upper()]
+                except KeyError:
+                    cataloger = edit.editor.upper()
                 summary[cataloger] = summary.get(cataloger, {})
                 edit_type = edit.type.lower()
                 if edit_type == 'catalog':
