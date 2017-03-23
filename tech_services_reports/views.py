@@ -30,8 +30,9 @@ def index( request, response_format=None ):
     # import time
     # from datetime import date
     # from django.db import connection, transaction
-    from django.template import loader, RequestContext
-    context = RequestContext( request )
+    # from django.template import loader, RequestContext
+    # context = RequestContext( request )
+    context = {}
     params = request.GET
     if params.has_key( 'format' ):
         requested_format = params['format']
