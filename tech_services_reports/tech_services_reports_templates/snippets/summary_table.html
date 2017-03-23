@@ -1,0 +1,19 @@
+<table class="report-results">
+		<tr>
+			{% for head in report.header %}
+			<th>{{ head }}</th>
+			{% endfor %}
+		</tr>
+{% for k,v in report.data %}
+		<tr>
+		<td>{{ k.title }}</td>
+		<td>{{ v }} </td>
+		</tr>
+{% endfor %}
+	<tr class="total">
+		<td>Total</th>
+		{% for total in report.totals %}
+		<td>{{ total }}</td>
+		{% endfor %}
+	</tr>
+</table>

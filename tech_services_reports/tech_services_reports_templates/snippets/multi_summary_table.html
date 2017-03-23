@@ -1,0 +1,28 @@
+{% load report_tags %}
+<table class="report-results extended">
+		<tr>
+			<th></th>
+			{% for head in report.header %}
+			<th>{{ head }}</th>
+			{% endfor %}
+		</tr>
+		{% comment %}Map the headers to the data points.{% endcomment %}
+			{% for row_label, cell_data in report.data.items %}
+				<tr>
+				<td>{{ row_label }}</td>
+				{% for header in report.header %}
+					{% for cell_type, data_point in cell_data.items %}
+						{% ifequal cell_type.lower header.lower %}
+							<td>{{ data_point }}</td>
+						{% endifequal %}
+					{% endfor %}
+				{% endfor %}
+				</tr>
+			{% endfor %}
+	<tr class="total">
+		<td>Total</th>
+		{% for head in report.header %}
+		<td>{% dict_value report.cross head.lower %}</td>
+		{% endfor %}
+	</tr>
+</table>

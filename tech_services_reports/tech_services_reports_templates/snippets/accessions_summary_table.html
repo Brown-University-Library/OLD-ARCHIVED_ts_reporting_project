@@ -1,0 +1,33 @@
+{% load report_tags %}
+<table class="report-results">
+		<tr>
+			<th></th>
+			{% for head in report.header %}
+			<th colspan="2">{{ head.title }}</th>
+			{% endfor %}
+		</tr>
+		<tr>
+			<th></th>
+			<!-- leave as loop so that it matches the number of headers -->
+			{% for count in report.count_types %}
+			<th>{{ count.title }}</th>
+			{% endfor %}
+		</tr>
+		{% comment %}Map the headers to the data points.{% endcomment %}
+			{% for location in report.locations %}
+				<tr>
+				<td>{{ location }}</td>
+				{% for header in report.header %}
+						<td>{% accession_cross_value report.cross location header "volumes" %}</td>
+						<td>{% accession_cross_value report.cross location header "titles" %}</td>
+				{% endfor %}
+				</tr>
+			{% endfor %}
+	<tr class="total">
+		<td>Total</th>
+		{% for header in report.header %}
+			<td>{% accession_cross_value report.cross "total" header "volumes" %}</td>
+			<td>{% accession_cross_value report.cross "total" header "titles" %}</td>
+		{% endfor %}
+	</tr>
+</table>

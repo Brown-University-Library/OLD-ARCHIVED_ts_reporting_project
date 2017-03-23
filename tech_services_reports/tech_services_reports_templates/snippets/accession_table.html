@@ -1,0 +1,35 @@
+{% load report_tags %}
+<h3 class="report-divider">{{ report.header }}</h3>
+<table class="report-results">
+<tr>
+<th></th>
+{% for head in headers %}
+	<th colspan="2">{{ head }}</th>
+{% endfor %}
+</tr>
+<tr>
+<th/>
+{% for head in headers %}
+	<th>Volumes</th>
+	<th>Titles</th>
+{% endfor %}
+</tr>
+{% for row in rows %}
+<tr>
+	<td> {{ row }}</td>
+	{% for head in headers %}
+	<td>{% accession_tuple report.data row head "volumes" %}</td>
+	<td>{% accession_tuple report.data row head "titles" %}</td>
+	{% endfor %}
+</tr>
+{% endfor %}
+<!-- totals -->
+<tr>
+<th>Total</th>
+{% for head in headers %}
+	<td>{% accession_tuple_total report.data head "volumes" %}</td>
+	<td>{% accession_tuple_total report.data head "titles" %}</td>
+{% endfor %}
+</tr>
+</tr>
+</table>
