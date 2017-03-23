@@ -15,6 +15,10 @@ urlpatterns = [
 
     url( r'^admin/', include(admin.site.urls) ),
 
-    url( r'^$',  RedirectView.as_view(pattern_name='info_url') ),
+    url( r'^stats/$',  ts_views.index, name='index_url' ),
+
+    url( r'^$',  RedirectView.as_view(pattern_name='index_url') ),
+
+    # url( r'^$',  RedirectView.as_view(pattern_name='info_url') ),
 
     ]
