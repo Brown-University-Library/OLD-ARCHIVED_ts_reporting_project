@@ -1,7 +1,9 @@
 ##### overview
 
-Minimalist [passenger](https://www.phusionpassenger.com)-compatible [django](https://www.djangoproject.com) project.
+Code for intranet webapp producing Tech Services reports for staff.
 
-Part of [new-project TODO list](https://gist.github.com/birkin/04a0a124d49be02e3d58).
+Note: not reflected in the commit history here is that all this code was written by [Ted Lawless](https://github.com/lawlesst).
+
+[I'm](https://github.com/birkin) just updating it here with tweaks for a newer version of django and some minor architectural changes.
 
 ---
