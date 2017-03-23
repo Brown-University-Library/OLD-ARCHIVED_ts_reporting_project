@@ -11,12 +11,10 @@ admin.autodiscover()
 
 urlpatterns = [
 
-    url( r'^admin/', include(admin.site.urls) ),
-
     url( r'^info/$',  ts_views.hi, name='info_url' ),
 
-    url( r'^$',  RedirectView.as_view(pattern_name='info_url') ),
+    url( r'^admin/', include(admin.site.urls) ),
 
-    # url( r'^', include('tech_services_reports.urls_app', namespace='foo') ),
+    url( r'^$',  RedirectView.as_view(pattern_name='info_url') ),
 
     ]
