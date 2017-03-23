@@ -44,6 +44,12 @@ class SummaryAccession(models.Model):
     format = models.CharField(max_length=50)
     acquisition_method = models.CharField(max_length=50)
 
+    def save(self, *args, **kwargs):
+        self.format = self.format.rstrip('s')
+        self.format = self.format.title()
+        self.location = self.location.strip().lower().replace(' ', '')
+        super(SummaryAccession, self).save()
+
     def __unicode__(self):
         return u'%s %s' % (self.date, self.format)
 
