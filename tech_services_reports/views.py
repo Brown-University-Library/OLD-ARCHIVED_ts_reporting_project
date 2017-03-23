@@ -55,4 +55,4 @@ def index( request, response_format=None ):
 
     # context['settings_app'] = settings_app
     resp = render( request, u'tech_services_reports_templates/index.html', context )
-    return render_to_response('index.html', context)
+    # return render_to_response('index.html', context)
