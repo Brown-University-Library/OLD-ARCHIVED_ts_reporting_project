@@ -6,4 +6,4 @@ import os
 
 FOO = 'BAR'
 
-FOO2 = os.environ['FOO2']
+# FOO2 = os.environ['FOO2']
