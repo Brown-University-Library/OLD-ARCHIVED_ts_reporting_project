@@ -10,7 +10,7 @@ import datetime, json, logging, pprint, re, sys, time, urllib
 from datetime import date, timedelta
 from optparse import make_option
 
-import requests
+import pymarc, requests
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.management.base import BaseCommand
@@ -65,6 +65,7 @@ class Command(BaseCommand):
         self.last_harvest = self.last_harvest()
 
     def handle(self, **options):
+        log.debug( 'options, ```{}```'.format(pprint.pformat(options)) )
         if options['summary']:
             self.summary(options['summary'])
         elif options['cleaner']:
@@ -91,8 +92,10 @@ class Command(BaseCommand):
         return first
 
     def counted_items(self):
+        log.debug( 'starting counted_items()' )
         from tech_services_reports.models import Accession
         numbers = set([i.number for i in Accession.objects.all()])
+        log.debug( 'numbers, ```{}```'.format(numbers) )
         return numbers
 
     def last_harvest(self):
@@ -119,10 +122,12 @@ class Command(BaseCommand):
     def summary(self, marc_file):
         """Harvests data points from exported MARC fields.
         Date counts will include the date of a given harvest."""
-        from tech_services_reports.utility_code import convert_date, CatStat
+        log.debug( 'starting summary()' )
+        from tech_services_reports.utility_code import convert_date
+        from tech_services_reports.utility_code import CatStat
         from tech_services_reports.models import Accession, CatEdit, Harvest
         from datetime import date
-        from pymarc import MARCReader
+        # from pymarc import MARCReader
         #Dicts to store counts
         cataloging_edit_count = {}
         cataloging_count = {}
@@ -131,10 +136,12 @@ class Command(BaseCommand):
         #Find items already counted.
         #Add logic to skip counted items.
         print>>sys.stderr, "Retrieving existing items stored in Accessions database."
+        log.debug( 'retrieving existing items stored in Accessions database' )
         existing_items = self.counted_items()
         #Loop through marc records.
         print>>sys.stderr, "Reading MARC file."
-	for record in MARCReader(file(marc_file)):
+	for record in pymarc.MARCReader(file(marc_file)):
+            log.debug( 'record, ```{}```'.format(record) )
             try:
                 bib_number = record['907']['a'][1:]
             except TypeError:

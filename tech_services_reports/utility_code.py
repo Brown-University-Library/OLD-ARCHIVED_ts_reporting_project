@@ -252,36 +252,7 @@ class AcquisitionMethod(object):
                     break
             log.debug( 'note_found, `{}`'.format(note_found) )
             if not note_found:
-                # raise NameError( '%s not in the possible notes: %s' % (note, ", ".join(self.possible_notes)) )
                 raise NameError( '{note} not in the possible notes: {poss}'.format( note=note, poss=", ".join(self.possible_notes)) )
-
-    # def process_notes( self ):
-    #     if note not in self.possible_notes:
-    #         note_found = False
-    #         for split in note.split(';'):
-    #     		#Clean up dirty template data
-    #     		split = split.lstrip('00')
-    #     		split = split.strip('.')
-    #     		split = split.replace('exch', 'Exchange')
-    #     		split = split.replace('"', '').title()
-    #     		#Remove 'd' for purchased, exchanged, etc.
-    #     		split = split.rstrip('d').title().strip()
-    #             #Brute force cleaning
-    #             if split == 'Gifts':
-    #                 split = 'Gift'
-    #             elif split == 'exchange':
-    #                 split == 'Exchange'
-    #             elif split == 'Puchase':
-    #                 split == 'Purchase'
-    #             if split in self.possible_notes:
-    #                 self.note = split
-    #                 note_found = True
-    #                 break
-    #         log.debug( 'note_found, `{}`'.format(note_found) )
-    #         if not note_found:
-    #             raise NameError('%s not in the possible notes: %s' \
-    #                 % (note, ", ".join(self.possible_notes)))
-
 
     def acq_type(self):
         if self.chunked[0] in self.possible_acq_types:
