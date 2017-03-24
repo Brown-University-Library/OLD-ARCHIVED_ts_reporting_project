@@ -235,10 +235,10 @@ class AcquisitionMethod:
             split == 'Exchange'
         elif split == 'Puchase':
             split == 'Purchase'
-                if split in self.possible_notes:
-                    self.note = split
-                    note_found = True
-                    break
+            if split in self.possible_notes:
+                self.note = split
+                note_found = True
+                break
             if not note_found:
                 raise NameError('%s not in the possible notes: %s' \
                     % (note, ", ".join(self.possible_notes)))
