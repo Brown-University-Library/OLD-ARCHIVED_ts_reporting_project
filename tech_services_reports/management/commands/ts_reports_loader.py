@@ -18,7 +18,7 @@ from tech_services_reports import settings_app
 
 
 log = logging.getLogger( "processing" )
-log.debug( 'starting ts_reports_loader.py' )
+log.debug( 'loaded ts_reports_loader.py' )
 
 
 #For format mappings

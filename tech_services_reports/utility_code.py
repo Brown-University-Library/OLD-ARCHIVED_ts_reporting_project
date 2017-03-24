@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 
 
 # from django.utils import simplejson as json
-import datetime, json, time, re
+import datetime, json, logging, time, re
 from datetime import date
 import settings_app
 # from django.utils import simplejson
@@ -13,6 +13,11 @@ import urllib
 from operator import itemgetter, attrgetter
 from helpers import defaultdict
 from itertools import chain
+
+
+log = logging.getLogger( "processing" )
+log.debug( 'loaded utility_code.py' )
+
 
 #Brown specific
 format_codes = {
@@ -221,24 +226,25 @@ class AcquisitionMethod:
         if note not in self.possible_notes:
             note_found = False
             for split in note.split(';'):
-		#Clean up dirty template data
-		split = split.lstrip('00')
-		split = split.strip('.')
-		split = split.replace('exch', 'Exchange')
-		split = split.replace('"', '').title()
-		#Remove 'd' for purchased, exchanged, etc.
-		split = split.rstrip('d').title().strip()
-        #Brute force cleaning
-        if split == 'Gifts':
-            split = 'Gift'
-        elif split == 'exchange':
-            split == 'Exchange'
-        elif split == 'Puchase':
-            split == 'Purchase'
-            if split in self.possible_notes:
-                self.note = split
-                note_found = True
-                break
+        		#Clean up dirty template data
+        		split = split.lstrip('00')
+        		split = split.strip('.')
+        		split = split.replace('exch', 'Exchange')
+        		split = split.replace('"', '').title()
+        		#Remove 'd' for purchased, exchanged, etc.
+        		split = split.rstrip('d').title().strip()
+                #Brute force cleaning
+                if split == 'Gifts':
+                    split = 'Gift'
+                elif split == 'exchange':
+                    split == 'Exchange'
+                elif split == 'Puchase':
+                    split == 'Purchase'
+                if split in self.possible_notes:
+                    self.note = split
+                    note_found = True
+                    break
+            log.debug( 'note_found, `{}`'.format(note_found) )
             if not note_found:
                 raise NameError('%s not in the possible notes: %s' \
                     % (note, ", ".join(self.possible_notes)))
