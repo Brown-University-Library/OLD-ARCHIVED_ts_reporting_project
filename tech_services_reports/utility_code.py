@@ -197,8 +197,10 @@ def gchart_url(vals, period, name, color='438043'):
 #        return repr((self.location, self.format))
 
 
-class AcquisitionMethod:
+class AcquisitionMethod(object):
+
     def __init__(self, note):
+        log.debug( 'starting __init__' )
 		#Clean up bad data in templates.
         self.note = note.strip('.')
         self.chunked = note.split(' ')
@@ -223,16 +225,20 @@ class AcquisitionMethod:
             "Serials Solutions",
             #"Serial Solutions",
         ]
+        self.process_notes( note )
+
+    def process_notes( self, note ):
         if note not in self.possible_notes:
             note_found = False
             for split in note.split(';'):
-        		#Clean up dirty template data
-        		split = split.lstrip('00')
-        		split = split.strip('.')
-        		split = split.replace('exch', 'Exchange')
-        		split = split.replace('"', '').title()
-        		#Remove 'd' for purchased, exchanged, etc.
-        		split = split.rstrip('d').title().strip()
+                #Clean up dirty template data
+                split = split.lstrip('00')
+                split = split.strip('.')
+                split = split.replace('exch', 'Exchange')
+                split = split.replace('"', '').title()
+                #Remove 'd' for purchased, exchanged, etc.
+                split = split.rstrip('d').title().strip()
+                log.debug( 'split, `{}`'.format(split) )
                 #Brute force cleaning
                 if split == 'Gifts':
                     split = 'Gift'
@@ -246,8 +252,35 @@ class AcquisitionMethod:
                     break
             log.debug( 'note_found, `{}`'.format(note_found) )
             if not note_found:
-                raise NameError('%s not in the possible notes: %s' \
-                    % (note, ", ".join(self.possible_notes)))
+                # raise NameError( '%s not in the possible notes: %s' % (note, ", ".join(self.possible_notes)) )
+                raise NameError( '{note} not in the possible notes: {poss}'.format( note=note, poss=", ".join(self.possible_notes)) )
+
+    # def process_notes( self ):
+    #     if note not in self.possible_notes:
+    #         note_found = False
+    #         for split in note.split(';'):
+    #     		#Clean up dirty template data
+    #     		split = split.lstrip('00')
+    #     		split = split.strip('.')
+    #     		split = split.replace('exch', 'Exchange')
+    #     		split = split.replace('"', '').title()
+    #     		#Remove 'd' for purchased, exchanged, etc.
+    #     		split = split.rstrip('d').title().strip()
+    #             #Brute force cleaning
+    #             if split == 'Gifts':
+    #                 split = 'Gift'
+    #             elif split == 'exchange':
+    #                 split == 'Exchange'
+    #             elif split == 'Puchase':
+    #                 split == 'Purchase'
+    #             if split in self.possible_notes:
+    #                 self.note = split
+    #                 note_found = True
+    #                 break
+    #         log.debug( 'note_found, `{}`'.format(note_found) )
+    #         if not note_found:
+    #             raise NameError('%s not in the possible notes: %s' \
+    #                 % (note, ", ".join(self.possible_notes)))
 
 
     def acq_type(self):
