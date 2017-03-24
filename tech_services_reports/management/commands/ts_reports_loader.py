@@ -6,10 +6,11 @@ from __future__ import unicode_literals
   Loading accessions statistics.
 """
 
-import datetime, json, logging, re, sys, time, urllib
+import datetime, json, logging, pprint, re, sys, time, urllib
 from datetime import date, timedelta
 from optparse import make_option
 
+import requests
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.management.base import BaseCommand
@@ -21,7 +22,11 @@ log.debug( 'starting ts_reports_loader.py' )
 
 
 #For format mappings
-location_format_map = json.loads( urllib.urlopen(settings_app.LOCATION_FORMAT_URL) )
+url = settings_app.LOCATION_FORMAT_URL
+log.debug( 'url, ```{}```'.format(url) )
+r = requests.get( url )
+location_format_map = json.loads( r.content )
+log.debug( 'location_format_map, ```{}```'.format(pprint.pformat(location_format_map)) )
 location_format_map = location_format_map['result']['items']
 
 #For cat edits
