@@ -11,3 +11,6 @@ import os
 
 ## ts_reports_loader.py
 LOCATION_FORMAT_URL = 'https://library.brown.edu/services/location_format/v1/?data=dump'
+
+BEGIN_YEAR = 2016
+BEGIN_MONTH = 01
