@@ -6,35 +6,30 @@ from __future__ import unicode_literals
   Loading accessions statistics.
 """
 
-import json,sys
-
-from django.core.management.base import BaseCommand
-from django.core.exceptions import ObjectDoesNotExist
-from django.contrib.auth.models import User
-# from django.utils import simplejson
+import datetime, json, logging, re, sys, time, urllib
+from datetime import date, timedelta
 from optparse import make_option
-import urllib
 
-from datetime import timedelta
-from datetime import date
-import time
-import re
-
+from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist
+from django.core.management.base import BaseCommand
 from tech_services_reports import settings_app
 
 
+log = logging.getLogger(__name__)
+
+
 #For format mappings
-# location_format_map = simplejson.load(urllib.urlopen(settings_app.LOCATION_FORMAT_URL))
-location_format_map = json.loads(urllib.urlopen(settings_app.LOCATION_FORMAT_URL))
+location_format_map = json.loads( urllib.urlopen(settings_app.LOCATION_FORMAT_URL) )
 location_format_map = location_format_map['result']['items']
 
 #For cat edits
 #101111,sf,Catalog
 CAT_RE = re.compile('([0-9]{6})\,(\w+)\,(\w+)$')
 
-TODAY = date.today()
+TODAY = datetime.date.today()
 #Number of days to go back for reports.
-CUTOFF_DAY_DELTA = timedelta(days=2)
+CUTOFF_DAY_DELTA = datetime.timedelta(days=2)
 
 
 
