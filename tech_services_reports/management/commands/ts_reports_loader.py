@@ -94,8 +94,12 @@ class Command(BaseCommand):
     def counted_items(self):
         log.debug( 'starting counted_items()' )
         from tech_services_reports.models import Accession
+        timestamp = datetime.datetime.now()
         numbers = set([i.number for i in Accession.objects.all()])
-        log.debug( 'numbers, ```{}```'.format(numbers) )
+        log.debug( 'that took, `{}`'.format( unicode(datetime.datetime.now()-timestamp) ) )
+        # log.debug( 'numbers, ```{}```'.format(numbers) )
+        log.debug( 'timestamp' )
+        log.debug( 'first three numbers, ```{three}```; number-count, `{count}`'.format(three=list(numbers)[0:2], count=len(numbers)) )
         return numbers
 
     def last_harvest(self):
