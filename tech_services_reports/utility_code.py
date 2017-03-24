@@ -273,6 +273,7 @@ class CatStat(object):
     """Used during import to translate from MARC fields to database fields.
     """
     def __init__(self, rec):
+        log.debug( 'in __init__()' )
         self.rec = rec
         self.oclc_code = settings_app.OCLC_CODE
         self.number = rec['907']['a'][1:]
@@ -341,6 +342,9 @@ class CatStat(object):
         else:
             return 'copy'
 
+    # end class CatStat()
+
+
 def location_format_mappings():
     import urllib
     # from django.utils import simplejson
@@ -353,8 +357,6 @@ def location_format_mappings():
     return location_format_dict
 
 
-
-
 def jqueryUIDates(datestr):
     """Preps dates for jqueryUI widgets"""
     from datetime import date
@@ -365,6 +367,7 @@ def jqueryUIDates(datestr):
     day = int(chunks[1])
     year = int(chunks[2])
     return date(year, month, day)
+
 
 class CatalogingReport(object):
     def __init__(self, start, end, cataloger=None):

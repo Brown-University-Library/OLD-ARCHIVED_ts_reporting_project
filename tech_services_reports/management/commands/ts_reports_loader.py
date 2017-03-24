@@ -98,7 +98,6 @@ class Command(BaseCommand):
         numbers = set([i.number for i in Accession.objects.all()])
         log.debug( 'that took, `{}`'.format( unicode(datetime.datetime.now()-timestamp) ) )
         # log.debug( 'numbers, ```{}```'.format(numbers) )
-        log.debug( 'timestamp' )
         log.debug( 'first three numbers, ```{three}```; number-count, `{count}`'.format(three=list(numbers)[0:2], count=len(numbers)) )
         return numbers
 
@@ -144,7 +143,7 @@ class Command(BaseCommand):
         existing_items = self.counted_items()
         #Loop through marc records.
         print>>sys.stderr, "Reading MARC file."
-	for record in pymarc.MARCReader(file(marc_file)):
+    	for record in pymarc.MARCReader(file(marc_file)):
             log.debug( 'record, ```{}```'.format(record) )
             try:
                 bib_number = record['907']['a'][1:]
@@ -208,6 +207,7 @@ class Command(BaseCommand):
             #Iterate through item counts and update
             for k, vol in this_vol.items():
                 volume_count[k] = volume_count.get(k, 0) + vol
+        log.debug( 'volume_count dct, ```{}```'.format( pprint.pformat(volume_count) ) )
 
         #Finish looping through MARC records
 
