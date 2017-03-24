@@ -23,10 +23,9 @@ log.debug( 'starting ts_reports_loader.py' )
 
 #For format mappings
 url = settings_app.LOCATION_FORMAT_URL
-log.debug( 'url, ```{}```'.format(url) )
 r = requests.get( url )
 location_format_map = json.loads( r.content )
-log.debug( 'location_format_map, ```{}```'.format(pprint.pformat(location_format_map)) )
+# log.debug( 'location_format_map, ```{}```'.format(pprint.pformat(location_format_map)) )
 location_format_map = location_format_map['result']['items']
 
 #For cat edits
@@ -39,15 +38,28 @@ CUTOFF_DAY_DELTA = datetime.timedelta(days=2)
 
 
 
+# class Command(BaseCommand):
+#     help = "For loading Josiah exports for reports."
+#     option_list = BaseCommand.option_list + (
+#         make_option('--summary', '-s', dest='summary',
+#                     help='Loads from MARC exports.  Expecting items in MARC exports.'),
+#         make_option('--cleaner', '-c', dest='cleaner',
+#                     help='Cleans up database by finding common data entry problems.'),
+
+#     )
+
 class Command(BaseCommand):
     help = "For loading Josiah exports for reports."
-    option_list = BaseCommand.option_list + (
-        make_option('--summary', '-s', dest='summary',
-                    help='Loads from MARC exports.  Expecting items in MARC exports.'),
-        make_option('--cleaner', '-c', dest='cleaner',
-                    help='Cleans up database by finding common data entry problems.'),
 
-    )
+    def add_arguments(self, parser):
+        parser.add_argument(
+            '--summary', dest='summary', help='Loads from MARC exports.  Expecting items in MARC exports.'
+            )
+        parser.add_argument(
+            '--cleaner',
+            dest='cleaner',
+            help='Cleans up database by finding common data entry problems.'
+            )
 
     def __init__(self):
         self.last_harvest = self.last_harvest()
