@@ -136,9 +136,15 @@ LOGGING = {
     'handlers': {
         'logfile': {
             'level':'DEBUG',
-            'class':'logging.FileHandler',  # note: configure server to use system's log-rotate to avoid permissions issues
-            'filename': os.environ.get(u'RPRTNG__LOG_PATH'),
+            'class':'logging.FileHandler',
+            'filename': os.environ['RPRTNG__LOG_PATH'],
             'formatter': 'standard',
+        },
+        'processing_logfile':{
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': os.environ['RPRTNG__PROCESSING_LOG_PATH'],
+            'formatter': 'standard'
         },
         'console':{
             'level':'DEBUG',
@@ -147,9 +153,13 @@ LOGGING = {
         },
     },
     'loggers': {
-        'tech_services_reports': {
+        'webapp': {
             'handlers': ['logfile'],
-            'level': os.environ.get(u'RPRTNG__LOG_LEVEL'),
+            'level': os.environ['RPRTNG__LOG_LEVEL'],
+        },
+        'processing': {
+            'handlers': ['processing_logfile'],
+            'level': os.environ['RPRTNG__PROCESSING_LOG_LEVEL'],
         },
     }
 }

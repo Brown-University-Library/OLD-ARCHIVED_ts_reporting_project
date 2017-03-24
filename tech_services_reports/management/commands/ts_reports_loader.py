@@ -16,7 +16,8 @@ from django.core.management.base import BaseCommand
 from tech_services_reports import settings_app
 
 
-log = logging.getLogger(__name__)
+log = logging.getLogger( "processing" )
+log.debug( 'starting ts_reports_loader.py' )
 
 
 #For format mappings
