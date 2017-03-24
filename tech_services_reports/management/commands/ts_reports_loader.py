@@ -6,12 +6,12 @@ from __future__ import unicode_literals
   Loading accessions statistics.
 """
 
-import sys
+import json,sys
 
 from django.core.management.base import BaseCommand
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import User
-from django.utils import simplejson
+# from django.utils import simplejson
 from optparse import make_option
 import urllib
 
@@ -24,7 +24,8 @@ from tech_services_reports import settings_app
 
 
 #For format mappings
-location_format_map = simplejson.load(urllib.urlopen(settings_app.LOCATION_FORMAT_URL))
+# location_format_map = simplejson.load(urllib.urlopen(settings_app.LOCATION_FORMAT_URL))
+location_format_map = json.loads(urllib.urlopen(settings_app.LOCATION_FORMAT_URL))
 location_format_map = location_format_map['result']['items']
 
 #For cat edits
@@ -246,7 +247,8 @@ class Command(BaseCommand):
             db_fixture.append(fixd)
 
         #Done.  Print the fixture.
-        print simplejson.dumps(db_fixture)
+        # print simplejson.dumps(db_fixture)
+        print json.dumps(db_fixture)
 
 
     def count_volumes(self, marc_items, cat_date, material_type, counted_items):
@@ -463,7 +465,8 @@ class Command(BaseCommand):
         from tech_services_reports.models import Accession, CatEdit, Harvest
         from datetime import date
 
-        location_format_map = simplejson.load(urllib.urlopen(settings_app.LOCATION_FORMAT_URL))
+        # location_format_map = simplejson.load(urllib.urlopen(settings_app.LOCATION_FORMAT_URL))
+        location_format_map = json.loads(urllib.urlopen(settings_app.LOCATION_FORMAT_URL))
 	location_format_map = location_format_map['result']['items']
 
         edits = CatEdit.objects.filter(type="Batch Load")
