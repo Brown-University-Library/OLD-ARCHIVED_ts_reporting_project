@@ -200,7 +200,7 @@ def gchart_url(vals, period, name, color='438043'):
 class AcquisitionMethod(object):
 
     def __init__(self, note):
-        log.debug( 'starting __init__' )
+        log.debug( 'starting AcquisitionMethod.__init__()' )
 		#Clean up bad data in templates.
         self.note = note.strip('.')
         self.chunked = note.split(' ')
@@ -252,7 +252,10 @@ class AcquisitionMethod(object):
                     break
             log.debug( 'note_found, `{}`'.format(note_found) )
             if not note_found:
-                raise NameError( '{note} not in the possible notes: {poss}'.format( note=note, poss=", ".join(self.possible_notes)) )
+                # raise NameError( '```{note}``` not in the possible notes: ```{poss}```'.format( note=note, poss=", ".join(self.possible_notes)) )
+                message = '```{note}``` not in the possible notes: ```{poss}```'.format( note=note, poss=", ".join(self.possible_notes) )
+                log.debug( message )
+                raise NameError( message )
 
     def acq_type(self):
         if self.chunked[0] in self.possible_acq_types:
@@ -273,7 +276,7 @@ class CatStat(object):
     """Used during import to translate from MARC fields to database fields.
     """
     def __init__(self, rec):
-        log.debug( 'in __init__()' )
+        # log.debug( 'starting CatStat.__init__()' )
         self.rec = rec
         self.oclc_code = settings_app.OCLC_CODE
         self.number = rec['907']['a'][1:]
