@@ -146,6 +146,12 @@ LOGGING = {
             'filename': os.environ['RPRTNG__PROCESSING_LOG_PATH'],
             'formatter': 'standard'
         },
+        'processing_error':{
+            'level': 'WARNING',
+            'class': 'logging.FileHandler',
+            'filename': os.environ['RPRTNG__PROCESSING_ERROR_LOG_PATH'],
+            'formatter': 'standard'
+        },
         'console':{
             'level':'DEBUG',
             'class':'logging.StreamHandler',
@@ -158,7 +164,7 @@ LOGGING = {
             'level': os.environ['RPRTNG__LOG_LEVEL'],
         },
         'processing': {
-            'handlers': ['processing_logfile'],
+            'handlers': ['processing_logfile', 'processing_error'],
             'level': os.environ['RPRTNG__PROCESSING_LOG_LEVEL'],
         },
     }
