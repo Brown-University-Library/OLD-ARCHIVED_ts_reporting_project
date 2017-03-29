@@ -157,7 +157,7 @@ class Command(BaseCommand):
             counter += 1
             try:
                 bib_number = record['907']['a'][1:]
-                log.debug( 'bib_number, ```{}```'.format(bib_number) )
+                log.info( 'bib_number, `{}`'.format(bib_number) )
             except TypeError:
                 print>>sys.stderr, "No bib number"
                 #print>>sys.stderr, record
@@ -448,9 +448,9 @@ class Command(BaseCommand):
                 try:
                     edate = date(year, month, day)
                 except Exception as e:
-                    log.debug( 'date problem for bib, `{b}`: year, `{y}`; month, `{m}`; day, `{d}`'.format( b=bib_number, y=year, m=month, d=day ) )
-                    log.debug( 'exception processing date, ```{}```'.format( unicode(repr(e)) ) )
-                    log.debug( 'marc_995 field, ```{}```'.format( str(edit).decode('utf-8') ) )
+                    log.warning( 'date problem for bib, `{b}`: year, `{y}`; month, `{m}`; day, `{d}`'.format( b=bib_number, y=year, m=month, d=day ) )
+                    log.error( 'exception processing date, ```{}```'.format( unicode(repr(e)) ) )
+                    log.warning( 'marc_995 field, ```{}```'.format( str(edit).decode('utf-8') ) )
                     continue
                 if edate.year < settings_app.BEGIN_YEAR:
                     continue
