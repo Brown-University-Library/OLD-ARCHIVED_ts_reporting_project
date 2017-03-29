@@ -453,7 +453,13 @@ class Command(BaseCommand):
                 if month > 12:
                     print>>sys.stderr, "Month value not valid.", bib_number, marc_995
                     continue
-                edate = date(year, month, day)
+                try:
+                    edate = date(year, month, day)
+                except Exception as e:
+                    log.debug( 'date problem for bib, `{b}`: year, `{y}`; month, `{m}`; day, `{d}`'.format( b=bib_number, y=year, m=month, d=day ) )
+                    log.debug( 'exception processing date, ```{}```'.format( unicode(repr(e)) ) )
+                    log.debug( 'marc_995, ```{}```'.format(marc_995) )
+                    log.debug( 'source, ```{}```'.format(source) )
                 if edate.year < settings_app.BEGIN_YEAR:
                     continue
                 if edate.year == settings_app.BEGIN_YEAR:
