@@ -12,6 +12,7 @@ from optparse import make_option
 
 import pymarc, requests
 from django.contrib.auth.models import User
+from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.management.base import BaseCommand
 from tech_services_reports import settings_app
@@ -91,25 +92,16 @@ class Command(BaseCommand):
                 first = item_created
         return first
 
-    # def counted_items(self):
-    #     log.debug( 'starting counted_items()' )
-    #     from tech_services_reports.models import Accession
-    #     timestamp = datetime.datetime.now()
-    #     numbers = set([i.number for i in Accession.objects.all()])
-    #     log.debug( 'that took, `{}`'.format( unicode(datetime.datetime.now()-timestamp) ) )
-    #     # log.debug( 'numbers, ```{}```'.format(numbers) )
-    #     log.debug( 'first three numbers, ```{three}```; number-count, `{count}`'.format(three=list(numbers)[0:2], count=len(numbers)) )
-    #     return numbers
-
     def counted_items(self):
+        """ Grabs stored accession items from db.
+            Called by Command.summary() """
         log.debug( 'starting counted_items()' )
         timestamp = datetime.datetime.now()
-        from django.core.cache import cache
         numbers = cache.get('counted_items__numbers')
         if numbers is None:
             from tech_services_reports.models import Accession
             numbers = set([i.number for i in Accession.objects.all()])
-            cache.set( 'counted_items__numbers', numbers, 60*60 )
+            cache.set( 'counted_items__numbers', numbers, 60*60*24 )  # db grab cached for a day
         log.debug( 'that took, `{}`'.format( unicode(datetime.datetime.now()-timestamp) ) )
         log.debug( 'first three numbers, ```{three}```; number-count, `{count}`'.format(three=list(numbers)[0:2], count=len(numbers)) )
         return numbers
