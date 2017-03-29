@@ -91,13 +91,26 @@ class Command(BaseCommand):
                 first = item_created
         return first
 
+    # def counted_items(self):
+    #     log.debug( 'starting counted_items()' )
+    #     from tech_services_reports.models import Accession
+    #     timestamp = datetime.datetime.now()
+    #     numbers = set([i.number for i in Accession.objects.all()])
+    #     log.debug( 'that took, `{}`'.format( unicode(datetime.datetime.now()-timestamp) ) )
+    #     # log.debug( 'numbers, ```{}```'.format(numbers) )
+    #     log.debug( 'first three numbers, ```{three}```; number-count, `{count}`'.format(three=list(numbers)[0:2], count=len(numbers)) )
+    #     return numbers
+
     def counted_items(self):
         log.debug( 'starting counted_items()' )
-        from tech_services_reports.models import Accession
         timestamp = datetime.datetime.now()
-        numbers = set([i.number for i in Accession.objects.all()])
+        from django.core.cache import cache
+        numbers = cache.get('counted_items__numbers')
+        if numbers is None:
+            from tech_services_reports.models import Accession
+            numbers = set([i.number for i in Accession.objects.all()])
+            cache.set( 'counted_items__numbers', numbers, 60*60 )
         log.debug( 'that took, `{}`'.format( unicode(datetime.datetime.now()-timestamp) ) )
-        # log.debug( 'numbers, ```{}```'.format(numbers) )
         log.debug( 'first three numbers, ```{three}```; number-count, `{count}`'.format(three=list(numbers)[0:2], count=len(numbers)) )
         return numbers
 
@@ -143,10 +156,16 @@ class Command(BaseCommand):
         existing_items = self.counted_items()
         #Loop through marc records.
         print>>sys.stderr, "Reading MARC file."
-    	for record in pymarc.MARCReader(file(marc_file)):
-            log.debug( 'record, ```{}```'.format(record) )
+        counter = 0
+    	# for record in pymarc.MARCReader( file(marc_file) ):
+        for record in pymarc.MARCReader( file(marc_file), force_utf8=True, utf8_handling='ignore' ):
+            # log.debug( 'record, ```{}```'.format(record) )
+            if counter > 0 and counter % 10000 == 0:
+                print>>sys.stderr, '`{}` records processed'.format(counter)
+            counter += 1
             try:
                 bib_number = record['907']['a'][1:]
+                log.debug( 'bib_number, ```{}```'.format(bib_number) )
             except TypeError:
                 print>>sys.stderr, "No bib number"
                 #print>>sys.stderr, record
@@ -277,10 +296,16 @@ class Command(BaseCommand):
 
     def count_volumes(self, marc_items, cat_date, material_type, counted_items):
         """Create summary accession info for items created within given range."""
+        log.debug( 'starting count_volumes()' )
         from tech_services_reports.utility_code import convert_date, AcquisitionMethod
         from tech_services_reports.helpers import defaultdict as DD
         from tech_services_reports.helpers import namedtuple
         from datetime import date
+        # log.debug( 'marc_items[0:2], ```{}```'.format( pprint.pformat(marc_items[0:2]) ) )
+        # log.debug( 'cat_date, `{}`'.format(cat_date) )
+        # log.debug( 'material_type, `{}`'.format(material_type) )
+        # log.debug( 'list(counted_items)[0:2], ```{}```'.format( pprint.pformat(list(counted_items)[0:2]) ) )  # this stays the same??
+
         summary = DD(int)
         summary_titles = DD(int)
 
@@ -399,8 +424,11 @@ class Command(BaseCommand):
                 except TypeError:
                     pass
 
-        return {'volumes': dict(summary),
-                'titles': dict(summary_titles)}
+        return_val = {'volumes': dict(summary), 'titles': dict(summary_titles)}
+        if return_val['volumes'] or return_val['titles']:
+            log.debug( 'return_val, ```{}```'.format( pprint.pformat(return_val) ) )
+        return return_val
+
 
     def count_cataloging_edits(self,
                                bib_number,
