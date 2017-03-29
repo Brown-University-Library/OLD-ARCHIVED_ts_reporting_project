@@ -450,8 +450,8 @@ class Command(BaseCommand):
                 except Exception as e:
                     log.debug( 'date problem for bib, `{b}`: year, `{y}`; month, `{m}`; day, `{d}`'.format( b=bib_number, y=year, m=month, d=day ) )
                     log.debug( 'exception processing date, ```{}```'.format( unicode(repr(e)) ) )
-                    log.debug( 'marc_995, ```{}```'.format(marc_995) )
-                    log.debug( 'source, ```{}```'.format(source) )
+                    log.debug( 'marc_995 field, ```{}```'.format( str(edit).decode('utf-8') ) )
+                    continue
                 if edate.year < settings_app.BEGIN_YEAR:
                     continue
                 if edate.year == settings_app.BEGIN_YEAR:
