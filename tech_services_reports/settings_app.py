@@ -16,3 +16,6 @@ BEGIN_YEAR = 2016  # for start of report processing
 BEGIN_MONTH = 01
 
 OCLC_CODE = 'RBN'  # for determining cataloging type
+
+ITEM_ACC_NOTE = 'e'  # mappings for MARC record to database; these are subfields; value changed of 2011-March-30
+# ITEM_ACC_NOTE = 'n'  # original value
