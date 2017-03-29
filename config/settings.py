@@ -164,3 +164,5 @@ LOGGING = {
     }
 }
 
+# docs <https://docs.djangoproject.com/en/1.10/topics/cache/>
+CACHES = json.loads( os.environ['RPRTNG__CACHES_JSON'] )
