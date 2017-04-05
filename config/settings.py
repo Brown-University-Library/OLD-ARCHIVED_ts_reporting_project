@@ -4,8 +4,8 @@ from __future__ import unicode_literals
 """
 Django settings for reporting_project.
 
-Environmental variables triggered in project's env_rprt/bin/activate, when using runserver,
-  or env_rprt/bin/activate_this.py, when using apache via passenger.
+Environmental variables triggered in project's env_ts_rprt/bin/activate, when using runserver,
+  or env_ts_rprt/bin/activate_this.py, when using apache via passenger.
 """
 
 import json, logging, os
@@ -18,14 +18,14 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ['RPRTNG__SECRET_KEY']
+SECRET_KEY = os.environ['TS_RPRT__SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = json.loads( os.environ['RPRTNG__DEBUG_JSON'] )  # will be True or False
+DEBUG = json.loads( os.environ['TS_RPRT__DEBUG_JSON'] )  # will be True or False
 
-ADMINS = json.loads( os.environ['RPRTNG__ADMINS_JSON'] )
+ADMINS = json.loads( os.environ['TS_RPRT__ADMINS_JSON'] )
 
-ALLOWED_HOSTS = json.loads( os.environ['RPRTNG__ALLOWED_HOSTS'] )  # list
+ALLOWED_HOSTS = json.loads( os.environ['TS_RPRT__ALLOWED_HOSTS'] )  # list
 
 
 # Application definition
@@ -53,7 +53,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'config.urls'
 
-TEMPLATES = json.loads( os.environ['RPRTNG__TEMPLATES_JSON'] )  # list of dict(s)
+TEMPLATES = json.loads( os.environ['TS_RPRT__TEMPLATES_JSON'] )  # list of dict(s)
 
 WSGI_APPLICATION = 'config.passenger_wsgi.application'
 
@@ -61,7 +61,7 @@ WSGI_APPLICATION = 'config.passenger_wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
 
-DATABASES = json.loads( os.environ['RPRTNG__DATABASES_JSON'] )
+DATABASES = json.loads( os.environ['TS_RPRT__DATABASES_JSON'] )
 
 
 # Password validation
@@ -100,13 +100,13 @@ USE_TZ = True  # was False
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
-STATIC_URL = os.environ['RPRTNG__STATIC_URL']
-STATIC_ROOT = os.environ['RPRTNG__STATIC_ROOT']  # needed for collectstatic command
+STATIC_URL = os.environ['TS_RPRT__STATIC_URL']
+STATIC_ROOT = os.environ['TS_RPRT__STATIC_ROOT']  # needed for collectstatic command
 
 
 # Email
-EMAIL_HOST = os.environ['RPRTNG__EMAIL_HOST']
-EMAIL_PORT = int( os.environ['RPRTNG__EMAIL_PORT'] )
+EMAIL_HOST = os.environ['TS_RPRT__EMAIL_HOST']
+EMAIL_PORT = int( os.environ['TS_RPRT__EMAIL_PORT'] )
 
 
 # sessions
@@ -137,19 +137,19 @@ LOGGING = {
         'logfile': {
             'level':'DEBUG',
             'class':'logging.FileHandler',
-            'filename': os.environ['RPRTNG__LOG_PATH'],
+            'filename': os.environ['TS_RPRT__LOG_PATH'],
             'formatter': 'standard',
         },
         'processing_logfile':{
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': os.environ['RPRTNG__PROCESSING_LOG_PATH'],
+            'filename': os.environ['TS_RPRT__PROCESSING_LOG_PATH'],
             'formatter': 'standard'
         },
         'processing_error':{
             'level': 'WARNING',
             'class': 'logging.FileHandler',
-            'filename': os.environ['RPRTNG__PROCESSING_ERROR_LOG_PATH'],
+            'filename': os.environ['TS_RPRT__PROCESSING_ERROR_LOG_PATH'],
             'formatter': 'standard'
         },
         'console':{
@@ -161,14 +161,14 @@ LOGGING = {
     'loggers': {
         'webapp': {
             'handlers': ['logfile'],
-            'level': os.environ['RPRTNG__LOG_LEVEL'],
+            'level': os.environ['TS_RPRT__LOG_LEVEL'],
         },
         'processing': {
             'handlers': ['processing_logfile', 'processing_error'],
-            'level': os.environ['RPRTNG__PROCESSING_LOG_LEVEL'],
+            'level': os.environ['TS_RPRT__PROCESSING_LOG_LEVEL'],
         },
     }
 }
 
 # docs <https://docs.djangoproject.com/en/1.10/topics/cache/>
-CACHES = json.loads( os.environ['RPRTNG__CACHES_JSON'] )
+CACHES = json.loads( os.environ['TS_RPRT__CACHES_JSON'] )
