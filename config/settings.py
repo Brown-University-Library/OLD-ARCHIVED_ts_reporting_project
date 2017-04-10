@@ -124,6 +124,11 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 # print '- EXISTING_LOGGER_NAMES, `%s`' % existing_logger_names
 logging.getLogger('requests').setLevel( logging.WARNING )
 
+"""
+logging reminder:
+- loggers['processing'] will evaluate any log-message with a level higher than the specified log-level
+- a log entry will only be _written_ to a file if the message's level meets a level set in a handler
+"""
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,
@@ -134,38 +139,40 @@ LOGGING = {
         },
     },
     'handlers': {
-        'logfile': {
-            'level':'DEBUG',
+        'webapp_handler': {
+            'level':'INFO',
             'class':'logging.FileHandler',
-            'filename': os.environ['TS_RPRT__LOG_PATH'],
-            'formatter': 'standard',
+            'filename': os.environ['TS_RPRT__WEBAPP_LOG_PATH'],
+            'formatter': 'standard'
         },
-        'processing_logfile':{
-            'level': 'DEBUG',
+        'processing_detail':{
+            'level': 'INFO',
             'class': 'logging.FileHandler',
             'filename': os.environ['TS_RPRT__PROCESSING_LOG_PATH'],
             'formatter': 'standard'
         },
-        'processing_error':{
+        'processing_serious':{
             'level': 'WARNING',
             'class': 'logging.FileHandler',
             'filename': os.environ['TS_RPRT__PROCESSING_ERROR_LOG_PATH'],
             'formatter': 'standard'
         },
         'console':{
-            'level':'DEBUG',
+            'level':'INFO',
             'class':'logging.StreamHandler',
             'formatter': 'standard'
         },
     },
     'loggers': {
         'webapp': {
-            'handlers': ['logfile'],
-            'level': os.environ['TS_RPRT__LOG_LEVEL'],
+            'handlers': ['webapp_handler'],
+            'level': os.environ['TS_RPRT__WEBAPP_LOG_LEVEL'],
+            'propagate': False
         },
         'processing': {
-            'handlers': ['processing_logfile', 'processing_error'],
+            'handlers': ['console', 'processing_detail', 'processing_serious'],
             'level': os.environ['TS_RPRT__PROCESSING_LOG_LEVEL'],
+            'propagate': False
         },
     }
 }
