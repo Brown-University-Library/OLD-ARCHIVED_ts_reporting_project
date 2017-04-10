@@ -38,17 +38,6 @@ TODAY = datetime.date.today()
 CUTOFF_DAY_DELTA = datetime.timedelta(days=2)
 
 
-
-# class Command(BaseCommand):
-#     help = "For loading Josiah exports for reports."
-#     option_list = BaseCommand.option_list + (
-#         make_option('--summary', '-s', dest='summary',
-#                     help='Loads from MARC exports.  Expecting items in MARC exports.'),
-#         make_option('--cleaner', '-c', dest='cleaner',
-#                     help='Cleans up database by finding common data entry problems.'),
-
-#     )
-
 class Command(BaseCommand):
     help = "For loading Josiah exports for reports."
 
@@ -144,7 +133,8 @@ class Command(BaseCommand):
         #Find items already counted.
         #Add logic to skip counted items.
         print>>sys.stderr, "Retrieving existing items stored in Accessions database."
-        log.debug( 'retrieving existing items stored in Accessions database' )
+        log.debug( 'zretrieving existing items stored in Accessions database' )
+        log.info( 'retrieving existing items stored in Accessions database' )
         existing_items = self.counted_items()
         #Loop through marc records.
         print>>sys.stderr, "Reading MARC file."
