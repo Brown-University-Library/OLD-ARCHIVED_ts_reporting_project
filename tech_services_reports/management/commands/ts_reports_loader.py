@@ -157,7 +157,7 @@ class Command(BaseCommand):
             counter += 1
             try:
                 bib_number = record['907']['a'][1:]
-                log.info( 'bib_number, `{}`'.format(bib_number) )
+                log.debug( 'bib_number, `{}`'.format(bib_number) )
             except TypeError:
                 print>>sys.stderr, "No bib number"
                 #print>>sys.stderr, record
