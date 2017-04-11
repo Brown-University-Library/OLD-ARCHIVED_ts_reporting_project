@@ -91,7 +91,7 @@ class Command(BaseCommand):
             from tech_services_reports.models import Accession
             numbers = set([i.number for i in Accession.objects.all()])
             cache.set( 'counted_items__numbers', numbers, 60*60*24 )  # db grab cached for a day
-        log.debug( 'that took, `{}`'.format( unicode(datetime.datetime.now()-timestamp) ) )
+        log.info( 'that took, `{}`'.format( unicode(datetime.datetime.now()-timestamp) ) )
         log.debug( 'first three numbers, ```{three}```; number-count, `{count}`'.format(three=list(numbers)[0:2], count=len(numbers)) )
         return numbers
 
@@ -124,7 +124,7 @@ class Command(BaseCommand):
         from tech_services_reports.utility_code import CatStat
         from tech_services_reports.models import Accession, CatEdit, Harvest
         from datetime import date
-        # from pymarc import MARCReader
+        log.info( 'reading MARC file, ```{}```'.format(marc_file) )
         #Dicts to store counts
         cataloging_edit_count = {}
         cataloging_count = {}
@@ -132,25 +132,21 @@ class Command(BaseCommand):
         volume_count = {}
         #Find items already counted.
         #Add logic to skip counted items.
-        print>>sys.stderr, "Retrieving existing items stored in Accessions database."
-        log.debug( 'zretrieving existing items stored in Accessions database' )
         log.info( 'retrieving existing items stored in Accessions database' )
         existing_items = self.counted_items()
         #Loop through marc records.
-        print>>sys.stderr, "Reading MARC file."
         counter = 0
-    	# for record in pymarc.MARCReader( file(marc_file) ):
         for record in pymarc.MARCReader( file(marc_file), force_utf8=True, utf8_handling='ignore' ):
             # log.debug( 'record, ```{}```'.format(record) )
             if counter > 0 and counter % 10000 == 0:
-                print>>sys.stderr, '`{}` records processed'.format(counter)
+                # print>>sys.stderr, '`{}` records processed'.format(counter)
+                log.info( '`{}` records processed'.format(counter) )
             counter += 1
             try:
                 bib_number = record['907']['a'][1:]
                 log.debug( 'bib_number, `{}`'.format(bib_number) )
             except TypeError:
-                print>>sys.stderr, "No bib number"
-                #print>>sys.stderr, record
+                log.debug( 'no bib_number' )
                 continue
             bib_level = record['998']['c']
             bib_created = self.get_bib_created(record)
@@ -216,7 +212,8 @@ class Command(BaseCommand):
         # Put the individual counts together into a db fixture.
         #======================================================================
         db_fixture = []
-        print>>sys.stderr, "Creating accessions stats fixture."
+        # print>>sys.stderr, "Creating accessions stats fixture."
+        log.info( 'creating accessions stats fixture' )
         for meta, count in volume_count.items():
             #Prep fixture.
             fixd = {}
@@ -241,7 +238,8 @@ class Command(BaseCommand):
 
             db_fixture.append(fixd)
 
-        print>>sys.stderr, "Creating cataloging stats fixtures."
+        # print>>sys.stderr, "Creating cataloging stats fixtures."
+        log.info( 'creating cataloging stats fixture' )
         for meta, count in cataloging_edit_count.items():
             fixd = {}
             fixd['model'] = "tech_services_reports.catedit"
@@ -258,7 +256,8 @@ class Command(BaseCommand):
             if len(meta_str) > 50:
 		meta_str = meta_str.replace('Backstage Library Works', 'BL')
 		if len(meta_str) > 50:
-                    print>>sys.stderr, "Can't record edit for {0}.  Edit string too long.".format(bib)
+                    # print>>sys.stderr, "Can't record edit for {0}.  Edit string too long.".format(bib)
+                    log.warning( "can't record edit for bib `{}`; edit string too long".format(bib) )
 	            continue
             fixd['pk'] = meta_str
             f = {}
@@ -274,6 +273,8 @@ class Command(BaseCommand):
         #Done.  Print the fixture.
         # print simplejson.dumps(db_fixture)
         print json.dumps(db_fixture)
+
+        ## end def summary()
 
 
     def count_volumes(self, marc_items, cat_date, material_type, counted_items):
