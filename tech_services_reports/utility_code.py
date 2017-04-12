@@ -6,12 +6,12 @@ from __future__ import unicode_literals
 # from django.utils import simplejson as json
 import datetime, json, logging, time, re
 from datetime import date
-import settings_app
+from tech_services_reports import settings_app
 # from django.utils import simplejson
 import urllib
 #from models import Bib, CatEdit, Item
 from operator import itemgetter, attrgetter
-from helpers import defaultdict
+from tech_services_reports.helpers import defaultdict
 from itertools import chain
 
 
