@@ -136,7 +136,7 @@ class Command(BaseCommand):
         existing_items = self.counted_items()
         #Loop through marc records.
         counter = 0
-        for record in pymarc.MARCReader( file(marc_file), force_utf8=True, utf8_handling='ignore' ):
+        for record in pymarc.MARCReader( open(marc_file), force_utf8=True, utf8_handling='ignore' ):
             # log.debug( 'record, ```{}```'.format(record) )
             if counter > 0 and counter % 10000 == 0:
                 # print>>sys.stderr, '`{}` records processed'.format(counter)
