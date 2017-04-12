@@ -74,28 +74,28 @@ def pull_shib_info(request, data):
     if not username or not netid:
         return
     else:
-    #strip @brown.edu from username.
-    username = username.replace('@brown.edu', '').strip()
-    u, created = User.objects.get_or_create(username=username)
-    #Fill in user details after first login.
-    #if created:
-    u.first_name = data.get('Shibboleth-givenName', '')
-    u.last_name = data.get('Shibboleth-sn', '')
-    u.email = data.get('Shibboleth-mail', None)
-    #Each login check super or staff status to allow for changes
-    #to the setting fail.
-    if netid in settings_app.SUPER_USERS:
-        u.is_superuser = True
-    if netid in settings_app.STAFF_USERS:
-        u.is_staff = True
-    #Brute force login, see - http://djangosnippets.org/snippets/1552/
-    backend = get_backends()[0]
-    u.backend = "%s.%s" % (backend.__module__, backend.__class__.__name__)
-    login(request, u)
-    #Put garbage in the passward
-    u.set_unusable_password()
-    u.save()
-    return u
+        #strip @brown.edu from username.
+        username = username.replace('@brown.edu', '').strip()
+        u, created = User.objects.get_or_create(username=username)
+        #Fill in user details after first login.
+        #if created:
+        u.first_name = data.get('Shibboleth-givenName', '')
+        u.last_name = data.get('Shibboleth-sn', '')
+        u.email = data.get('Shibboleth-mail', None)
+        #Each login check super or staff status to allow for changes
+        #to the setting fail.
+        if netid in settings_app.SUPER_USERS:
+            u.is_superuser = True
+        if netid in settings_app.STAFF_USERS:
+            u.is_staff = True
+        #Brute force login, see - http://djangosnippets.org/snippets/1552/
+        backend = get_backends()[0]
+        u.backend = "%s.%s" % (backend.__module__, backend.__class__.__name__)
+        login(request, u)
+        #Put garbage in the passward
+        u.set_unusable_password()
+        u.save()
+        return u
 
 
 def convert_date(datestr):
