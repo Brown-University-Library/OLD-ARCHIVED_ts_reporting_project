@@ -74,8 +74,8 @@ def pull_shib_info(request, data):
     if not username or not netid:
         return
     else:
-	#strip @brown.edu from username.
-	username = username.replace('@brown.edu', '').strip()
+    #strip @brown.edu from username.
+    username = username.replace('@brown.edu', '').strip()
     u, created = User.objects.get_or_create(username=username)
     #Fill in user details after first login.
     #if created:
@@ -201,7 +201,7 @@ class AcquisitionMethod(object):
 
     def __init__(self, note):
         log.debug( 'starting AcquisitionMethod.__init__()' )
-		#Clean up bad data in templates.
+        #Clean up bad data in templates.
         self.note = note.strip('.')
         self.chunked = note.split(' ')
         self.possible_notes = [
@@ -754,7 +754,7 @@ class AccessionReport(object):
             try:
                 return [r[0] for r in distinct]
             except TypeError:
-    			return []
+                return []
 
     def formats(self):
         formats = self._distinct('format')
