@@ -12,6 +12,7 @@ import sys as _sys
 
 
 log = logging.getLogger( "processing" )
+log.debug( 'logger loaded' )
 
 
 def namedtuple(typename, field_names, verbose=False, rename=False):
@@ -106,10 +107,11 @@ def namedtuple(typename, field_names, verbose=False, rename=False):
     # Execute the template string in a temporary namespace
     namespace = dict(_itemgetter=_itemgetter, __name__='namedtuple_%s' % typename,
                      _property=property, _tuple=tuple)
-    log.debug( 'type(template), `{}`'.format(template) )
+    log.debug( 'type(template), `{}`'.format( type(template) ) )
     log.debug( 'template, ```{}```'.format(template) )
     try:
-        exec( template in namespace )
+        # exec template in namespace
+        exec( template, namespace )
     except SyntaxError as e:
         raise SyntaxError(e.message + ':\n' + template)
     result = namespace[typename]
