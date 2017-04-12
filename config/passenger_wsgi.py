@@ -1,55 +1,41 @@
-# -*- coding: utf-8 -*-
-
-from __future__ import unicode_literals
 """
-WSGI config for reporting_project.
+WSGI config.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
 For more information on this file, see
-https://docs.djangoproject.com/en/1.9/howto/deployment/wsgi/
+https://docs.djangoproject.com/en/1.8/howto/deployment/wsgi/
 """
 
-"""
-Prepares application environment.
-Variables assume project setup like:
-stuff
-    reporting_project
-        tech_services_reports
-        config
-    env_ts_rprt
-"""
-
-import os, pprint, sys
+import os, sys
+import dotenv
 
 
-## become self-aware, padawan
-current_directory = os.path.dirname(os.path.abspath(__file__))
-
-## vars
-ACTIVATE_FILE = os.path.abspath( '%s/../../env_ts_rprt/bin/activate_this.py' % current_directory )
-PROJECT_DIR = os.path.abspath( '%s/../../ts_reporting_project' % current_directory )
-PROJECT_ENCLOSING_DIR = os.path.abspath( '%s/../..' % current_directory )
+PROJECT_DIR = os.path.dirname( os.path.dirname(os.path.abspath(__file__)) )
 SETTINGS_MODULE = 'config.settings'
-SITE_PACKAGES_DIR = os.path.abspath( u'%s/../../env_ts_rprt/lib/python2.7/site-packages' % current_directory )
+ENV_PATH = os.path.join( PROJECT_DIR, '..env' )
+print( 'ENV_PATH, ```{}```'.format(ENV_PATH) )
 
-## virtualenv
-execfile( ACTIVATE_FILE, dict(__file__=ACTIVATE_FILE) )
 
-## sys.path additions
-for entry in [PROJECT_DIR, PROJECT_ENCLOSING_DIR, SITE_PACKAGES_DIR]:
- if entry not in sys.path:
-   sys.path.append( entry )
+## update path
+sys.path.append( PROJECT_DIR )
 
-## environment additions
-os.environ['DJANGO_SETTINGS_MODULE'] = SETTINGS_MODULE  # so django can access its settings
+# ## activate venv
+# activate_this = os.path.join(os.path.dirname( PROJECT_DIR ),'env_ts_reports/bin/activate_this.py')
+# execfile(activate_this, dict(__file__=activate_this))
 
 ## load up env vars
-SETTINGS_FILE = os.environ['TS_RPRT__SETTINGS_PATH']  # set in activate_this.py, and activated above
-import shellvars
-var_dct = shellvars.get_vars( SETTINGS_FILE )
-for ( key, val ) in var_dct.items():
-    os.environ[key] = val
+dotenv.read_dotenv(  )
+
+## reference django settings
+os.environ['DJANGO_SETTINGS_MODULE'] = SETTINGS_MODULE  # so django can access its settings
+
+# ## load up env vars
+# SETTINGS_FILE = os.environ['IIP__SETTINGS_PATH']  # set in activate_this.py, and activated above
+# import shellvars
+# var_dct = shellvars.get_vars( SETTINGS_FILE )
+# for ( key, val ) in var_dct.items():
+#     os.environ[key] = val
 
 ## gogogo
 from django.core.wsgi import get_wsgi_application
