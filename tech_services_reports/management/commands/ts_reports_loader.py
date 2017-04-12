@@ -91,7 +91,7 @@ class Command(BaseCommand):
             from tech_services_reports.models import Accession
             numbers = set([i.number for i in Accession.objects.all()])
             cache.set( 'counted_items__numbers', numbers, 60*60*24 )  # db grab cached for a day
-        log.info( 'that took, `{}`'.format( unicode(datetime.datetime.now()-timestamp) ) )
+        log.info( 'that took, `{}`'.format( str(datetime.datetime.now()-timestamp) ) )
         log.debug( 'first three numbers, ```{three}```; number-count, `{count}`'.format(three=list(numbers)[0:2], count=len(numbers)) )
         return numbers
 
@@ -440,7 +440,7 @@ class Command(BaseCommand):
                     edate = date(year, month, day)
                 except Exception as e:
                     log.warning( 'date problem for bib, `{b}`: year, `{y}`; month, `{m}`; day, `{d}`'.format( b=bib_number, y=year, m=month, d=day ) )
-                    log.error( 'exception processing date, ```{}```'.format( unicode(repr(e)) ) )
+                    log.error( 'exception processing date, ```{}```'.format( repr(e) ) )
                     log.warning( 'marc_995 field, ```{}```'.format( str(edit).decode('utf-8') ) )
                     continue
                 if edate.year < settings_app.BEGIN_YEAR:
