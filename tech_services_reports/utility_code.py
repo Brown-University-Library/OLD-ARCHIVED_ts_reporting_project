@@ -117,10 +117,10 @@ def convert_date(datestr):
        month = int(dgroups[0])
        day = int(dgroups[1])
        year = int(dgroups[2])
-   except ValueError, e:
+   except ValueError as e:
        #print>>sys.stderr, e, ' in date function.'
        return
-   except IndexError, e:
+   except IndexError as e:
        return
    this_year = (date.today().year) - 2000
    #If the year integer is greater than the current year then,
