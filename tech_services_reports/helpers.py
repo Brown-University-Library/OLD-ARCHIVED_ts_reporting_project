@@ -2,12 +2,17 @@
 
 from __future__ import unicode_literals
 
+import logging
 """Helpers to add Python 2.5 > functionality to Python 2.4"""
 
 ## {{{ http://code.activestate.com/recipes/500261/ (r15)
 from operator import itemgetter as _itemgetter
 from keyword import iskeyword as _iskeyword
 import sys as _sys
+
+
+log = logging.getLogger( "processing" )
+
 
 def namedtuple(typename, field_names, verbose=False, rename=False):
     """Returns a new subclass of tuple with named fields.
@@ -35,7 +40,7 @@ def namedtuple(typename, field_names, verbose=False, rename=False):
 
     # Parse and validate the field names.  Validation serves two purposes,
     # generating informative error messages and preventing template injection attacks.
-    if isinstance(field_names, basestring):
+    if isinstance(field_names, str):
         field_names = field_names.replace(',', ' ').split() # names separated by whitespace and/or commas
     field_names = tuple(map(str, field_names))
     if rename:
@@ -101,6 +106,8 @@ def namedtuple(typename, field_names, verbose=False, rename=False):
     # Execute the template string in a temporary namespace
     namespace = dict(_itemgetter=_itemgetter, __name__='namedtuple_%s' % typename,
                      _property=property, _tuple=tuple)
+    log.debug( 'type(template), `{}`'.format(template) )
+    log.debug( 'template, ```{}```'.format(template) )
     try:
         exec( template in namespace )
     except SyntaxError as e:
