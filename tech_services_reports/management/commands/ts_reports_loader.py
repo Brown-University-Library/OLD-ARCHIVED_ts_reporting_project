@@ -254,11 +254,11 @@ class Command(BaseCommand):
                                 source,
                                 edate.isoformat(),])
             if len(meta_str) > 50:
-		meta_str = meta_str.replace('Backstage Library Works', 'BL')
-		if len(meta_str) > 50:
-                    # print>>sys.stderr, "Can't record edit for {0}.  Edit string too long.".format(bib)
-                    log.warning( "can't record edit for bib `{}`; edit string too long".format(bib) )
-	            continue
+                meta_str = meta_str.replace('Backstage Library Works', 'BL')
+            if len(meta_str) > 50:
+                # print>>sys.stderr, "Can't record edit for {0}.  Edit string too long.".format(bib)
+                log.warning( "can't record edit for bib `{}`; edit string too long".format(bib) )
+                continue
             fixd['pk'] = meta_str
             f = {}
             f['editor'] = cataloger
@@ -272,7 +272,7 @@ class Command(BaseCommand):
 
         #Done.  Print the fixture.
         # print simplejson.dumps(db_fixture)
-        print json.dumps(db_fixture)
+        print( json.dumps(db_fixture) )
 
         ## end def summary()
 
@@ -351,7 +351,7 @@ class Command(BaseCommand):
             #Don't count old stuff.
             #if TODAY - item_created < CUTOFF_DAY_DELTA:
             #    #print>>sys.stderr, "Old accession skipping. %s" % first_item
-	    #	continue
+        #   continue
             #Skip known items
             if item_number in counted_items:
                 #print>>sys.stderr, item_number, ' already counted.  skipping.'
@@ -374,7 +374,7 @@ class Command(BaseCommand):
 
             try:
                 acquisition_method = AcquisitionMethod(item_acc_note).note
-            except NameError, e:
+            except NameError as e:
                 print>>sys.stderr, item, e
                 continue
             try:
@@ -508,7 +508,7 @@ class Command(BaseCommand):
 
         # location_format_map = simplejson.load(urllib.urlopen(settings_app.LOCATION_FORMAT_URL))
         location_format_map = json.loads(urllib.urlopen(settings_app.LOCATION_FORMAT_URL))
-	location_format_map = location_format_map['result']['items']
+        location_format_map = location_format_map['result']['items']
 
         edits = CatEdit.objects.filter(type="Batch Load")
         print>>sys.stderr, "Will merge %s Batch Loads to Batch." % len(edits)
@@ -524,11 +524,11 @@ class Command(BaseCommand):
             loc_code = str(acc.location)
             try:
                 format = location_format_map[loc_code]['format']
-		#print loc_code, format
+                #print loc_code, format
                 acc.format = format
                 acc.save()
-            except KeyError, e:
-		print>>sys.stderr, "Bad code: ", loc_code
+            except KeyError as e:
+                print>>sys.stderr, "Bad code: ", loc_code
 
 
 
