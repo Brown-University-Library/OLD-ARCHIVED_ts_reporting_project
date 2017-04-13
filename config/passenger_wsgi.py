@@ -13,7 +13,7 @@ import dotenv
 
 PROJECT_DIR = os.path.dirname( os.path.dirname(os.path.abspath(__file__)) )
 SETTINGS_MODULE = 'config.settings'
-ENV_PATH = os.path.abspath( '{}/../.env'.format(PROJECT_DIR) )
+ENV_PATH = os.path.abspath( '{}/../local_settings.env'.format(PROJECT_DIR) )
 # print( 'ENV_PATH, ```{}```'.format(ENV_PATH) )
 
 
