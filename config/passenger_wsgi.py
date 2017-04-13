@@ -13,29 +13,18 @@ import dotenv
 
 PROJECT_DIR = os.path.dirname( os.path.dirname(os.path.abspath(__file__)) )
 SETTINGS_MODULE = 'config.settings'
-ENV_PATH = os.path.join( PROJECT_DIR, '..env' )
-print( 'ENV_PATH, ```{}```'.format(ENV_PATH) )
+ENV_PATH = os.path.abspath( '{}/../.env'.format(PROJECT_DIR) )
+# print( 'ENV_PATH, ```{}```'.format(ENV_PATH) )
 
 
 ## update path
 sys.path.append( PROJECT_DIR )
 
-# ## activate venv
-# activate_this = os.path.join(os.path.dirname( PROJECT_DIR ),'env_ts_reports/bin/activate_this.py')
-# execfile(activate_this, dict(__file__=activate_this))
-
 ## load up env vars
-dotenv.read_dotenv(  )
+dotenv.read_dotenv( ENV_PATH )
 
 ## reference django settings
 os.environ['DJANGO_SETTINGS_MODULE'] = SETTINGS_MODULE  # so django can access its settings
-
-# ## load up env vars
-# SETTINGS_FILE = os.environ['IIP__SETTINGS_PATH']  # set in activate_this.py, and activated above
-# import shellvars
-# var_dct = shellvars.get_vars( SETTINGS_FILE )
-# for ( key, val ) in var_dct.items():
-#     os.environ[key] = val
 
 ## gogogo
 from django.core.wsgi import get_wsgi_application
