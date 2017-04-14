@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import datetime, logging
+import datetime, logging, re
 import pymarc
 from tech_services_reports import settings_app
 from tech_services_reports import utility_code
@@ -135,6 +135,8 @@ def count_batch_edits(
 
 def count_cataloging_edits(
     bib_number, mat_type, marc_995, cat_edit_count, source ):
+    #101111,sf,Catalog
+    CAT_RE = re.compile('([0-9]{6})\,(\w+)\,(\w+)$')
     for edit in marc_995:
         note = edit['a']
         if not note:

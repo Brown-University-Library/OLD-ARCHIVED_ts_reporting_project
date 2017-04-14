@@ -35,7 +35,7 @@ location_format_map = location_format_map['result']['items']
 
 #For cat edits
 #101111,sf,Catalog
-CAT_RE = re.compile('([0-9]{6})\,(\w+)\,(\w+)$')
+# CAT_RE = re.compile('([0-9]{6})\,(\w+)\,(\w+)$')
 
 TODAY = datetime.date.today()
 #Number of days to go back for reports.
