@@ -115,10 +115,10 @@ class Command(BaseCommand):
             obj.save()
             return obj
 
-    def get_bib_created(self, this_record):
-        from tech_services_reports.utility_code import convert_date
-        d = this_record['907']['c']
-        return convert_date(d)
+    # def get_bib_created(self, this_record):
+    #     from tech_services_reports.utility_code import convert_date
+    #     d = this_record['907']['c']
+    #     return convert_date(d)
 
     def summary(self, marc_file):
         """ Harvests data points from exported MARC fields.

@@ -2,6 +2,7 @@
 
 import datetime, logging
 import pymarc
+from tech_services_reports import utility_code
 
 
 log = logging.getLogger( "processing" )
@@ -28,7 +29,7 @@ def parse_marc_file( marc_file ):
                 log.debug( 'no bib_number' )
                 continue
             bib_level = record['998']['c']
-            bib_created = self.get_bib_created(record)
+            bib_created = get_bib_created( record )
             #==================================================================
             # Count cat edits
             #==================================================================
@@ -83,3 +84,11 @@ def parse_marc_file( marc_file ):
             #Iterate through item counts and update
             for k, vol in this_vol.items():
                 volume_count[k] = volume_count.get(k, 0) + vol
+
+    ## end def parse_marc_file()
+
+
+def get_bib_created( this_record ):
+    d = this_record['907']['c']
+    return utility_code.convert_date(d)
+
