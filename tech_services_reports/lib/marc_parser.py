@@ -12,6 +12,7 @@ log = logging.getLogger( "processing" )
 def parse_marc_file( marc_file ):
 
     counter = 0
+    cataloging_edit_count = {}
 
     with open( marc_file, 'rb' ) as fh:
         reader = pymarc.MARCReader( fh, to_unicode=True, force_utf8=True, utf8_handling='ignore' )
