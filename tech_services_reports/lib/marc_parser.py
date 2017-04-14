@@ -63,7 +63,7 @@ def parse_marc_file( marc_file ):
             items = record.get_fields('945')
             #Count the volumes
             #This will be dict with a named tuple as a key.
-            this_count = self.count_volumes(items,
+            this_count = count_volumes(items,
                                             cat_date,
                                             mat_type,
                                             existing_items)
@@ -170,3 +170,140 @@ def count_cataloging_edits(
             cat_edit_count[_key] = cat_edit_count.get(_key, 0) + 1
     return cat_edit_count
 
+
+def count_volumes( marc_items, cat_date, material_type, counted_items ):
+    """Create summary accession info for items created within given range."""
+    log.debug( 'starting count_volumes()' )
+    from tech_services_reports.utility_code import convert_date, AcquisitionMethod
+    from tech_services_reports.helpers import defaultdict as DD
+    from tech_services_reports.helpers import namedtuple
+    from datetime import date
+    # log.debug( 'marc_items[0:2], ```{}```'.format( pprint.pformat(marc_items[0:2]) ) )
+    # log.debug( 'cat_date, `{}`'.format(cat_date) )
+    # log.debug( 'material_type, `{}`'.format(material_type) )
+    # log.debug( 'list(counted_items)[0:2], ```{}```'.format( pprint.pformat(list(counted_items)[0:2]) ) )  # this stays the same??
+
+    summary = DD(int)
+    summary_titles = DD(int)
+
+    #Marker to hold whether this title has been counted as an accession.
+    title_counted = False
+
+    #Named tuple used as key for storing totals.
+    #Method names need to match models.
+    Acc = namedtuple('acc_summary', ['number',
+                                     'created',
+                                     'acquisition_method',
+                                     'format',
+                                     'location',
+                                     'serial_added_volume'],
+                                    verbose=False)
+
+    #For determine if a title is accessioned.
+    #Only need to find first attached items for those with more than
+    #one item.
+    #if len(marc_items) > 1:
+    #Get the first items for serials.
+    if material_type != 's':
+        first_item = self.first_item(marc_items)
+    else:
+        first_item = cat_date
+
+    #else:
+    #first_item = date.today()
+        #print>>sys.stderr, first_item
+    for item in marc_items:
+        try:
+            item_number = item['y']
+            if not item_number:
+                #print>>sys.stderr, 'no item number? ', item
+                continue
+            if item_number:
+                item_number = item_number.lstrip('.')
+        except KeyError:
+            #print>>sys.stderr, 'no item number? ', item
+            continue
+        #Get acc note, skip anything without one.
+        item_acc_note = item[settings_app.ITEM_ACC_NOTE]
+        if not item_acc_note:
+            #print>>sys.stderr, 'no accession note ', item_number
+            continue
+
+        item_created = convert_date(item['z'])
+        #Yes, some item records don't have a created date.
+        if not item_created:
+            #print>>sys.stderr, 'no item create date? ', item
+            continue
+        #Skip items from before system was implemented.
+        if item_created.year < settings_app.BEGIN_YEAR:
+            #print>>sys.stderr, 'too old ', item_number, item_created
+            continue
+        if item_created.year == settings_app.BEGIN_YEAR:
+            if item_created.month < settings_app.BEGIN_MONTH:
+                #print>>sys.stderr, 'too old ', item_number, item_created
+                continue
+        #Don't count old stuff.
+        #if TODAY - item_created < CUTOFF_DAY_DELTA:
+        #    #print>>sys.stderr, "Old accession skipping. %s" % first_item
+    #   continue
+        #Skip known items
+        if item_number in counted_items:
+            #print>>sys.stderr, item_number, ' already counted.  skipping.'
+            #print>>sys.stderr, '-',
+            continue
+
+        #Determine bib's accession date by
+        try:
+            if not item['l']:
+                print>>sys.stderr, 'no location code ', item_number
+                continue
+            raw_location = item['l'].strip()
+            #Store raw location codes in case building names change in the future.
+            #This will make display tricky.
+            item_location = raw_location
+            #item_location = location_format_map[raw_location]['building']
+        except KeyError:
+            #item_location = 'unknown'
+            item_location = 'unknown'
+
+        try:
+            acquisition_method = AcquisitionMethod(item_acc_note).note
+        except NameError as e:
+            print>>sys.stderr, item, e
+            continue
+        try:
+            item_format = location_format_map[raw_location]['format']
+        except KeyError:
+            #print>>sys.stderr, "%s is an unknown location code." % item_location
+            item_format = 'unknown'
+
+        #Serial added volumes: item record create date > bib record cat date AND bib record bib level equals = serial
+        serial_added_volume = False
+        if cat_date:
+            if item_created > cat_date:
+                if material_type == 's':
+                    serial_added_volume = True
+
+        _key = Acc(number=item_number,
+                   created=item_created,
+                   acquisition_method=acquisition_method,
+                   format=item_format,
+                   location=item_location,
+                   serial_added_volume=serial_added_volume)
+        summary[_key] += 1
+
+        #Add to the title count.
+        if not title_counted:
+            try:
+                if item_created <= first_item:
+                    summary_titles[_key] += 1
+                    title_counted = True
+            except TypeError:
+                pass
+
+    return_val = {'volumes': dict(summary), 'titles': dict(summary_titles)}
+    if return_val['volumes'] or return_val['titles']:
+        log.debug( 'return_val, ```{}```'.format( pprint.pformat(return_val) ) )
+    return return_val
+
+    ## end def count_volumes()
