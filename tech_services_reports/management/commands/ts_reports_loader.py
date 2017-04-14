@@ -144,7 +144,7 @@ class Command(BaseCommand):
         #======================================================================
 
         #Loop through marc records.
-        data = marc_parser.parse_marc_file( marc_file )
+        data = marc_parser.parse_marc_file( marc_file, existing_items )
         log.debug( 'data, ```{}```'.format(data) )
 
         log.debug( 'volume_count dct, ```{}```'.format( pprint.pformat(volume_count) ) )

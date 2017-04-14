@@ -10,7 +10,7 @@ from tech_services_reports.utility_code import CatStat
 log = logging.getLogger( "processing" )
 
 
-def parse_marc_file( marc_file ):
+def parse_marc_file( marc_file, existing_items ):
 
     counter = 0
     cataloging_edit_count = {}
