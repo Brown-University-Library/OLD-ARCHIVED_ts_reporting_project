@@ -3,6 +3,7 @@
 import datetime, logging
 import pymarc
 from tech_services_reports import utility_code
+from tech_services_reports.utility_code import CatStat
 
 
 log = logging.getLogger( "processing" )
@@ -33,7 +34,7 @@ def parse_marc_file( marc_file ):
             #==================================================================
             # Count cat edits
             #==================================================================
-            cat_date = convert_date(record['998']['b'])
+            cat_date = utility_code.convert_date(record['998']['b'])
             cat_stat = CatStat(record)
             #Count cataloging edits
             #Store needed fields.
