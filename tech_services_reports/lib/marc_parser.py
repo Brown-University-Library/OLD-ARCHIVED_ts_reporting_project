@@ -155,11 +155,11 @@ def count_cataloging_edits(
                 print>>sys.stderr, "Month value not valid.", bib_number, marc_995
                 continue
             try:
-                edate = date(year, month, day)
+                edate = datetime.date(year, month, day)
             except Exception as e:
                 log.warning( 'date problem for bib, `{b}`: year, `{y}`; month, `{m}`; day, `{d}`'.format( b=bib_number, y=year, m=month, d=day ) )
                 log.error( 'exception processing date, ```{}```'.format( repr(e) ) )
-                log.warning( 'marc_995 field, ```{}```'.format( str(edit).decode('utf-8') ) )
+                log.warning( 'marc_995 field, ```{}```'.format(edit) )
                 continue
             if edate.year < settings_app.BEGIN_YEAR:
                 continue
