@@ -44,13 +44,8 @@ def parse_marc_file( marc_file ):
             #Batch edit notes stored here.
             marc_910 = record.get_fields('910')
             #Count the batch load info
-            this_batch_edit = self.count_batch_edits(
-                           bib_number,
-                           bib_created,
-                           mat_type,
-                           marc_910,
-                           cataloging_edit_count,
-                           source)
+            this_batch_edit = count_batch_edits(
+                bib_number, bib_created, mat_type, marc_910, cataloging_edit_count, source )
             cataloging_edit_count.update(this_batch_edit)
 
             #Count individual edits added by staff.
@@ -93,3 +88,44 @@ def get_bib_created( this_record ):
     d = this_record['907']['c']
     return utility_code.convert_date(d)
 
+
+def count_batch_edits(
+    bib_number, create_date, mat_type, marc_910, cat_edit_count, source ):
+    """Count Shelf Ready bibs.  Email from Sam.
+    YBP (b56908994) and Aux Amateurs (b57122490) use constant data in 910 $a.
+    For Casalini (b57128510), the constant data we're interested in is
+    placed in 910 $g.
+    Also note that records created even a few weeks ago have overlays from our authority control vendor, Backstage Library Works; the YBP record also has an overlay from OCLC BibNote.  In these cases, the original cat date -- now lost -- equals the create date."""
+
+    shelf_ready = False
+    for field in marc_910:
+        edate = create_date
+        if edate.year < settings_app.BEGIN_YEAR:
+                continue
+        if edate.year == settings_app.BEGIN_YEAR:
+            if edate.month < settings_app.BEGIN_MONTH:
+                continue
+        if field['a'] == 'ybp':
+            shelf_ready = True
+            editor = 'YBP'
+        elif field['a'] == 'Aux Amateurs shelf-ready':
+            shelf_ready = True
+            editor = 'Aux Amateurs'
+        elif field['g'] == 'Casalini Libri':
+            shelf_ready = True
+            editor = 'Casalini'
+        elif field['a'] == 'Coutts':
+            shelf_ready = True
+            editor = 'Coutts'
+        elif field['a'] == 'BSLW shelfready':
+            shelf_ready = True
+            editor = 'Backstage Library Works'
+
+        #Logic for 910 to determine if it's Shelf ready.
+        if shelf_ready:
+            #print field
+            _key = (editor, create_date, 'batch load', bib_number, mat_type, source)
+            cat_edit_count[_key] = cat_edit_count.get(_key, 0) + 1
+            #Counted it, break out of this record.
+            break
+    return cat_edit_count
