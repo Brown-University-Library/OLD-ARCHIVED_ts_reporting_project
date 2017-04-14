@@ -363,85 +363,10 @@ class Command(BaseCommand):
                                marc_995,
                                cat_edit_count,
                                source):
-        for edit in marc_995:
-            note = edit['a']
-            if not note:
-                continue
-            match = CAT_RE.search(note)
-            #print>>sys.stderr, note, match
-            if match:
-                _fields = {}
-                edate, editor, ctype = match.groups()
-                if ctype == 'Batch Load':
-                    ctype = 'Batch'
-                year = 2000 + int(edate[:2])
-                month = int(edate[2:4])
-                day = int(edate[4:6])
-                if month > 12:
-                    print>>sys.stderr, "Month value not valid.", bib_number, marc_995
-                    continue
-                try:
-                    edate = date(year, month, day)
-                except Exception as e:
-                    log.warning( 'date problem for bib, `{b}`: year, `{y}`; month, `{m}`; day, `{d}`'.format( b=bib_number, y=year, m=month, d=day ) )
-                    log.error( 'exception processing date, ```{}```'.format( repr(e) ) )
-                    log.warning( 'marc_995 field, ```{}```'.format( str(edit).decode('utf-8') ) )
-                    continue
-                if edate.year < settings_app.BEGIN_YEAR:
-                    continue
-                if edate.year == settings_app.BEGIN_YEAR:
-                    if edate.month < settings_app.BEGIN_MONTH:
-                        continue
-                _key = (editor, edate, ctype, bib_number, mat_type, source)
-                cat_edit_count[_key] = cat_edit_count.get(_key, 0) + 1
+        cat_edit_count = marc_parser.count_cataloging_edits(
+            bib_number, mat_type, marc_995, at_edit_count, source )
         return cat_edit_count
 
-
-    # def count_batch_edits(self,
-    #                        bib_number,
-    #                        create_date,
-    #                        mat_type,
-    #                        marc_910,
-    #                        cat_edit_count,
-    #                        source):
-    #     """Count Shelf Ready bibs.  Email from Sam.
-    #     YBP (b56908994) and Aux Amateurs (b57122490) use constant data in 910 $a.
-    #     For Casalini (b57128510), the constant data we're interested in is
-    #     placed in 910 $g.
-    #     Also note that records created even a few weeks ago have overlays from our authority control vendor, Backstage Library Works; the YBP record also has an overlay from OCLC BibNote.  In these cases, the original cat date -- now lost -- equals the create date."""
-
-    #     shelf_ready = False
-    #     for field in marc_910:
-    #         edate = create_date
-    #         if edate.year < settings_app.BEGIN_YEAR:
-    #                 continue
-    #         if edate.year == settings_app.BEGIN_YEAR:
-    #             if edate.month < settings_app.BEGIN_MONTH:
-    #                 continue
-    #         if field['a'] == 'ybp':
-    #             shelf_ready = True
-    #             editor = 'YBP'
-    #         elif field['a'] == 'Aux Amateurs shelf-ready':
-    #             shelf_ready = True
-    #             editor = 'Aux Amateurs'
-    #         elif field['g'] == 'Casalini Libri':
-    #             shelf_ready = True
-    #             editor = 'Casalini'
-    #         elif field['a'] == 'Coutts':
-    #             shelf_ready = True
-    #             editor = 'Coutts'
-    #         elif field['a'] == 'BSLW shelfready':
-    #             shelf_ready = True
-    #             editor = 'Backstage Library Works'
-
-    #         #Logic for 910 to determine if it's Shelf ready.
-    #         if shelf_ready:
-    #             #print field
-    #             _key = (editor, create_date, 'batch load', bib_number, mat_type, source)
-    #             cat_edit_count[_key] = cat_edit_count.get(_key, 0) + 1
-    #             #Counted it, break out of this record.
-    #             break
-    #     return cat_edit_count
 
     def count_batch_edits(self,
                            bib_number,
