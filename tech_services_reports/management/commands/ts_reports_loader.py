@@ -16,6 +16,7 @@ from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.management.base import BaseCommand
 from tech_services_reports import settings_app
+from tech_services_reports.lib import marc_parser
 from tech_services_reports.models import Accession, CatEdit, Harvest
 from tech_services_reports.utility_code import CatStat
 from tech_services_reports.utility_code import convert_date
