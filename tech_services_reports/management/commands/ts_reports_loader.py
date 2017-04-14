@@ -140,8 +140,6 @@ class Command(BaseCommand):
         #======================================================================
 
         #Loop through marc records.
-        counter = 0
-
         data = marc_parser.parse_marc_file( marc_file )
         log.debug( 'data, ```{}```'.format(data) )
 
