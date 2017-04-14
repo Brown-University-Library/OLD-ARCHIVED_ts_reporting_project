@@ -67,23 +67,32 @@ class Command(BaseCommand):
         else:
           print>>sys.stderr, 'no file specified'
 
+    # def first_item(self, items):
+    #     """Get the first attached item and use that as the accessions
+    #     count date.  E.g.  Items will be counted as an accessioned title
+    #     on the date of the first attached item."""
+    #     from tech_services_reports.utility_code import convert_date
+    #     from datetime import date
+    #     first = date(1900, 1, 1)
+    #     for count, item in enumerate(items):
+    #         item_created = convert_date(item['z'])
+    #         if not item_created:
+    #             continue
+    #         #Initialize first attached item date.
+    #         if count == 0:
+    #             first = item_created
+    #         if item_created < first:
+    #             first = item_created
+    #     return first
+
+
     def first_item(self, items):
         """Get the first attached item and use that as the accessions
         count date.  E.g.  Items will be counted as an accessioned title
         on the date of the first attached item."""
-        from tech_services_reports.utility_code import convert_date
-        from datetime import date
-        first = date(1900, 1, 1)
-        for count, item in enumerate(items):
-            item_created = convert_date(item['z'])
-            if not item_created:
-                continue
-            #Initialize first attached item date.
-            if count == 0:
-                first = item_created
-            if item_created < first:
-                first = item_created
-        return first
+        first_item = marc_parser.get_first_item( items )
+        return first_item
+
 
     def counted_items(self):
         """ Grabs stored accession items from db.

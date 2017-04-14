@@ -205,7 +205,7 @@ def count_volumes( marc_items, cat_date, material_type, counted_items ):
     #if len(marc_items) > 1:
     #Get the first items for serials.
     if material_type != 's':
-        first_item = self.first_item(marc_items)
+        first_item = get_first_item( marc_items )
     else:
         first_item = cat_date
 
@@ -307,3 +307,20 @@ def count_volumes( marc_items, cat_date, material_type, counted_items ):
     return return_val
 
     ## end def count_volumes()
+
+
+def get_first_item( items ):
+    """Get the first attached item and use that as the accessions
+    count date.  E.g.  Items will be counted as an accessioned title
+    on the date of the first attached item."""
+    first = datetime.date(1900, 1, 1)
+    for count, item in enumerate(items):
+        item_created = utility_code.convert_date(item['z'])
+        if not item_created:
+            continue
+        #Initialize first attached item date.
+        if count == 0:
+            first = item_created
+        if item_created < first:
+            first = item_created
+    return first
