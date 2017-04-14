@@ -138,11 +138,13 @@ class Command(BaseCommand):
             Date counts will include the date of a given harvest. """
         log.debug( 'starting summary()' )
         log.info( 'reading MARC file, ```{}```'.format(marc_file) )
+
         #Dicts to store counts
         cataloging_edit_count = {}
-        cataloging_count = {}
+        # cataloging_count = {}
         title_count = {}
         volume_count = {}
+
         #Find items already counted.
         #Add logic to skip counted items.
         log.info( 'retrieving existing items stored in Accessions database' )
@@ -153,7 +155,7 @@ class Command(BaseCommand):
         #======================================================================
 
         #Loop through marc records.
-        data = marc_parser.parse_marc_file( marc_file, existing_items )
+        ( cataloging_edit_count, title_count, volume_count ) = marc_parser.parse_marc_file( marc_file, existing_items )
         log.debug( 'data, ```{}```'.format(data) )
 
         log.debug( 'volume_count dct, ```{}```'.format( pprint.pformat(volume_count) ) )

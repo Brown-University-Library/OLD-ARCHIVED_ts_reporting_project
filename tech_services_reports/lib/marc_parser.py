@@ -14,6 +14,8 @@ def parse_marc_file( marc_file, existing_items ):
 
     counter = 0
     cataloging_edit_count = {}
+    title_count = {}
+    volume_count = {}
 
     with open( marc_file, 'rb' ) as fh:
         reader = pymarc.MARCReader( fh, to_unicode=True, force_utf8=True, utf8_handling='ignore' )
@@ -82,6 +84,9 @@ def parse_marc_file( marc_file, existing_items ):
             #Iterate through item counts and update
             for k, vol in this_vol.items():
                 volume_count[k] = volume_count.get(k, 0) + vol
+
+    return_tpl = ( cataloging_edit_count, title_count, volume_count )
+    return return_tpl
 
     ## end def parse_marc_file()
 
