@@ -18,7 +18,8 @@ def parse_marc_file( marc_file, existing_items ):
     volume_count = {}
 
     with open( marc_file, 'rb' ) as fh:
-        reader = pymarc.MARCReader( fh, to_unicode=True, force_utf8=True, utf8_handling='ignore' )
+        # reader = pymarc.MARCReader( fh, to_unicode=True, force_utf8=True, utf8_handling='ignore' )
+        reader = pymarc.MARCReader( fh )
         start = datetime.datetime.now()
         count = 0
         for record in reader:
