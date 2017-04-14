@@ -2,6 +2,7 @@
 
 import datetime, logging
 import pymarc
+from tech_services_reports import settings_app
 from tech_services_reports import utility_code
 from tech_services_reports.utility_code import CatStat
 
