@@ -7,16 +7,16 @@ For more information on this file, see
 https://docs.djangoproject.com/en/1.8/howto/deployment/wsgi/
 """
 
-import os
-from sys import path
+import os, sys
 
 
-PROJECT_DIR_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+PROJECT_DIR_PATH = os.path.dirname( os.path.dirname(os.path.abspath(__file__)) )
 SETTINGS_MODULE = 'config.settings'
+SETTINGS_POINTER_PATH = '{}/../env_settings'
 
 
 ## update path
-path.append(PROJECT_DIR_PATH)
+sys.path.append( PROJECT_DIR_PATH )
 
 
 
@@ -26,7 +26,7 @@ path.append(PROJECT_DIR_PATH)
 
 
 
-## activate venv  -- works; source: <http://devmartin.com/blog/2015/02/how-to-deploy-a-python3-wsgi-application-with-apache2-and-debian/>
+# activate venv  -- works; source: <http://devmartin.com/blog/2015/02/how-to-deploy-a-python3-wsgi-application-with-apache2-and-debian/>
 activate_this_path = os.path.join( os.path.dirname(PROJECT_DIR_PATH),'env_ts_rprt/bin/activate_this.py' )
 exec( open(activate_this_path).read() )
 
