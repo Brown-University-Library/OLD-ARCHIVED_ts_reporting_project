@@ -49,9 +49,9 @@ def parse_marc_file( marc_file, existing_items ):
 
                 try:
                     bib_number = record['907']['a'][1:]
-                    log.info( 'bib_number, `{}`'.format(bib_number) )
+                    log.debug( 'bib_number, `{}`'.format(bib_number) )
                 except TypeError:
-                    log.info( 'no bib_number' )
+                    log.debug( 'no bib_number' )
                     continue
                 bib_level = record['998']['c']
                 bib_created = get_bib_created( record )
@@ -116,7 +116,8 @@ def parse_marc_file( marc_file, existing_items ):
                 process_flag = False
             count_processed += 1
             if count_processed % 10000 == 0:
-                print( '`{}` records counted'.format(count_processed) )
+                # print( '`{}` records counted'.format(count_processed) )
+                log.info( '`{}` records counted'.format(count_processed) )
             # if count_processed > 10000:
             #     break
 
