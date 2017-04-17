@@ -109,7 +109,9 @@ def parse_marc_file( marc_file, existing_items ):
 
             except Exception as e:
                 log.error( 'exception accessing record, ```{count}```; tell-count, ```{tell}```'.format(count=count_processed, tell=fh.tell() ) )
-                log.error( 'exception, ```{err}```'.format( err=repr(e) ) )
+                log.error( 'exception info-a, ```{err_a}```\ninfo-b, ```{err_b}```'.format( err_a=e, err_b=repr(e) ) )
+                # log.error( 'exception description-a, ```{err}```'.format( err=repr(e) ) )
+                # log.error( 'exception description-b, ```{err}```'.format( err=e ) )
                 count_bad += 1
                 last_read_good = False
             if fh.tell() == file_size:
@@ -117,7 +119,7 @@ def parse_marc_file( marc_file, existing_items ):
             count_processed += 1
             if count_processed % 10000 == 0:
                 # print( '`{}` records counted'.format(count_processed) )
-                log.info( '`{}` records counted'.format(count_processed) )
+                log.info( '`{}` records processed'.format(count_processed) )
             # if count_processed > 10000:
             #     break
 
