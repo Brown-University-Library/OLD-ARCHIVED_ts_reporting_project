@@ -138,8 +138,9 @@ class Command(BaseCommand):
 
         #Loop through marc records.
         ( cataloging_edit_count, title_count, volume_count ) = marc_parser.parse_marc_file( marc_file, existing_items )
-        log.debug( 'data, ```{}```'.format(data) )
 
+        log.debug( 'cataloging_edit_count, ```{}```'.format( pprint.pformat(cataloging_edit_count) ) )
+        log.debug( 'title_count, ```{}```'.format( pprint.pformat(title_count) ) )
         log.debug( 'volume_count dct, ```{}```'.format( pprint.pformat(volume_count) ) )
 
         #Finish looping through MARC records

@@ -18,78 +18,201 @@ def parse_marc_file( marc_file, existing_items ):
     volume_count = {}
 
     with open( marc_file, 'rb' ) as fh:
-        # reader = pymarc.MARCReader( fh, to_unicode=True, force_utf8=True, utf8_handling='ignore' )
-        reader = pymarc.MARCReader( fh )
+
         start = datetime.datetime.now()
-        count = 0
-        for record in reader:
-            # log.debug( 'record, ```{}```'.format(record) )
-            if counter > 0 and counter % 10000 == 0:
-                # print>>sys.stderr, '`{}` records processed'.format(counter)
-                log.info( '`{}` records processed'.format(counter) )
-            counter += 1
+        fh.seek( 0, 2 ); file_size = fh.tell(); fh.seek( 0 )
+        log.debug( 'file_size(K), `{}`'.format( file_size/1024 ) )
+        count_processed = 0; count_good = 0; count_bad = 0; count_segments_to_review = 0
+        last_good_tell = 0
+        last_read_good = True
+        segment_to_review = 'init'
+        # reader = pymarc.MARCReader( fh, to_unicode=True, force_utf8=True, utf8_handling='ignore' )
+        # reader = pymarc.MARCReader( fh, force_utf8=True, utf8_handling='ignore' )
+        # reader = pymarc.MARCReader( fh, utf8_handling='ignore' )
+        reader = pymarc.MARCReader( fh )
+        process_flag = True
+
+        while process_flag is True:
             try:
-                bib_number = record['907']['a'][1:]
-                log.debug( 'bib_number, `{}`'.format(bib_number) )
-            except TypeError:
-                log.debug( 'no bib_number' )
-                continue
-            bib_level = record['998']['c']
-            bib_created = get_bib_created( record )
-            #==================================================================
-            # Count cat edits
-            #==================================================================
-            cat_date = utility_code.convert_date(record['998']['b'])
-            cat_stat = CatStat(record)
-            #Count cataloging edits
-            #Store needed fields.
-            marc_995 = record.get_fields('995')
-            mat_type = cat_stat.mat_type()
-            source = cat_stat.cat_type()
-            #Batch edit notes stored here.
-            marc_910 = record.get_fields('910')
-            #Count the batch load info
-            this_batch_edit = count_batch_edits(
-                bib_number, bib_created, mat_type, marc_910, cataloging_edit_count, source )
-            cataloging_edit_count.update(this_batch_edit)
+                record = next( reader )
+                count_good += 1
+                if last_read_good is False:
+                    current_position = fh.tell()
+                    segment_to_review_byte_count = current_position - last_good_tell
+                    fh.seek( last_good_tell )
+                    segment_to_review = fh.read( segment_to_review_byte_count )
+                    count_segments_to_review += 1
+                    log.info( 'segment_to_review, ```{}```'.format(segment_to_review) )
+                    fh.seek( current_position )
+                last_good_tell = fh.tell()
+                last_read_good = True
 
-            #Count individual edits added by staff.
-            this_cat_edit = count_cataloging_edits(bib_number,
-                                                        mat_type,
-                                                        marc_995,
-                                                        cataloging_edit_count,
-                                                        source)
-            cataloging_edit_count.update(this_cat_edit)
-            #==================================================================
-            # Count accessions based off item fields.
-            #==================================================================
-            items = record.get_fields('945')
-            #Count the volumes
-            #This will be dict with a named tuple as a key.
-            this_count = count_volumes(items,
-                                            cat_date,
-                                            mat_type,
-                                            existing_items)
-            #We won't be counting everything - skipping some old items.
-            if this_count is None:
-                continue
-            #Pull the volume and title count from the accessions key.
-            this_vol = this_count['volumes']
-            this_title = this_count['titles']
+                try:
+                    bib_number = record['907']['a'][1:]
+                    log.info( 'bib_number, `{}`'.format(bib_number) )
+                except TypeError:
+                    log.info( 'no bib_number' )
+                    continue
+                bib_level = record['998']['c']
+                bib_created = get_bib_created( record )
 
-            #Add the title count
-            for k, title in this_title.items():
-                title_count[k] = title_count.get(k, 0) + title
+                #==================================================================
+                # Count cat edits
+                #==================================================================
+                cat_date = utility_code.convert_date(record['998']['b'])
+                cat_stat = CatStat(record)
+                #Count cataloging edits
+                #Store needed fields.
+                marc_995 = record.get_fields('995')
+                mat_type = cat_stat.mat_type()
+                source = cat_stat.cat_type()
+                #Batch edit notes stored here.
+                marc_910 = record.get_fields('910')
+                #Count the batch load info
+                this_batch_edit = count_batch_edits(
+                    bib_number, bib_created, mat_type, marc_910, cataloging_edit_count, source )
+                cataloging_edit_count.update(this_batch_edit)
 
-            #Add the volume count
-            #Iterate through item counts and update
-            for k, vol in this_vol.items():
-                volume_count[k] = volume_count.get(k, 0) + vol
+                #Count individual edits added by staff.
+                this_cat_edit = count_cataloging_edits(bib_number,
+                                                            mat_type,
+                                                            marc_995,
+                                                            cataloging_edit_count,
+                                                            source)
+                cataloging_edit_count.update(this_cat_edit)
+
+                #==================================================================
+                # Count accessions based off item fields.
+                #==================================================================
+                items = record.get_fields('945')
+                #Count the volumes
+                #This will be dict with a named tuple as a key.
+                this_count = count_volumes(items,
+                                                cat_date,
+                                                mat_type,
+                                                existing_items)
+                #We won't be counting everything - skipping some old items.
+                if this_count is None:
+                    continue
+                #Pull the volume and title count from the accessions key.
+                this_vol = this_count['volumes']
+                this_title = this_count['titles']
+
+                #Add the title count
+                for k, title in this_title.items():
+                    title_count[k] = title_count.get(k, 0) + title
+
+                #Add the volume count
+                #Iterate through item counts and update
+                for k, vol in this_vol.items():
+                    volume_count[k] = volume_count.get(k, 0) + vol
+
+            except Exception as e:
+                log.error( 'exception accessing record, ```{count}```; tell-count, ```{tell}```'.format(count=count_processed, tell=fh.tell() ) )
+                log.error( 'exception, ```{err}```'.format( err=repr(e) ) )
+                count_bad += 1
+                last_read_good = False
+            if fh.tell() == file_size:
+                process_flag = False
+            count_processed += 1
+            if count_processed % 10000 == 0:
+                print( '`{}` records counted'.format(count_processed) )
+            # if count_processed > 10000:
+            #     break
+
+        end = datetime.datetime.now()
+        log.info( 'count_processed, `{}`'.format(count_processed) )
+        log.info( 'count_good, `{}`'.format(count_good) )
+        log.info( 'count_bad, `{}`'.format(count_bad) )
+        log.info( 'count_segments_to_review, `{}`'.format(count_segments_to_review) )
+        log.info( 'time_taken, `{}`'.format(end-start) )
 
     return_tpl = ( cataloging_edit_count, title_count, volume_count )
     return return_tpl
 
     ## end def parse_marc_file()
+
+
+# def parse_marc_file( marc_file, existing_items ):
+
+#     counter = 0
+#     cataloging_edit_count = {}
+#     title_count = {}
+#     volume_count = {}
+
+#     with open( marc_file, 'rb' ) as fh:
+#         # reader = pymarc.MARCReader( fh, to_unicode=True, force_utf8=True, utf8_handling='ignore' )
+#         reader = pymarc.MARCReader( fh )
+#         start = datetime.datetime.now()
+#         count = 0
+#         for record in reader:
+#             # log.debug( 'record, ```{}```'.format(record) )
+#             if counter > 0 and counter % 10000 == 0:
+#                 # print>>sys.stderr, '`{}` records processed'.format(counter)
+#                 log.info( '`{}` records processed'.format(counter) )
+#             counter += 1
+#             try:
+#                 bib_number = record['907']['a'][1:]
+#                 log.debug( 'bib_number, `{}`'.format(bib_number) )
+#             except TypeError:
+#                 log.debug( 'no bib_number' )
+#                 continue
+#             bib_level = record['998']['c']
+#             bib_created = get_bib_created( record )
+#             #==================================================================
+#             # Count cat edits
+#             #==================================================================
+#             cat_date = utility_code.convert_date(record['998']['b'])
+#             cat_stat = CatStat(record)
+#             #Count cataloging edits
+#             #Store needed fields.
+#             marc_995 = record.get_fields('995')
+#             mat_type = cat_stat.mat_type()
+#             source = cat_stat.cat_type()
+#             #Batch edit notes stored here.
+#             marc_910 = record.get_fields('910')
+#             #Count the batch load info
+#             this_batch_edit = count_batch_edits(
+#                 bib_number, bib_created, mat_type, marc_910, cataloging_edit_count, source )
+#             cataloging_edit_count.update(this_batch_edit)
+
+#             #Count individual edits added by staff.
+#             this_cat_edit = count_cataloging_edits(bib_number,
+#                                                         mat_type,
+#                                                         marc_995,
+#                                                         cataloging_edit_count,
+#                                                         source)
+#             cataloging_edit_count.update(this_cat_edit)
+#             #==================================================================
+#             # Count accessions based off item fields.
+#             #==================================================================
+#             items = record.get_fields('945')
+#             #Count the volumes
+#             #This will be dict with a named tuple as a key.
+#             this_count = count_volumes(items,
+#                                             cat_date,
+#                                             mat_type,
+#                                             existing_items)
+#             #We won't be counting everything - skipping some old items.
+#             if this_count is None:
+#                 continue
+#             #Pull the volume and title count from the accessions key.
+#             this_vol = this_count['volumes']
+#             this_title = this_count['titles']
+
+#             #Add the title count
+#             for k, title in this_title.items():
+#                 title_count[k] = title_count.get(k, 0) + title
+
+#             #Add the volume count
+#             #Iterate through item counts and update
+#             for k, vol in this_vol.items():
+#                 volume_count[k] = volume_count.get(k, 0) + vol
+
+#     return_tpl = ( cataloging_edit_count, title_count, volume_count )
+#     return return_tpl
+
+#     ## end def parse_marc_file()
 
 
 def get_bib_created( this_record ):

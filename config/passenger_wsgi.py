@@ -14,7 +14,7 @@ import shellvars
 # print( 'the initial env, ```{}```'.format( pprint.pformat(dict(os.environ)) ) )
 
 PROJECT_DIR_PATH = os.path.dirname( os.path.dirname(os.path.abspath(__file__)) )
-ENV_SETTINGS_FILE = os.environ['TS_RPRT__SETTINGS_PATH']  # set in conf.d/passenger.conf
+ENV_SETTINGS_FILE = os.environ['TS_RPRT__SETTINGS_PATH']  # set in `conf.d/passenger.conf`, and `env/bin/activate`
 
 ## update path
 sys.path.append( PROJECT_DIR_PATH )
