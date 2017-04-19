@@ -28,7 +28,8 @@ log.debug( 'loaded ts_reports_loader.py' )
 
 #For format mappings
 url = settings_app.LOCATION_FORMAT_URL
-r = requests.get( url )
+requests.packages.urllib3.disable_warnings()
+r = requests.get( url, verify=False )
 location_format_map = json.loads( r.content.decode('utf-8') )
 # log.debug( 'location_format_map, ```{}```'.format(pprint.pformat(location_format_map)) )
 location_format_map = location_format_map['result']['items']
