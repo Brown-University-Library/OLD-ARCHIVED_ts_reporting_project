@@ -331,7 +331,8 @@ def count_cataloging_edits(
             month = int(edate[2:4])
             day = int(edate[4:6])
             if month > 12:
-                print>>sys.stderr, "Month value not valid.", bib_number, marc_995
+                # print>>sys.stderr, "Month value not valid.", bib_number, marc_995
+                log.warning( 'month value not valid; bib_number, `{bib}`; marc_995, `{mrc}`'.format( bib=bib_number, mrc=marc_995 ) )
                 continue
             try:
                 edate = datetime.date(year, month, day)
@@ -434,7 +435,8 @@ def count_volumes( marc_items, cat_date, material_type, counted_items ):
         #Determine bib's accession date by
         try:
             if not item['l']:
-                print>>sys.stderr, 'no location code ', item_number
+                # print>>sys.stderr, 'no location code ', item_number
+                log.warning( 'no location code; item_number, `{}`'.format(item_number) )
                 continue
             raw_location = item['l'].strip()
             #Store raw location codes in case building names change in the future.
@@ -448,7 +450,8 @@ def count_volumes( marc_items, cat_date, material_type, counted_items ):
         try:
             acquisition_method = AcquisitionMethod(item_acc_note).note
         except NameError as e:
-            print>>sys.stderr, item, e
+            # print>>sys.stderr, item, e
+            log.warning( 'error instantiating AcquisitionMethod();\nitem, ```{itm}```; info-a, ```{err_a}```;\info-b, ```{err_b}```'.format( itm=item, err_a=e, err_b=repr(e) ) )
             continue
         try:
             item_format = location_format_map[raw_location]['format']
