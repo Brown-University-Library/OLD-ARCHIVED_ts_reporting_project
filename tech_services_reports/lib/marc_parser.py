@@ -109,7 +109,7 @@ def parse_marc_file( marc_file, existing_items ):
                 segment_to_review_byte_count = current_position - last_position
                 fh.seek( last_position )
                 segment_to_review = fh.read( segment_to_review_byte_count )
-                log.info( 'segment_to_review, ```{}```'.format(segment_to_review) )
+                log.info( 'segment_to_review, ```{}```'.format(segment_to_review) )  ## TODO: write these to a separate file
                 fh.seek( current_position )
                 last_position = current_position
 
@@ -125,8 +125,12 @@ def parse_marc_file( marc_file, existing_items ):
         ## warning level really just for console output
         log.warning( 'summary for marc file, ```{}```'.format(marc_file) )
         log.warning( 'count_processed, `{}`'.format(count_processed) )
-        log.warning( 'count_good, `{}`'.format(count_good) )
-        log.warning( 'count_bad, `{}`; problem-segments are in log'.format(count_bad) )
+        log.warning( 'count_good_encoding, `{}`'.format(count_good) )
+        if count_bad > 0:
+            bad_msg = 'count_bad_encoding, `{}`; problem-segments are in log'.format( count_bad )
+        else:
+            bad_msg = 'count_bad, `{}`'.format( count_bad )
+        log.warning( bad_msg )
         log.warning( 'time_taken, `{}`'.format(end-start) )
 
     return_tpl = ( cataloging_edit_count, title_count, volume_count )
