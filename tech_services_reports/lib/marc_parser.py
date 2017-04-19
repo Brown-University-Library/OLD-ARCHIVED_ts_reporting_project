@@ -451,7 +451,8 @@ def count_volumes( marc_items, cat_date, material_type, counted_items ):
             acquisition_method = AcquisitionMethod(item_acc_note).note
         except NameError as e:
             # print>>sys.stderr, item, e
-            log.warning( 'error instantiating AcquisitionMethod();\nitem, ```{itm}```; info-a, ```{err_a}```;\info-b, ```{err_b}```'.format( itm=item, err_a=e, err_b=repr(e) ) )
+            log.warning( 'error instantiating AcquisitionMethod(); error logged' )
+            log.info( 'error instantiating AcquisitionMethod();\nitem, ```{itm}```;\ninfo, ```{err}```'.format( itm=item, err=repr(e) ) )
             continue
         try:
             item_format = location_format_map[raw_location]['format']
