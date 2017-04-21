@@ -23,7 +23,7 @@ sys.path.append( PROJECT_DIR_PATH )
 ## - the project's httpd/passenger.conf section allows specification of the python-path via `PassengerPython`, which auto-activates it
 ## - the auto-activation provides access to modules, but not, automatically, env-vars
 ## - env-vars loading under python3.x occurs via the `SenEnv` entry in the project's passenger.conf section
-##   - requires apache mod_env; info: <https://www.phusionpassenger.com/library/indepth/environment_variables.html>
+##   - requires apache env_module; info: <https://www.phusionpassenger.com/library/indepth/environment_variables.html>
 
 ## reference django settings
 os.environ[u'DJANGO_SETTINGS_MODULE'] = 'config.settings'  # so django can access its settings
