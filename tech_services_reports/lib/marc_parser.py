@@ -50,21 +50,10 @@ class Parser(object):
         log.debug( 'loop_dct, ```{}```'.format( pprint.pformat(loop_dct) ) )
         return loop_dct
 
-    # def prepare_loop_vars( self, fh ):
-    #     """ Initializes vars for loop.
-    #         Calld by process_marc_file() """
-    #     start = datetime.datetime.now()
-    #     fh.seek( 0, 2 ); file_size = fh.tell(); fh.seek( 0 )
-    #     log.debug( 'file_size(K), `{}`'.format( file_size/1024 ) )
-    #     counter = 0; count_processed = 0; count_good = 0; count_bad = 0; last_position = 0; current_position = 0; process_flag = True
-    #     segment_to_review = 'init'
-    #     reader = pymarc.MARCReader( fh )
-    #     return_tpl = (
-    #         start, file_size, counter, count_processed, count_good, count_bad,
-    #         last_position, current_position, segment_to_review, reader, process_flag )
-    #     log.debug( 'return_tpl, ```{}```'.format(return_tpl) )
-    #     return return_tpl
-
+    def get_record( self ):
+        """ Tries to iterate to the next record.
+            Called by process_marc_file() """
+        pass
 
     # end class Parser()
 
