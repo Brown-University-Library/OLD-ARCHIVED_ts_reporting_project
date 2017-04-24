@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import unicode_literals
-import logging, os
+import datetime, logging, os
+import pymarc
 from django.test import TestCase
+from tech_services_reports.lib.marc_parser import Parser
 
 
 log = logging.getLogger(__name__)
@@ -16,9 +18,18 @@ class ParserTest( TestCase ):
         self.loop_filepath = os.environ['TS_RPRT__PREP_LOOP_FILEPATH']
 
     def test_prepare_loop_vars(self):
-        """ Checks initialization. """
+        """ Checks loop initialization. """
+        p = Parser()
+        label_dct = {}
+        labels = [ 'start', 'file_size', 'counter', 'count_processed', 'count_good', 'count_bad', 'last_position', 'current_position', 'segment_to_review', 'reader', 'process_flag' ]
+        for i, label in enumerate( labels ):
+            label_dct[ label ] = i
         with open( self.loop_filepath, 'rb' ) as fh:
-            pass
+            returned_tpl = p.prepare_loop_vars( fh )
+            self.assertEqual( datetime.datetime, type( returned_tpl[label_dct['start']] ) )
+            self.assertEqual( 154390421, returned_tpl[label_dct['file_size']] )
+            self.assertEqual( pymarc.reader.MARCReader, type( returned_tpl[label_dct['reader']] ) )
+            self.assertEqual( True, returned_tpl[label_dct['process_flag']] )
 
 
 class RootUrlTest( TestCase ):
@@ -39,3 +50,4 @@ class RootUrlTest( TestCase ):
         self.assertEqual(  '/stats/', redirect_url )
 
     # end class RootUrlTest()
+
