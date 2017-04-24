@@ -17,13 +17,13 @@ class RootUrlTest( TestCase ):
         response = self.client.get( '' )  # project root part of url is assumed
         self.assertEqual( 302, response.status_code )  # permanent redirect
         redirect_url = response._headers['location'][1]
-        self.assertEqual(  '/info/', redirect_url )
+        self.assertEqual(  '/stats/', redirect_url )
 
     def test_root_url_slash(self):
         """ Checks '/root_url/'. """
         response = self.client.get( '/' )  # project root part of url is assumed
         self.assertEqual( 302, response.status_code )  # permanent redirect
         redirect_url = response._headers['location'][1]
-        self.assertEqual(  '/info/', redirect_url )
+        self.assertEqual(  '/stats/', redirect_url )
 
     # end class RootUrlTest()
