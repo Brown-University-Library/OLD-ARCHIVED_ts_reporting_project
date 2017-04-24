@@ -13,11 +13,12 @@ class ParserTest( TestCase ):
     """ Checks lib.mar_parser.Parser() """
 
     def setUp(self):
-        self.loop_filepath = os.environ['']
+        self.loop_filepath = os.environ['TS_RPRT__PREP_LOOP_FILEPATH']
 
     def test_prepare_loop_vars(self):
         """ Checks initialization. """
-        with open( marc_file, 'rb' ) as fh:
+        with open( self.loop_filepath, 'rb' ) as fh:
+            pass
 
 
 class RootUrlTest( TestCase ):
