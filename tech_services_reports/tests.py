@@ -23,10 +23,9 @@ class ParserTest( TestCase ):
         with open( self.loop_filepath, 'rb' ) as fh:
             loop_dct = self.prsr.prepare_loop_vars( fh )
             self.assertEqual(
-                ['count_bad', 'count_good', 'count_processed', 'counter', 'current_position', 'file_size_MB', 'last_position', 'process_flag', 'reader', 'segment_to_review', 'start_time'],
+                ['count_bad', 'count_good', 'count_processed', 'counter', 'current_position', 'file_size_MB', 'last_position', 'process_flag', 'reader', 'segment_to_review'],
                 sorted( loop_dct.keys() )
                 )
-            self.assertEqual( datetime.datetime, type( loop_dct['start_time'] ) )
             self.assertEqual( 147.23817920684814, loop_dct['file_size_MB'] )
             self.assertEqual( pymarc.reader.MARCReader, type( loop_dct['reader'] ) )
             self.assertEqual( True, loop_dct['process_flag'] )

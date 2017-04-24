@@ -31,11 +31,12 @@ class Parser(object):
     def setup( self ):
         """ Initializes vars.
             Called by process_marc_file() """
+        start_time = datetime.datetime.now()
         counter = 0
         cataloging_edit_count = {}
         title_count = {}
         volume_count = {}
-        return_tpl = ( cataloging_edit_count, title_count, volume_count )
+        return_tpl = ( start_time, cataloging_edit_count, title_count, volume_count )
         return return_tpl
 
     def prepare_loop_vars( self, fh ):
@@ -43,7 +44,7 @@ class Parser(object):
             Calld by process_marc_file() """
         loop_dct = {
             'counter': 0, 'count_processed': 0, 'count_good': 0, 'count_bad': 0, 'last_position': 0, 'current_position': 0,
-            'process_flag': True, 'start_time': datetime.datetime.now(), 'segment_to_review': 'init' }
+            'process_flag': True, 'segment_to_review': 'init' }
         fh.seek( 0, 2 ); loop_dct['file_size_MB'] = fh.tell() / (1024*1024); fh.seek( 0 )
         loop_dct['reader'] = pymarc.MARCReader( fh )
         log.debug( 'loop_dct, ```{}```'.format( pprint.pformat(loop_dct) ) )
