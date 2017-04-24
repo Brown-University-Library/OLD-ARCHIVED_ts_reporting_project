@@ -1,12 +1,23 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import unicode_literals
-import logging
+import logging, os
 from django.test import TestCase
 
 
 log = logging.getLogger(__name__)
 TestCase.maxDiff = None
+
+
+class ParserTest( TestCase ):
+    """ Checks lib.mar_parser.Parser() """
+
+    def setUp(self):
+        self.loop_filepath = os.environ['']
+
+    def test_prepare_loop_vars(self):
+        """ Checks initialization. """
+        with open( marc_file, 'rb' ) as fh:
 
 
 class RootUrlTest( TestCase ):
