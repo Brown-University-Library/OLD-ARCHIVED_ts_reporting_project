@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import datetime, logging, re
+import datetime, logging, pprint, re
 import pymarc
 from tech_services_reports import settings_app
 from tech_services_reports import utility_code
@@ -21,7 +21,7 @@ class Parser(object):
             Called by management.commands.ts_reports_loader.summary() """
         ( start_time, cataloging_edit_count, title_count, volume_count ) = self.setup()
         with open( marc_file, 'rb' ) as fh:
-            ( file_size, counter, count_processed, count_good, count_bad, last_position, current_position, segment_to_review, reader, process_flag ) = self.prepare_loop_vars( fh )
+            loop_dct = self.prepare_loop_vars( fh )
             while process_flag is True:
                 record = self.get_record()
                 data = self.parse_record( record )
@@ -35,23 +35,34 @@ class Parser(object):
         cataloging_edit_count = {}
         title_count = {}
         volume_count = {}
-        return_tpl = ( counter, cataloging_edit_count, title_count, volume_count )
+        return_tpl = ( cataloging_edit_count, title_count, volume_count )
         return return_tpl
 
     def prepare_loop_vars( self, fh ):
         """ Initializes vars for loop.
             Calld by process_marc_file() """
-        start = datetime.datetime.now()
-        fh.seek( 0, 2 ); file_size = fh.tell(); fh.seek( 0 )
-        log.debug( 'file_size(K), `{}`'.format( file_size/1024 ) )
-        counter = 0; count_processed = 0; count_good = 0; count_bad = 0; last_position = 0; current_position = 0; process_flag = True
-        segment_to_review = 'init'
-        reader = pymarc.MARCReader( fh )
-        return_tpl = (
-            start, file_size, counter, count_processed, count_good, count_bad,
-            last_position, current_position, segment_to_review, reader, process_flag )
-        log.debug( 'return_tpl, ```{}```'.format(return_tpl) )
-        return return_tpl
+        loop_dct = {
+            'counter': 0, 'count_processed': 0, 'count_good': 0, 'count_bad': 0, 'last_position': 0, 'current_position': 0,
+            'process_flag': True, 'start_time': datetime.datetime.now(), 'segment_to_review': 'init' }
+        fh.seek( 0, 2 ); loop_dct['file_size_MB'] = fh.tell() / (1024*1024); fh.seek( 0 )
+        loop_dct['reader'] = pymarc.MARCReader( fh )
+        log.debug( 'loop_dct, ```{}```'.format( pprint.pformat(loop_dct) ) )
+        return loop_dct
+
+    # def prepare_loop_vars( self, fh ):
+    #     """ Initializes vars for loop.
+    #         Calld by process_marc_file() """
+    #     start = datetime.datetime.now()
+    #     fh.seek( 0, 2 ); file_size = fh.tell(); fh.seek( 0 )
+    #     log.debug( 'file_size(K), `{}`'.format( file_size/1024 ) )
+    #     counter = 0; count_processed = 0; count_good = 0; count_bad = 0; last_position = 0; current_position = 0; process_flag = True
+    #     segment_to_review = 'init'
+    #     reader = pymarc.MARCReader( fh )
+    #     return_tpl = (
+    #         start, file_size, counter, count_processed, count_good, count_bad,
+    #         last_position, current_position, segment_to_review, reader, process_flag )
+    #     log.debug( 'return_tpl, ```{}```'.format(return_tpl) )
+    #     return return_tpl
 
 
     # end class Parser()
