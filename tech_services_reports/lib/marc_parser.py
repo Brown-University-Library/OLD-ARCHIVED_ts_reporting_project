@@ -16,15 +16,16 @@ class Parser(object):
     def __init__( self ):
         pass
 
-    def process_marc_file( marc_filepath, existing_items ):
+    def process_marc_file( self, marc_filepath, existing_items ):
         """ Manages processing.
             Called by management.commands.ts_reports_loader.summary() """
         ( start_time, cataloging_edit_count, title_count, volume_count ) = self.setup()
         with open( marc_filepath, 'rb' ) as fh:
-            loop_dct = self.prepare_loop_vars( fh )
-            while process_flag is True:
-                record = self.get_record()
-                data = self.parse_record( record )
+            loop_data_dct = self.prepare_loop_vars( fh )
+            while loop_data_dct['process_flag'] is True:
+                record = self.get_record( loop_data_dct, fh, marc_filepath )
+                data = self.parse_record( loop_data_dct )
+            end_time = datetime.datetime.now()
         return_tpl = ( cataloging_edit_count, title_count, volume_count )
         return return_tpl
 
@@ -42,16 +43,43 @@ class Parser(object):
     def prepare_loop_vars( self, fh ):
         """ Initializes vars for loop.
             Calld by process_marc_file() """
-        loop_dct = {
+        loop_data_dct = {
             'counter': 0, 'count_processed': 0, 'count_good': 0, 'count_bad': 0, 'last_position': 0, 'current_position': 0,
             'process_flag': True, 'segment_to_review': 'init' }
-        fh.seek( 0, 2 ); loop_dct['file_size_MB'] = fh.tell() / (1024*1024); fh.seek( 0 )
-        loop_dct['reader'] = pymarc.MARCReader( fh )
-        log.debug( 'loop_dct, ```{}```'.format( pprint.pformat(loop_dct) ) )
-        return loop_dct
+        fh.seek( 0, 2 ); loop_data_dct['file_size'] = fh.tell(); fh.seek( 0 )
+        loop_data_dct['reader'] = pymarc.MARCReader( fh )
+        log.debug( 'loop_data_dct, ```{}```'.format( pprint.pformat(loop_data_dct) ) )
+        return loop_data_dct
 
-    def get_record( self ):
+    def get_record( self, loop_data_dct, fh, marc_filepath ):
         """ Tries to iterate to the next record.
+            Called by process_marc_file() """
+        record = None
+        try:
+            record = next( loop_data_dct['reader'] )
+            loop_data_dct['count_good'] += 1
+            loop_data_dct['current_position'] = fh.tell()
+            loop_data_dct['last_position'] = loop_data_dct['current_position']
+        except Exception as e:
+            log.info( 'exception accessing record, ```{count}```; tell-count, ```{tell}```'.format(count=loop_data_dct['count_processed'], tell=fh.tell() ) )
+            log.info( 'exception in file, ```{fl}```\n; info-a, ```{err_a}```\ninfo-b, ```{err_b}```'.format( fl=marc_filepath, err_a=e, err_b=repr(e) ) )
+            count_bad += 1
+            current_position = fh.tell()
+            segment_to_review_byte_count = current_position - last_position
+            fh.seek( last_position )
+            segment_to_review = fh.read( segment_to_review_byte_count )
+            log.info( 'segment_to_review, ```{}```'.format(segment_to_review) )  ## TODO: write these to a separate file
+            fh.seek( current_position )
+            last_position = current_position
+        if fh.tell() == loop_data_dct['file_size']:
+            loop_data_dct['process_flag'] = False
+        count_processed += 1
+        if count_processed % 10000 == 0:
+            log.info( '`{}` records processed'.format(count_processed) )
+        return record
+
+    def parse_record( self, record ):
+        """ Parses record.
             Called by process_marc_file() """
         pass
 
