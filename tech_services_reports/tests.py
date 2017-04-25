@@ -4,19 +4,19 @@ from __future__ import unicode_literals
 import datetime, logging, os
 import pymarc
 from django.test import TestCase
-from tech_services_reports.lib.marc_parser import Parser
+from tech_services_reports.lib.marc_parser import FileParser
 
 
 log = logging.getLogger(__name__)
 TestCase.maxDiff = None
 
 
-class ParserTest( TestCase ):
+class FileParserTest( TestCase ):
     """ Checks lib.mar_parser.Parser() """
 
     def setUp(self):
         self.loop_filepath = os.environ['TS_RPRT__PREP_LOOP_FILEPATH']
-        self.prsr = Parser()
+        self.fl_prsr = FileParser()
 
     def test_process_marc_file(self):
         """ Checks file processing. """
@@ -28,7 +28,7 @@ class ParserTest( TestCase ):
         acc1.save(); acc2.save(); acc3.save()
         existing_items = set( [i.number for i in Accession.objects.all()] )
         ## the test
-        data_tple = self.prsr.process_marc_file( self.loop_filepath, existing_items )
+        data_tple = self.fl_prsr.process_marc_file( self.loop_filepath, existing_items )
         self.assertEqual( tuple, type(data_tple) )
         self.assertEqual( (2, 2), data_tple )
 

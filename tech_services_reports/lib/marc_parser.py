@@ -10,8 +10,8 @@ from tech_services_reports.utility_code import CatStat
 log = logging.getLogger( "processing" )
 
 
-class Parser(object):
-    """ Contains functions for parsing a marc file. """
+class FileParser(object):
+    """ Contains functions for iterating through a marc file. """
 
     def __init__( self ):
         ## time-tracker
@@ -39,7 +39,7 @@ class Parser(object):
             reader = pymarc.MARCReader( fh )
             while self.process_flag is True:
                 record = self.get_record( reader, fh, marc_filepath )
-                data = self.parse_record( record )
+                data = self.parse_record( record, existing_items )
             self.log_summary( marc_filepath )
         return_tpl = ( self.cataloging_edit_count, self.title_count, self.volume_count )
         return return_tpl
@@ -51,33 +51,6 @@ class Parser(object):
         self.file_size = fh.tell()
         fh.seek( 0 )
         return self.file_size
-
-    # def get_record( self, reader, fh, marc_filepath ):
-    #     """ Tries to iterate to the next record.
-    #         Called by process_marc_file() """
-    #     record = None
-    #     try:
-    #         record = next( reader )
-    #         self.count_good += 1
-    #         self.current_position = fh.tell()
-    #         self.last_position = self.current_position
-    #     except Exception as e:
-    #         log.info( 'exception accessing record, ```{count}```; tell-count, ```{tell}```'.format(count=self.count_processed, tell=fh.tell() ) )
-    #         log.info( 'exception in file, ```{fl}```\n; info-a, ```{err_a}```\ninfo-b, ```{err_b}```'.format( fl=marc_filepath, err_a=e, err_b=repr(e) ) )
-    #         self.count_bad += 1
-    #         self.current_position = fh.tell()
-    #         segment_to_review_byte_count = self.current_position - self.last_position
-    #         fh.seek( self.last_position )
-    #         self.segment_to_review = fh.read( segment_to_review_byte_count )
-    #         log.info( 'segment_to_review, ```{}```'.format( self.segment_to_review ) )  ## TODO: write these to a separate file
-    #         fh.seek( self.current_position )
-    #         self.last_position = self.current_position
-    #     if fh.tell() == self.file_size:
-    #         self.process_flag = False
-    #     self.count_processed += 1
-    #     if self.count_processed % 10000 == 0:
-    #         log.info( '`{}` records processed'.format( self.count_processed ) )
-    #     return record
 
     def get_record( self, reader, fh, marc_filepath ):
         """ Tries to iterate to the next record.
@@ -118,10 +91,74 @@ class Parser(object):
             log.info( '`{}` records processed'.format( self.count_processed ) )
         return
 
-    def parse_record( self, record ):
-        """ Parses record.
+
+
+    def parse_record( self, record, existing_items ):
+        """ Parses record to update counts.
             Called by process_marc_file() """
-        pass
+        try:
+            bib_number = record['907']['a'][1:]
+            log.debug( 'bib_number, `{}`'.format(bib_number) )
+        except TypeError:
+            log.debug( 'no bib_number' )
+            return
+        bib_level = record['998']['c']
+        bib_created = get_bib_created( record )
+
+        #==================================================================
+        # Count cat edits
+        #==================================================================
+        cat_date = utility_code.convert_date(record['998']['b'])
+        cat_stat = CatStat(record)
+        #Count cataloging edits
+        #Store needed fields.
+        marc_995 = record.get_fields('995')
+        mat_type = cat_stat.mat_type()
+        source = cat_stat.cat_type()
+        #Batch edit notes stored here.
+        marc_910 = record.get_fields('910')
+        #Count the batch load info
+        this_batch_edit = count_batch_edits(
+            bib_number, bib_created, mat_type, marc_910, self.cataloging_edit_count, source )
+        self.cataloging_edit_count.update(this_batch_edit)
+
+        #Count individual edits added by staff.
+        this_cat_edit = count_cataloging_edits(bib_number,
+                                                    mat_type,
+                                                    marc_995,
+                                                    self.cataloging_edit_count,
+                                                    source)
+        self.cataloging_edit_count.update(this_cat_edit)
+
+        #==================================================================
+        # Count accessions based off item fields.
+        #==================================================================
+        items = record.get_fields('945')
+        #Count the volumes
+        #This will be dict with a named tuple as a key.
+        this_count = count_volumes(items,
+                                        cat_date,
+                                        mat_type,
+                                        existing_items)
+        #We won't be counting everything - skipping some old items.
+        if this_count is None:
+            return
+        #Pull the volume and title count from the accessions key.
+        this_vol = this_count['volumes']
+        this_title = this_count['titles']
+
+        #Add the title count
+        for k, title in this_title.items():
+            self.title_count[k] = self.title_count.get(k, 0) + title
+
+        #Add the volume count
+        #Iterate through item counts and update
+        for k, vol in this_vol.items():
+            self.volume_count[k] = self.volume_count.get(k, 0) + vol
+
+        return
+
+
 
     def log_summary( self, marc_filepath ):
         """ Logs summary of processing.
@@ -139,7 +176,7 @@ class Parser(object):
         log.warning( bad_msg )
         log.warning( 'time_taken, `{}`'.format( end_time-self.start_time ) )
 
-    # end class Parser()
+    # end class FileParser()
 
 
 def process_marc_file( marc_file, existing_items ):
