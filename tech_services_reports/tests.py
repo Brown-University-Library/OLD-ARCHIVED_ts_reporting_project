@@ -18,17 +18,17 @@ class ParserTest( TestCase ):
         self.loop_filepath = os.environ['TS_RPRT__PREP_LOOP_FILEPATH']
         self.prsr = Parser()
 
-    def test_prepare_loop_vars(self):
-        """ Checks loop initialization. """
-        with open( self.loop_filepath, 'rb' ) as fh:
-            loop_dct = self.prsr.prepare_loop_vars( fh )
-            self.assertEqual(
-                ['count_bad', 'count_good', 'count_processed', 'counter', 'current_position', 'file_size', 'last_position', 'process_flag', 'reader', 'segment_to_review'],
-                sorted( loop_dct.keys() )
-                )
-            self.assertEqual( 154390421, loop_dct['file_size'] )
-            self.assertEqual( pymarc.reader.MARCReader, type( loop_dct['reader'] ) )
-            self.assertEqual( True, loop_dct['process_flag'] )
+    # def test_prepare_loop_vars(self):
+    #     """ Checks loop initialization. """
+    #     with open( self.loop_filepath, 'rb' ) as fh:
+    #         loop_dct = self.prsr.prepare_loop_vars( fh )
+    #         self.assertEqual(
+    #             ['count_bad', 'count_good', 'count_processed', 'counter', 'current_position', 'file_size', 'last_position', 'process_flag', 'reader', 'segment_to_review'],
+    #             sorted( loop_dct.keys() )
+    #             )
+    #         self.assertEqual( 154390421, loop_dct['file_size'] )
+    #         self.assertEqual( pymarc.reader.MARCReader, type( loop_dct['reader'] ) )
+    #         self.assertEqual( True, loop_dct['process_flag'] )
 
     def test_process_marc_file(self):
         """ Checks file processing. """

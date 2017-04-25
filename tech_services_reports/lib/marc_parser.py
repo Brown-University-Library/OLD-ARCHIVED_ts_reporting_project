@@ -14,68 +14,70 @@ class Parser(object):
     """ Contains functions for parsing a marc file. """
 
     def __init__( self ):
-        pass
+        ## time-tracker
+        self.start_time = datetime.datetime.now()
+        self.end_time = None
+        ## return data
+        self.cataloging_edit_count = {}
+        self.title_count = {}
+        self.volume_count = {}
+        ## loop-tracking data
+        self.counter = 0
+        self.count_processed = 0
+        self.count_good = 0
+        self.count_bad = 0
+        self.last_position = 0
+        self.current_position = 0
+        self.process_flag = True
+        self.segment_to_review = 'init'
+        self.file_size = 0  # bytes
 
     def process_marc_file( self, marc_filepath, existing_items ):
         """ Manages processing.
             Called by management.commands.ts_reports_loader.summary() """
-        ( start_time, cataloging_edit_count, title_count, volume_count ) = self.setup()
         with open( marc_filepath, 'rb' ) as fh:
-            loop_data_dct = self.prepare_loop_vars( fh )
-            while loop_data_dct['process_flag'] is True:
-                record = self.get_record( loop_data_dct, fh, marc_filepath )
-                data = self.parse_record( loop_data_dct )
-            self.log_summary( marc_filepath, loop_data_dct )
-        return_tpl = ( cataloging_edit_count, title_count, volume_count )
+            self.set_file_size( fh )
+            reader = pymarc.MARCReader( fh )
+            while self.process_flag is True:
+                record = self.get_record( reader, fh, marc_filepath )
+                data = self.parse_record( record )
+            self.log_summary( marc_filepath )
+        return_tpl = ( self.cataloging_edit_count, self.title_count, self.volume_count )
         return return_tpl
 
-    def setup( self ):
-        """ Initializes vars.
+    def set_file_size( self, fh ):
+        """ Sets file size.
             Called by process_marc_file() """
-        start_time = datetime.datetime.now()
-        counter = 0
-        cataloging_edit_count = {}
-        title_count = {}
-        volume_count = {}
-        return_tpl = ( start_time, cataloging_edit_count, title_count, volume_count )
-        return return_tpl
+        fh.seek( 0, 2 )
+        self.file_size = fh.tell()
+        fh.seek( 0 )
+        return self.file_size
 
-    def prepare_loop_vars( self, fh ):
-        """ Initializes vars for loop.
-            Calld by process_marc_file() """
-        loop_data_dct = {
-            'counter': 0, 'count_processed': 0, 'count_good': 0, 'count_bad': 0, 'last_position': 0, 'current_position': 0,
-            'process_flag': True, 'segment_to_review': 'init' }
-        fh.seek( 0, 2 ); loop_data_dct['file_size'] = fh.tell(); fh.seek( 0 )
-        loop_data_dct['reader'] = pymarc.MARCReader( fh )
-        log.debug( 'loop_data_dct, ```{}```'.format( pprint.pformat(loop_data_dct) ) )
-        return loop_data_dct
-
-    def get_record( self, loop_data_dct, fh, marc_filepath ):
+    def get_record( self, reader, fh, marc_filepath ):
         """ Tries to iterate to the next record.
             Called by process_marc_file() """
         record = None
         try:
-            record = next( loop_data_dct['reader'] )
-            loop_data_dct['count_good'] += 1
-            loop_data_dct['current_position'] = fh.tell()
-            loop_data_dct['last_position'] = loop_data_dct['current_position']
+            record = next( reader )
+            self.count_good += 1
+            self.current_position = fh.tell()
+            self.last_position = self.current_position
         except Exception as e:
-            log.info( 'exception accessing record, ```{count}```; tell-count, ```{tell}```'.format(count=loop_data_dct['count_processed'], tell=fh.tell() ) )
+            log.info( 'exception accessing record, ```{count}```; tell-count, ```{tell}```'.format(count=self.count_processed, tell=fh.tell() ) )
             log.info( 'exception in file, ```{fl}```\n; info-a, ```{err_a}```\ninfo-b, ```{err_b}```'.format( fl=marc_filepath, err_a=e, err_b=repr(e) ) )
-            loop_data_dct['count_bad'] += 1
-            loop_data_dct['current_position'] = fh.tell()
-            segment_to_review_byte_count = loop_data_dct['current_position'] - loop_data_dct['last_position']
-            fh.seek( loop_data_dct['last_position'] )
-            loop_data_dct['segment_to_review'] = fh.read( segment_to_review_byte_count )
-            log.info( 'segment_to_review, ```{}```'.format( loop_data_dct['segment_to_review'] ) )  ## TODO: write these to a separate file
-            fh.seek( loop_data_dct['current_position'] )
-            loop_data_dct['last_position'] = loop_data_dct['current_position']
-        if fh.tell() == loop_data_dct['file_size']:
-            loop_data_dct['process_flag'] = False
-        loop_data_dct['count_processed'] += 1
-        if loop_data_dct['count_processed'] % 10000 == 0:
-            log.info( '`{}` records processed'.format( loop_data_dct['count_processed'] ) )
+            self.count_bad += 1
+            self.current_position = fh.tell()
+            segment_to_review_byte_count = self.current_position - self.last_position
+            fh.seek( self.last_position )
+            self.segment_to_review = fh.read( segment_to_review_byte_count )
+            log.info( 'segment_to_review, ```{}```'.format( self.segment_to_review ) )  ## TODO: write these to a separate file
+            fh.seek( self.current_position )
+            self.last_position = self.current_position
+        if fh.tell() == self.file_size:
+            self.process_flag = False
+        self.count_processed += 1
+        if self.count_processed % 10000 == 0:
+            log.info( '`{}` records processed'.format( self.count_processed ) )
         return record
 
     def parse_record( self, record ):
@@ -83,13 +85,13 @@ class Parser(object):
             Called by process_marc_file() """
         pass
 
-    def log_summary( self, marc_filepath, loop_data_dct ):
+    def log_summary( self, marc_filepath ):
         """ Logs summary of processing.
             Called by process_marc_file() """
         end = datetime.datetime.now()
         ## warning level really just for console output
         log.warning( 'summary for marc file, ```{}```'.format(marc_filepath) )
-        log.warning( 'count_processed, `{}`'.format( loop_data_dct['count_processed'] ) )
+        log.warning( 'count_processed, `{}`'.format( self.count_processed ) )
         # log.warning( 'count_good_encoding, `{}`'.format(count_good) )
         # if count_bad > 0:
         #     bad_msg = 'count_bad_encoding, `{}`; problem-segments are in log'.format( count_bad )
@@ -98,8 +100,99 @@ class Parser(object):
         # log.warning( bad_msg )
         # log.warning( 'time_taken, `{}`'.format(end-start) )
 
-
     # end class Parser()
+
+
+
+# class Parser(object):
+#     """ Contains functions for parsing a marc file. """
+
+#     def __init__( self ):
+#         pass
+
+#     def process_marc_file( self, marc_filepath, existing_items ):
+#         """ Manages processing.
+#             Called by management.commands.ts_reports_loader.summary() """
+#         ( start_time, cataloging_edit_count, title_count, volume_count ) = self.setup()
+#         with open( marc_filepath, 'rb' ) as fh:
+#             loop_data_dct = self.prepare_loop_vars( fh )
+#             while loop_data_dct['process_flag'] is True:
+#                 record = self.get_record( loop_data_dct, fh, marc_filepath )
+#                 data = self.parse_record( loop_data_dct )
+#             self.log_summary( marc_filepath, loop_data_dct )
+#         return_tpl = ( cataloging_edit_count, title_count, volume_count )
+#         return return_tpl
+
+#     def setup( self ):
+#         """ Initializes vars.
+#             Called by process_marc_file() """
+#         start_time = datetime.datetime.now()
+#         counter = 0
+#         cataloging_edit_count = {}
+#         title_count = {}
+#         volume_count = {}
+#         return_tpl = ( start_time, cataloging_edit_count, title_count, volume_count )
+#         return return_tpl
+
+#     def prepare_loop_vars( self, fh ):
+#         """ Initializes vars for loop.
+#             Calld by process_marc_file() """
+#         loop_data_dct = {
+#             'counter': 0, 'count_processed': 0, 'count_good': 0, 'count_bad': 0, 'last_position': 0, 'current_position': 0,
+#             'process_flag': True, 'segment_to_review': 'init' }
+#         fh.seek( 0, 2 ); loop_data_dct['file_size'] = fh.tell(); fh.seek( 0 )
+#         loop_data_dct['reader'] = pymarc.MARCReader( fh )
+#         log.debug( 'loop_data_dct, ```{}```'.format( pprint.pformat(loop_data_dct) ) )
+#         return loop_data_dct
+
+#     def get_record( self, loop_data_dct, fh, marc_filepath ):
+#         """ Tries to iterate to the next record.
+#             Called by process_marc_file() """
+#         record = None
+#         try:
+#             record = next( loop_data_dct['reader'] )
+#             loop_data_dct['count_good'] += 1
+#             loop_data_dct['current_position'] = fh.tell()
+#             loop_data_dct['last_position'] = loop_data_dct['current_position']
+#         except Exception as e:
+#             log.info( 'exception accessing record, ```{count}```; tell-count, ```{tell}```'.format(count=loop_data_dct['count_processed'], tell=fh.tell() ) )
+#             log.info( 'exception in file, ```{fl}```\n; info-a, ```{err_a}```\ninfo-b, ```{err_b}```'.format( fl=marc_filepath, err_a=e, err_b=repr(e) ) )
+#             loop_data_dct['count_bad'] += 1
+#             loop_data_dct['current_position'] = fh.tell()
+#             segment_to_review_byte_count = loop_data_dct['current_position'] - loop_data_dct['last_position']
+#             fh.seek( loop_data_dct['last_position'] )
+#             loop_data_dct['segment_to_review'] = fh.read( segment_to_review_byte_count )
+#             log.info( 'segment_to_review, ```{}```'.format( loop_data_dct['segment_to_review'] ) )  ## TODO: write these to a separate file
+#             fh.seek( loop_data_dct['current_position'] )
+#             loop_data_dct['last_position'] = loop_data_dct['current_position']
+#         if fh.tell() == loop_data_dct['file_size']:
+#             loop_data_dct['process_flag'] = False
+#         loop_data_dct['count_processed'] += 1
+#         if loop_data_dct['count_processed'] % 10000 == 0:
+#             log.info( '`{}` records processed'.format( loop_data_dct['count_processed'] ) )
+#         return record
+
+#     def parse_record( self, record ):
+#         """ Parses record.
+#             Called by process_marc_file() """
+#         pass
+
+#     def log_summary( self, marc_filepath, loop_data_dct ):
+#         """ Logs summary of processing.
+#             Called by process_marc_file() """
+#         end = datetime.datetime.now()
+#         ## warning level really just for console output
+#         log.warning( 'summary for marc file, ```{}```'.format(marc_filepath) )
+#         log.warning( 'count_processed, `{}`'.format( loop_data_dct['count_processed'] ) )
+#         # log.warning( 'count_good_encoding, `{}`'.format(count_good) )
+#         # if count_bad > 0:
+#         #     bad_msg = 'count_bad_encoding, `{}`; problem-segments are in log'.format( count_bad )
+#         # else:
+#         #     bad_msg = 'count_bad_encoding, `{}`'.format( count_bad )
+#         # log.warning( bad_msg )
+#         # log.warning( 'time_taken, `{}`'.format(end-start) )
+
+#     # end class Parser()
 
 
 def process_marc_file( marc_file, existing_items ):
