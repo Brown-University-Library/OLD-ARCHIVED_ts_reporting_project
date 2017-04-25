@@ -88,7 +88,7 @@ class Parser(object):
             Called by process_marc_file() """
         end = datetime.datetime.now()
         ## warning level really just for console output
-        log.warning( 'summary for marc file, ```{}```'.format(marc_file) )
+        log.warning( 'summary for marc file, ```{}```'.format(marc_filepath) )
         log.warning( 'count_processed, `{}`'.format( loop_data_dct['count_processed'] ) )
         # log.warning( 'count_good_encoding, `{}`'.format(count_good) )
         # if count_bad > 0:
