@@ -30,6 +30,21 @@ class ParserTest( TestCase ):
             self.assertEqual( pymarc.reader.MARCReader, type( loop_dct['reader'] ) )
             self.assertEqual( True, loop_dct['process_flag'] )
 
+    def test_process_marc_file(self):
+        """ Checks file processing. """
+        ## get `existing items`
+        from tech_services_reports.models import Accession
+        acc1 = Accession( number='i186011167', created=datetime.datetime.strptime('2017-04-07', '%Y-%m-%d'), acquisition_method='Gift', format='Book', location='japan', volumes=1, titles=1, serial_added_volume=False )
+        acc2 = Accession( number='i186010953', created=datetime.datetime.strptime('2017-04-07', '%Y-%m-%d'), acquisition_method='Purchase', format='dvd', location='rdv', volumes=1, titles=1, serial_added_volume=False )
+        acc3 = Accession( number='i186010394', created=datetime.datetime.strptime('2017-04-07', '%Y-%m-%d'), acquisition_method='Gift', format='CD (Sound Recording)', location='ocd', volumes=1, titles=1, serial_added_volume=False )
+        acc1.save(); acc2.save(); acc3.save()
+        existing items = set( [i.number for i in Accession.objects.all()] )
+        ## the test
+        data_tple = self.prsr.process_marc_file( self.loop_filepath, existing_items )
+        self.assertEqual( 2, type(data_tple) )
+
+    # end class ParserTest()
+
 
 class RootUrlTest( TestCase ):
     """ Checks root urls. """
