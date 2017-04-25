@@ -23,10 +23,10 @@ class ParserTest( TestCase ):
         with open( self.loop_filepath, 'rb' ) as fh:
             loop_dct = self.prsr.prepare_loop_vars( fh )
             self.assertEqual(
-                ['count_bad', 'count_good', 'count_processed', 'counter', 'current_position', 'file_size_MB', 'last_position', 'process_flag', 'reader', 'segment_to_review'],
+                ['count_bad', 'count_good', 'count_processed', 'counter', 'current_position', 'file_size', 'last_position', 'process_flag', 'reader', 'segment_to_review'],
                 sorted( loop_dct.keys() )
                 )
-            self.assertEqual( 147.23817920684814, loop_dct['file_size_MB'] )
+            self.assertEqual( 154390421, loop_dct['file_size'] )
             self.assertEqual( pymarc.reader.MARCReader, type( loop_dct['reader'] ) )
             self.assertEqual( True, loop_dct['process_flag'] )
 
@@ -38,7 +38,7 @@ class ParserTest( TestCase ):
         acc2 = Accession( number='i186010953', created=datetime.datetime.strptime('2017-04-07', '%Y-%m-%d'), acquisition_method='Purchase', format='dvd', location='rdv', volumes=1, titles=1, serial_added_volume=False )
         acc3 = Accession( number='i186010394', created=datetime.datetime.strptime('2017-04-07', '%Y-%m-%d'), acquisition_method='Gift', format='CD (Sound Recording)', location='ocd', volumes=1, titles=1, serial_added_volume=False )
         acc1.save(); acc2.save(); acc3.save()
-        existing items = set( [i.number for i in Accession.objects.all()] )
+        existing_items = set( [i.number for i in Accession.objects.all()] )
         ## the test
         data_tple = self.prsr.process_marc_file( self.loop_filepath, existing_items )
         self.assertEqual( 2, type(data_tple) )
