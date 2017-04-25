@@ -16,7 +16,6 @@ class Parser(object):
     def __init__( self ):
         ## time-tracker
         self.start_time = datetime.datetime.now()
-        self.end_time = None
         ## return data
         self.cataloging_edit_count = {}
         self.title_count = {}
@@ -87,18 +86,19 @@ class Parser(object):
 
     def log_summary( self, marc_filepath ):
         """ Logs summary of processing.
-            Called by process_marc_file() """
-        end = datetime.datetime.now()
-        ## warning level really just for console output
+            Called by process_marc_file()
+            (warning level really just for console output)
+            """
+        end_time = datetime.datetime.now()
         log.warning( 'summary for marc file, ```{}```'.format(marc_filepath) )
-        log.warning( 'count_processed, `{}`'.format( self.count_processed ) )
-        # log.warning( 'count_good_encoding, `{}`'.format(count_good) )
-        # if count_bad > 0:
-        #     bad_msg = 'count_bad_encoding, `{}`; problem-segments are in log'.format( count_bad )
-        # else:
-        #     bad_msg = 'count_bad_encoding, `{}`'.format( count_bad )
-        # log.warning( bad_msg )
-        # log.warning( 'time_taken, `{}`'.format(end-start) )
+        log.warning( 'count_processed, `{}`'.format(self.count_processed) )
+        log.warning( 'count_good_encoding, `{}`'.format(self.count_good) )
+        if self.count_bad > 0:
+            bad_msg = 'count_bad_encoding, `{}`; problem-segments are in log'.format( self.count_bad )
+        else:
+            bad_msg = 'count_bad_encoding, `{}`'.format( self.count_bad )
+        log.warning( bad_msg )
+        log.warning( 'time_taken, `{}`'.format( end_time-self.start_time ) )
 
     # end class Parser()
 
