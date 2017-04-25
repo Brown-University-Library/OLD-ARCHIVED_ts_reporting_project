@@ -138,7 +138,10 @@ class Command(BaseCommand):
         #======================================================================
 
         #Loop through marc records.
-        ( cataloging_edit_count, title_count, volume_count ) = marc_parser.parse_marc_file( marc_file, existing_items )
+        # ( cataloging_edit_count, title_count, volume_count ) = marc_parser.parse_marc_file( marc_file, existing_items )
+        from tech_services_reports.lib.marc_parser import FileParser
+        file_parser = FileParser()
+        ( cataloging_edit_count, title_count, volume_count ) = file_parser.process_marc_file( marc_filepath, existing_items, location_format_map )
 
         log.debug( 'cataloging_edit_count, ```{}```'.format( pprint.pformat(cataloging_edit_count) ) )
         log.debug( 'title_count, ```{}```'.format( pprint.pformat(title_count) ) )

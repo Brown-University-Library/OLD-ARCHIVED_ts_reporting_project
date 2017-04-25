@@ -11,7 +11,16 @@ log = logging.getLogger( "processing" )
 
 
 class FileParser(object):
-    """ Contains functions for iterating through a marc file. """
+    """ Contains functions for iterating through a marc file.
+        Notes:
+        - The `return-data` init values are in the form of:
+            self.count = { named_tuple_a: 1, named_tuple_b: 1 }
+        - Example:
+            self.cataloging_edit_count, ```{
+                ('SAM', datetime.date(2016, 2, 2), 'ENRICH', 'b41376304', 'a', 'copy'): 1,
+                ('SAM', datetime.date(2016, 2, 2), 'ENRICH', 'b41875436', 'a', 'copy'): 1
+                }```
+        - This is to prepare the fixtures that will be loaded into the db.  """
 
     def __init__( self ):
         ## time-tracker
@@ -31,7 +40,7 @@ class FileParser(object):
         self.segment_to_review = 'init'
         self.file_size = 0  # bytes
 
-    def process_marc_file( self, marc_filepath, existing_items ):
+    def process_marc_file( self, marc_filepath, existing_items, location_format_map ):
         """ Manages processing.
             Called by management.commands.ts_reports_loader.summary() """
         with open( marc_filepath, 'rb' ) as fh:
@@ -39,7 +48,7 @@ class FileParser(object):
             reader = pymarc.MARCReader( fh )
             while self.process_flag is True:
                 record = self.get_record( reader, fh, marc_filepath )
-                data = self.parse_record( record, existing_items )
+                data = self.parse_record( record, existing_items, location_format_map )
             self.log_summary( marc_filepath )
         return_tpl = ( self.cataloging_edit_count, self.title_count, self.volume_count )
         return return_tpl
@@ -93,9 +102,10 @@ class FileParser(object):
 
 
 
-    def parse_record( self, record, existing_items ):
+    def parse_record( self, record, existing_items, location_format_map ):
         """ Parses record to update counts.
-            Called by process_marc_file() """
+            Called by process_marc_file()
+            TODO: refactor; create a RecordParser() class """
         try:
             bib_number = record['907']['a'][1:]
             log.debug( 'bib_number, `{}`'.format(bib_number) )
@@ -139,7 +149,7 @@ class FileParser(object):
         this_count = count_volumes(items,
                                         cat_date,
                                         mat_type,
-                                        existing_items)
+                                        existing_items, location_format_map)
         #We won't be counting everything - skipping some old items.
         if this_count is None:
             return
@@ -179,7 +189,7 @@ class FileParser(object):
     # end class FileParser()
 
 
-def process_marc_file( marc_file, existing_items ):
+def process_marc_file( marc_file, existing_items, location_format_map ):
 
     counter = 0
     cataloging_edit_count = {}
@@ -251,7 +261,7 @@ def process_marc_file( marc_file, existing_items ):
                 this_count = count_volumes(items,
                                                 cat_date,
                                                 mat_type,
-                                                existing_items)
+                                                existing_items, location_format_map)
                 #We won't be counting everything - skipping some old items.
                 if this_count is None:
                     continue
@@ -302,6 +312,9 @@ def process_marc_file( marc_file, existing_items ):
         log.warning( bad_msg )
         log.warning( 'time_taken, `{}`'.format(end-start) )
 
+    log.info( 'cataloging_edit_count, ```{}```'.format( pprint.pformat(cataloging_edit_count) ) )
+    log.info( 'title_count, ```{}```'.format( pprint.pformat(title_count) ) )
+    log.info( 'volume_count dct, ```{}```'.format( pprint.pformat(volume_count) ) )
     return_tpl = ( cataloging_edit_count, title_count, volume_count )
     return return_tpl
 
@@ -394,7 +407,7 @@ def count_cataloging_edits(
     return cat_edit_count
 
 
-def count_volumes( marc_items, cat_date, material_type, counted_items ):
+def count_volumes( marc_items, cat_date, material_type, counted_items, location_format_map ):
     """Create summary accession info for items created within given range."""
     log.debug( 'starting count_volumes()' )
     from tech_services_reports.utility_code import convert_date, AcquisitionMethod
