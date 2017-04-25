@@ -16,11 +16,11 @@ class Parser(object):
     def __init__( self ):
         pass
 
-    def process_marc_file( marc_file, existing_items ):
+    def process_marc_file( marc_filepath, existing_items ):
         """ Manages processing.
             Called by management.commands.ts_reports_loader.summary() """
         ( start_time, cataloging_edit_count, title_count, volume_count ) = self.setup()
-        with open( marc_file, 'rb' ) as fh:
+        with open( marc_filepath, 'rb' ) as fh:
             loop_dct = self.prepare_loop_vars( fh )
             while process_flag is True:
                 record = self.get_record()
