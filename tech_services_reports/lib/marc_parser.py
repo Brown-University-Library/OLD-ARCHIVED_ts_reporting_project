@@ -73,9 +73,9 @@ class Parser(object):
             last_position = current_position
         if fh.tell() == loop_data_dct['file_size']:
             loop_data_dct['process_flag'] = False
-        count_processed += 1
-        if count_processed % 10000 == 0:
-            log.info( '`{}` records processed'.format(count_processed) )
+        loop_data_dct['count_processed'] += 1
+        if loop_data_dct['count_processed'] % 10000 == 0:
+            log.info( '`{}` records processed'.format( loop_data_dct['count_processed'] ) )
         return record
 
     def parse_record( self, record ):
