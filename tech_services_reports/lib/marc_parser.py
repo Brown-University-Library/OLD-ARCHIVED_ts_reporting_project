@@ -25,7 +25,7 @@ class Parser(object):
             while loop_data_dct['process_flag'] is True:
                 record = self.get_record( loop_data_dct, fh, marc_filepath )
                 data = self.parse_record( loop_data_dct )
-            end_time = datetime.datetime.now()
+            self.log_summary( marc_filepath, loop_data_dct )
         return_tpl = ( cataloging_edit_count, title_count, volume_count )
         return return_tpl
 
@@ -82,6 +82,22 @@ class Parser(object):
         """ Parses record.
             Called by process_marc_file() """
         pass
+
+    def log_summary( self, marc_filepath, loop_data_dct ):
+        """ Logs summary of processing.
+            Called by process_marc_file() """
+        end = datetime.datetime.now()
+        ## warning level really just for console output
+        log.warning( 'summary for marc file, ```{}```'.format(marc_file) )
+        log.warning( 'count_processed, `{}`'.format( loop_data_dct['count_processed'] ) )
+        # log.warning( 'count_good_encoding, `{}`'.format(count_good) )
+        # if count_bad > 0:
+        #     bad_msg = 'count_bad_encoding, `{}`; problem-segments are in log'.format( count_bad )
+        # else:
+        #     bad_msg = 'count_bad_encoding, `{}`'.format( count_bad )
+        # log.warning( bad_msg )
+        # log.warning( 'time_taken, `{}`'.format(end-start) )
+
 
     # end class Parser()
 
