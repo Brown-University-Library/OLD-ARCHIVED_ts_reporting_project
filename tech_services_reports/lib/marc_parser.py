@@ -63,14 +63,14 @@ class Parser(object):
         except Exception as e:
             log.info( 'exception accessing record, ```{count}```; tell-count, ```{tell}```'.format(count=loop_data_dct['count_processed'], tell=fh.tell() ) )
             log.info( 'exception in file, ```{fl}```\n; info-a, ```{err_a}```\ninfo-b, ```{err_b}```'.format( fl=marc_filepath, err_a=e, err_b=repr(e) ) )
-            count_bad += 1
-            current_position = fh.tell()
-            segment_to_review_byte_count = current_position - last_position
-            fh.seek( last_position )
-            segment_to_review = fh.read( segment_to_review_byte_count )
-            log.info( 'segment_to_review, ```{}```'.format(segment_to_review) )  ## TODO: write these to a separate file
-            fh.seek( current_position )
-            last_position = current_position
+            loop_data_dct['count_bad'] += 1
+            loop_data_dct['current_position'] = fh.tell()
+            segment_to_review_byte_count = loop_data_dct['current_position'] - loop_data_dct['last_position']
+            fh.seek( loop_data_dct['last_position'] )
+            loop_data_dct['segment_to_review'] = fh.read( segment_to_review_byte_count )
+            log.info( 'segment_to_review, ```{}```'.format( loop_data_dct['segment_to_review'] ) )  ## TODO: write these to a separate file
+            fh.seek( loop_data_dct['current_position'] )
+            loop_data_dct['last_position'] = loop_data_dct['current_position']
         if fh.tell() == loop_data_dct['file_size']:
             loop_data_dct['process_flag'] = False
         loop_data_dct['count_processed'] += 1

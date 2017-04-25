@@ -41,7 +41,8 @@ class ParserTest( TestCase ):
         existing_items = set( [i.number for i in Accession.objects.all()] )
         ## the test
         data_tple = self.prsr.process_marc_file( self.loop_filepath, existing_items )
-        self.assertEqual( 2, type(data_tple) )
+        self.assertEqual( tuple, type(data_tple) )
+        self.assertEqual( (2, 2), data_tple )
 
     # end class ParserTest()
 
