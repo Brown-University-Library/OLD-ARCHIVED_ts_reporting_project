@@ -119,6 +119,7 @@ def convert_date(datestr):
        year = int(dgroups[2])
    except ValueError as e:
        #print>>sys.stderr, e, ' in date function.'
+       log.debug( 'unable to parse date, ```{}```'.format(datestr) )
        return
    except IndexError as e:
        return
