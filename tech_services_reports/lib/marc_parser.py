@@ -192,7 +192,7 @@ class FileParser(object):
         mat_type = cat_stat.mat_type()
         source = cat_stat.cat_type()
         #Batch edit notes stored here.
-        marc_910 = record.get_fields('910')
+        # marc_910 = record.get_fields('910')
         #Count the batch load info
         this_batch_edit = count_batch_edits(
             bib_number, bib_created, mat_type, marc_910, self.cataloging_edit_count, source )
