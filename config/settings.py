@@ -146,7 +146,7 @@ LOGGING = {
             'formatter': 'standard'
         },
         'processing_detail':{
-            'level': 'INFO',
+            'level': os.environ['TS_RPRT__PROCESSING_LOG_LEVEL'],
             'class': 'logging.FileHandler',
             'filename': os.environ['TS_RPRT__PROCESSING_LOG_PATH'],
             'formatter': 'standard'
