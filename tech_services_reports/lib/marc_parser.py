@@ -10,6 +10,47 @@ from tech_services_reports.utility_code import CatStat
 log = logging.getLogger( "processing" )
 
 
+class RecordParser(object):
+    """ Contains functions for extracting data from a pymarc record object. """
+
+    def __init__( self ):
+        self.bib_number = None
+        self.bib_created = None
+
+    def parse_record( self, record ):
+        """ Manages parsing.
+            Called by Called by FileParser.parse_record()
+            Note: not executing ```bib_level = record['998']['c']``` because it's not used anywhere. """
+        self.get_bib( record )
+        if not self.bib_number:
+            return
+        self.bib_created = self.get_bib_created( record )
+
+
+    def get_bib( self, record ):
+        """ Extracts bib; includes check-digit.
+            Called by parse_record() """
+        try:
+            self.bib_number = record['907']['a'][1:]  # lops off initial '.'
+            if len( self.bib_number ) is not 9:
+                self.bib_number = None
+                log.info( 'invalid bib-length' )
+        except TypeError:
+            pass
+        log.debug( 'bib_number, `{}`'.format(self.bib_number) )
+        return self.bib_number
+
+
+    def get_bib_created( self, record ):
+        d = record['907']['c']
+        print( 'd, ```{}```'.format(d) )
+        self.bib_created = utility_code.convert_date(d)
+        return self.bib_created
+
+
+    # end class RecordParser()
+
+
 class FileParser(object):
     """ Contains functions for iterating through a marc file.
         Notes:
@@ -106,13 +147,19 @@ class FileParser(object):
         """ Parses record to update counts.
             Called by process_marc_file()
             TODO: refactor; create a RecordParser() class """
-        try:
-            bib_number = record['907']['a'][1:]
-            log.debug( 'bib_number, `{}`'.format(bib_number) )
-        except TypeError:
-            log.debug( 'no bib_number' )
+
+        rp = RecordParser()
+        rp.parse_record
+        if not rp.bib_number:
             return
-        bib_level = record['998']['c']
+
+        # try:
+        #     bib_number = record['907']['a'][1:]
+        #     log.debug( 'bib_number, `{}`'.format(bib_number) )
+        # except TypeError:
+        #     log.debug( 'no bib_number' )
+        #     return
+        # bib_level = record['998']['c']
         bib_created = get_bib_created( record )
 
         #==================================================================
@@ -167,6 +214,74 @@ class FileParser(object):
             self.volume_count[k] = self.volume_count.get(k, 0) + vol
 
         return
+
+
+
+    # def parse_record( self, record, existing_items, location_format_map ):
+    #     """ Parses record to update counts.
+    #         Called by process_marc_file()
+    #         TODO: refactor; create a RecordParser() class """
+    #     try:
+    #         bib_number = record['907']['a'][1:]
+    #         log.debug( 'bib_number, `{}`'.format(bib_number) )
+    #     except TypeError:
+    #         log.debug( 'no bib_number' )
+    #         return
+    #     bib_level = record['998']['c']
+    #     bib_created = get_bib_created( record )
+
+    #     #==================================================================
+    #     # Count cat edits
+    #     #==================================================================
+    #     cat_date = utility_code.convert_date(record['998']['b'])
+    #     cat_stat = CatStat(record)
+    #     #Count cataloging edits
+    #     #Store needed fields.
+    #     marc_995 = record.get_fields('995')
+    #     mat_type = cat_stat.mat_type()
+    #     source = cat_stat.cat_type()
+    #     #Batch edit notes stored here.
+    #     marc_910 = record.get_fields('910')
+    #     #Count the batch load info
+    #     this_batch_edit = count_batch_edits(
+    #         bib_number, bib_created, mat_type, marc_910, self.cataloging_edit_count, source )
+    #     self.cataloging_edit_count.update(this_batch_edit)
+
+    #     #Count individual edits added by staff.
+    #     this_cat_edit = count_cataloging_edits(bib_number,
+    #                                                 mat_type,
+    #                                                 marc_995,
+    #                                                 self.cataloging_edit_count,
+    #                                                 source)
+    #     self.cataloging_edit_count.update(this_cat_edit)
+
+    #     #==================================================================
+    #     # Count accessions based off item fields.
+    #     #==================================================================
+    #     items = record.get_fields('945')
+    #     #Count the volumes
+    #     #This will be dict with a named tuple as a key.
+    #     this_count = count_volumes(items,
+    #                                     cat_date,
+    #                                     mat_type,
+    #                                     existing_items, location_format_map)
+    #     #We won't be counting everything - skipping some old items.
+    #     if this_count is None:
+    #         return
+    #     #Pull the volume and title count from the accessions key.
+    #     this_vol = this_count['volumes']
+    #     this_title = this_count['titles']
+
+    #     #Add the title count
+    #     for k, title in this_title.items():
+    #         self.title_count[k] = self.title_count.get(k, 0) + title
+
+    #     #Add the volume count
+    #     #Iterate through item counts and update
+    #     for k, vol in this_vol.items():
+    #         self.volume_count[k] = self.volume_count.get(k, 0) + vol
+
+    #     return
 
 
 
