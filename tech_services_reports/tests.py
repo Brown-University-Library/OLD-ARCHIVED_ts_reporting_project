@@ -45,10 +45,24 @@ class RecordParserTest( TestCase ):
         self.assertEqual( datetime.date(2007, 7, 10), self.rp.get_bib_created( record ), record.as_dict() )
 
     def test_parse_cat_date_bad_record(self):
-        """ Checks bib date.
-            The initial extract yields ```z``` """
+        """ Checks bib date. """
         record = self.make_record( self.bad_marc_no_bib )
         self.assertEqual( datetime.date(2013, 2, 14), self.rp.get_cat_date( record ), record.as_dict() )
+
+    def test_get_field_bad_record_no995(self):
+        """ Checks marc995 handling. """
+        record = self.make_record( self.bad_marc_no_bib )
+        self.assertEqual( [], self.rp.get_field( record, '995' ), '{}'.format( pprint.pformat(record.as_dict()) ) )
+
+    def test_get_field_bad_record_910(self):
+        """ Checks marc910 handling. """
+        record = self.make_record( self.bad_marc_no_bib )
+        self.assertEqual( 2, len( self.rp.get_field(record, '910') ), '{}'.format( pprint.pformat(record.as_dict()) ) )
+
+    def test_get_field_good_record_910(self):
+        """ Checks marc910 handling. """
+        record = self.make_record( self.good_marc_with_bib )
+        self.assertEqual( 3, len( self.rp.get_field(record, '910') ), '{}'.format( pprint.pformat(record.as_dict()) ) )
 
     # end class RecordParserTest()
 

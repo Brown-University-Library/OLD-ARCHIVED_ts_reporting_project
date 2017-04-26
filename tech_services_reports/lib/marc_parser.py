@@ -16,6 +16,9 @@ class RecordParser(object):
     def __init__( self ):
         self.bib_number = None
         self.bib_created = None
+        self.cat_date = None
+        self.marc995 = None
+        self.marc910 = None
 
     def parse_record( self, record ):
         """ Manages parsing.
@@ -24,8 +27,10 @@ class RecordParser(object):
         self.get_bib( record )
         if not self.bib_number:
             return
-        self.bib_created = self.get_bib_created( record )
-        self.cat_date = self.get_cat_date( record )
+        self.get_bib_created( record )
+        self.get_cat_date( record )
+        self.marc995 = self.get_field( record, '995' )
+        self.marc910 = self.get_field( record, '910' )
         return
 
     def get_bib( self, record ):
@@ -55,7 +60,12 @@ class RecordParser(object):
         self.cat_date = utility_code.convert_date(datestr)
         return self.cat_date
 
-
+    def get_field( self, record, num_str ):
+        """ Extracts 995 field if available.
+            Returns a list of field-objects, or an empty list.
+            Called by parse_record() """
+        field_list = record.get_fields( num_str )
+        return field_list
 
     # end class RecordParser()
 
@@ -174,11 +184,11 @@ class FileParser(object):
         #==================================================================
         # Count cat edits
         #==================================================================
-        cat_date = utility_code.convert_date(record['998']['b'])
+        # cat_date = utility_code.convert_date(record['998']['b'])
         cat_stat = CatStat(record)
         #Count cataloging edits
         #Store needed fields.
-        marc_995 = record.get_fields('995')
+        # marc_995 = record.get_fields('995')
         mat_type = cat_stat.mat_type()
         source = cat_stat.cat_type()
         #Batch edit notes stored here.
