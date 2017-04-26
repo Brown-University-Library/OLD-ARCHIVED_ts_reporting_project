@@ -25,7 +25,8 @@ class RecordParser(object):
         if not self.bib_number:
             return
         self.bib_created = self.get_bib_created( record )
-
+        self.cat_date = self.get_cat_date( record )
+        return
 
     def get_bib( self, record ):
         """ Extracts bib; includes check-digit.
@@ -40,12 +41,20 @@ class RecordParser(object):
         log.debug( 'bib_number, `{}`'.format(self.bib_number) )
         return self.bib_number
 
-
     def get_bib_created( self, record ):
+        """ Extracts bib date string and attempts to return a date-object.
+            Called by parse_record() """
         datestr = record['907']['c'].strip()
-        print( 'datestr, ```{}```'.format(datestr) )
         self.bib_created = utility_code.convert_date(datestr)
         return self.bib_created
+
+    def get_cat_date( self, record ):
+        """ Extracts cat date string and attempts to return a date-object.
+            Called by parse_record() """
+        datestr = record['998']['b'].strip()
+        self.cat_date = utility_code.convert_date(datestr)
+        return self.cat_date
+
 
 
     # end class RecordParser()
@@ -160,7 +169,7 @@ class FileParser(object):
         #     log.debug( 'no bib_number' )
         #     return
         # bib_level = record['998']['c']
-        bib_created = get_bib_created( record )
+        # bib_created = get_bib_created( record )
 
         #==================================================================
         # Count cat edits

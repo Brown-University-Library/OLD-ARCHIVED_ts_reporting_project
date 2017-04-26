@@ -44,6 +44,12 @@ class RecordParserTest( TestCase ):
         record = self.make_record( self.bad_marc_no_bib )
         self.assertEqual( datetime.date(2007, 7, 10), self.rp.get_bib_created( record ), record.as_dict() )
 
+    def test_parse_cat_date_bad_record(self):
+        """ Checks bib date.
+            The initial extract yields ```z``` """
+        record = self.make_record( self.bad_marc_no_bib )
+        self.assertEqual( datetime.date(2013, 2, 14), self.rp.get_cat_date( record ), record.as_dict() )
+
     # end class RecordParserTest()
 
 
