@@ -42,9 +42,9 @@ class RecordParser(object):
 
 
     def get_bib_created( self, record ):
-        d = record['907']['c']
-        print( 'd, ```{}```'.format(d) )
-        self.bib_created = utility_code.convert_date(d)
+        datestr = record['907']['c'].strip()
+        print( 'datestr, ```{}```'.format(datestr) )
+        self.bib_created = utility_code.convert_date(datestr)
         return self.bib_created
 
 

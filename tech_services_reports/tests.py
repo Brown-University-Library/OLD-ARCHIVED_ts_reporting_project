@@ -42,7 +42,7 @@ class RecordParserTest( TestCase ):
         """ Checks bib date.
             The initial extract yields ```07-10-07  ``` """
         record = self.make_record( self.bad_marc_no_bib )
-        self.assertEqual( '07-10-07', self.rp.get_bib_created( record ), record.as_dict() )
+        self.assertEqual( datetime.date(2007, 7, 10), self.rp.get_bib_created( record ), record.as_dict() )
 
     # end class RecordParserTest()
 
