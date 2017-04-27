@@ -116,11 +116,11 @@ class Command(BaseCommand):
         dt = marc_parser.get_bib_created( this_record )
         return dt
 
-    def summary(self, marc_file):
+    def summary(self, marc_filepath):
         """ Harvests data points from exported MARC fields.
             Date counts will include the date of a given harvest. """
         log.debug( 'starting summary()' )
-        log.info( 'reading MARC file, ```{}```'.format(marc_file) )
+        log.info( 'reading MARC file, ```{}```'.format(marc_filepath) )
 
         #Dicts to store counts
         cataloging_edit_count = {}
