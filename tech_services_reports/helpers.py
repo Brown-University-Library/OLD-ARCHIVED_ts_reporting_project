@@ -107,8 +107,8 @@ def namedtuple(typename, field_names, verbose=False, rename=False):
     # Execute the template string in a temporary namespace
     namespace = dict(_itemgetter=_itemgetter, __name__='namedtuple_%s' % typename,
                      _property=property, _tuple=tuple)
-    log.debug( 'type(template), `{}`'.format( type(template) ) )
-    log.debug( 'template, ```{}```'.format(template) )
+    # log.debug( 'type(template), `{}`'.format( type(template) ) )
+    # log.debug( 'template, ```{}```'.format(template) )
     try:
         # exec template in namespace
         exec( template, namespace )

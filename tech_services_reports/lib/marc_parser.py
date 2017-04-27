@@ -32,7 +32,7 @@ class RecordParser(object):
         self.get_cat_date( record )
         self.marc995 = self.get_field( record, '995' )
         self.marc910 = self.get_field( record, '910' )
-        self.marc995 = self.get_field( record, '945' )
+        self.marc945 = self.get_field( record, '945' )
         return
 
     def get_bib( self, record ):
@@ -134,7 +134,7 @@ class FileParser(object):
             self.last_position = self.current_position
         except Exception as e:
             self._handle_bad_record( e, fh, marc_filepath )
-        self._update_counts( fh )
+        self._update_processing_counts( fh )
         return record
 
     def _handle_bad_record( self, e, fh, marc_filepath ):
@@ -152,7 +152,7 @@ class FileParser(object):
         self.last_position = self.current_position
         return
 
-    def _update_counts( self, fh ):
+    def _update_processing_counts( self, fh ):
         """ Updates `count_processed` after record record-instantiation.
             Called by get_record() """
         if fh.tell() == self.file_size:
@@ -170,55 +170,36 @@ class FileParser(object):
             TODO: refactor; create a RecordParser() class """
 
         rp = RecordParser()
-        rp.parse_record
+        rp.parse_record( record )
         if not rp.bib_number:
             return
-
-        # try:
-        #     bib_number = record['907']['a'][1:]
-        #     log.debug( 'bib_number, `{}`'.format(bib_number) )
-        # except TypeError:
-        #     log.debug( 'no bib_number' )
-        #     return
-        # bib_level = record['998']['c']
-        # bib_created = get_bib_created( record )
 
         #==================================================================
         # Count cat edits
         #==================================================================
-        # cat_date = utility_code.convert_date(record['998']['b'])
-        cat_stat = CatStat(record)
-        #Count cataloging edits
-        #Store needed fields.
-        # marc_995 = record.get_fields('995')
+        cat_stat = CatStat( record )
+        ##Count cataloging edits
+        ##Store needed fields.
         mat_type = cat_stat.mat_type()
         source = cat_stat.cat_type()
-        #Batch edit notes stored here.
-        # marc_910 = record.get_fields('910')
-        #Count the batch load info
+        ##Batch edit notes stored here.
+        ##Count the batch load info
         this_batch_edit = count_batch_edits(
-            bib_number, bib_created, mat_type, marc_910, self.cataloging_edit_count, source )
+            rp.bib_number, rp.bib_created, mat_type, rp.marc910, self.cataloging_edit_count, source )
         self.cataloging_edit_count.update(this_batch_edit)
-
-        #Count individual edits added by staff.
-        this_cat_edit = count_cataloging_edits(bib_number,
-                                                    mat_type,
-                                                    marc_995,
-                                                    self.cataloging_edit_count,
-                                                    source)
+        ##Count individual edits added by staff.
+        this_cat_edit = count_cataloging_edits(
+            rp.bib_number, mat_type, rp.marc995, self.cataloging_edit_count, source )
         self.cataloging_edit_count.update(this_cat_edit)
 
         #==================================================================
-        # Count accessions based off item fields.
+        # Count accessions based off item fields (from '945' field).
         #==================================================================
-        items = record.get_fields('945')
-        #Count the volumes
-        #This will be dict with a named tuple as a key.
-        this_count = count_volumes(items,
-                                        cat_date,
-                                        mat_type,
-                                        existing_items, location_format_map)
-        #We won't be counting everything - skipping some old items.
+        ##Count the volumes
+        ##This will be dict with a named tuple as a key.
+        this_count = count_volumes(
+            rp.marc945, rp.cat_date, mat_type, existing_items, location_format_map )
+        ##We won't be counting everything - skipping some old items.
         if this_count is None:
             return
         #Pull the volume and title count from the accessions key.
