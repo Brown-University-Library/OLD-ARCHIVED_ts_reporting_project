@@ -64,6 +64,16 @@ class RecordParserTest( TestCase ):
         record = self.make_record( self.good_marc_with_bib )
         self.assertEqual( 3, len( self.rp.get_field(record, '910') ), '{}'.format( pprint.pformat(record.as_dict()) ) )
 
+    def test_get_field_bad_record_945(self):
+        """ Checks marc945 handling in bad record. """
+        record = self.make_record( self.bad_marc_no_bib )
+        self.assertEqual( 1, len( self.rp.get_field(record, '945') ), '{}'.format( pprint.pformat(record.as_dict()) ) )
+
+    def test_get_field_good_record_945(self):
+        """ Checks marc945 handling in good record. """
+        record = self.make_record( self.good_marc_with_bib )
+        self.assertEqual( 1, len( self.rp.get_field(record, '945') ), '{}'.format( pprint.pformat(record.as_dict()) ) )
+
     # end class RecordParserTest()
 
 

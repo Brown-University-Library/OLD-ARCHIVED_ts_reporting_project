@@ -19,6 +19,7 @@ class RecordParser(object):
         self.cat_date = None
         self.marc995 = None
         self.marc910 = None
+        self.marc945 = None
 
     def parse_record( self, record ):
         """ Manages parsing.
@@ -31,6 +32,7 @@ class RecordParser(object):
         self.get_cat_date( record )
         self.marc995 = self.get_field( record, '995' )
         self.marc910 = self.get_field( record, '910' )
+        self.marc995 = self.get_field( record, '945' )
         return
 
     def get_bib( self, record ):
