@@ -6,6 +6,7 @@ import datetime, json, logging, os, pprint
 from .models import Accession, CatEdit
 from django.conf import settings as project_settings
 from django.contrib.auth import logout
+from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
@@ -30,34 +31,47 @@ def hi( request ):
 # @bul_login
 def index( request, response_format=None ):
     log.debug( 'starting index()' )
+
     # import time
     # from datetime import date
     # from django.db import connection, transaction
     # from django.template import loader, RequestContext
     # context = RequestContext( request )
-    context = {}
+    context = { 'STATIC_URL': project_settings.STATIC_URL }
     params = request.GET
     if 'format' in params.keys():
         requested_format = params['format']
     else:
         requested_format = None
+
     #Accessions
     #Months to reports
-    acc_months = Accession.objects.dates('created', 'month', order='DESC')
+    acc_months = cache.get( 'acc_months_cached' )
+    if acc_months is None:
+        acc_months = Accession.objects.dates('created', 'month', order='DESC')
+        cache.set( 'acc_months_cached', acc_months, 60*60*24 )  # 1 day
     #Years to report
-    acc_years = Accession.objects.dates('created', 'year', order='DESC')
+    acc_years = cache.get( 'acc_years_cached' )
+    if acc_years is None:
+        acc_years = Accession.objects.dates('created', 'year', order='DESC')
+        cache.set( 'acc_years_cached', acc_years, 60*60*24 )
     context['acc_months'] = acc_months
     context['acc_years'] = acc_years
 
     #Cataloging
-    cat_months = CatEdit.objects.dates('edit_date', 'month', order='DESC')
+    cat_months = cache.get( 'cat_months_cached' )
+    if cat_months is None:
+        cat_months = CatEdit.objects.dates('edit_date', 'month', order='DESC')
+        cache.set( 'cat_months_cached', cat_months, 60*60*24 )
     #Years to report
-    cat_years = CatEdit.objects.dates('edit_date', 'year', order='DESC')
+    cat_years = cache.get( 'cat_years_cached' )
+    if cat_years is None:
+        cat_years = CatEdit.objects.dates('edit_date', 'year', order='DESC')
+        cache.set( 'cat_years_cached', cat_years, 60*60*24 )
     context['cat_months'] = cat_months
     context['cat_years'] = cat_years
 
     # context['settings_app'] = settings_app
     log.debug( 'context, ```{}```'.format(pprint.pformat(context)) )
-    resp = render( request, u'tech_services_reports_templates/index.html', context )
-    # return render_to_response('index.html', context)
-    return resp
+    index_resp = render( request, u'tech_services_reports_templates/index.html', context )
+    return index_resp
