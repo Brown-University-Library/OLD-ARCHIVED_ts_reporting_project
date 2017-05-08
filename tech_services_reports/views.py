@@ -21,10 +21,10 @@ def hi( request ):
     return HttpResponse( '<p>hi</p> <p>( %s )</p>' % now )
 
 
-def index( request ):
-    """ Returns simplest response. """
-    now = datetime.datetime.now()
-    return HttpResponse( '<p>index</p> <p>( %s )</p>' % now )
+# def index( request ):
+#     """ Returns simplest response. """
+#     now = datetime.datetime.now()
+#     return HttpResponse( '<p>index</p> <p>( %s )</p>' % now )
 
 
 # @bul_login
