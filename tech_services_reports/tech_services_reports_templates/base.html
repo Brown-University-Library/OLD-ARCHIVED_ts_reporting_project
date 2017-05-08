@@ -1,56 +1,56 @@
-<!DOCTYPE HTML>
+<!--
 
+
+        Copyright 2010 Brown University
+
+        This program is free software; you can redistribute it and/or modify
+        it under the terms of the GNU General Public License as published by
+        the Free Software Foundation; either version 2 of the License, or
+        (at your option) any later version.
+
+        This program is distributed in the hope that it will be useful,
+        but WITHOUT ANY WARRANTY; without even the implied warranty of
+        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+        GNU General Public License for more details.
+
+        You should have received a copy of the GNU General Public License
+        along with this program; if not, write to the Free Software
+        Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+        MA 02110-1301, USA.
+-->
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+ "http://www.w3.org/TR/html4/strict.dtd">
 <html>
-
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
-    <title>
-        {% block page_title %}
-        tech_services_reports - Brown University Library
-        {% endblock page_title %}
-    </title>
-    <link href="//library.brown.edu/css_2011/BUL2011.css" rel="stylesheet" type="text/css" />
-    <script type="text/javascript" src="//library.brown.edu/scripts_2011/css3-mediaqueries.js"></script>
+   <title>{% block title %}BUL Staff{% endblock %}</title>
+   <link rel="stylesheet" href="{{ settings_app.MEDIA_URL }}reset-fonts-grids.css" type="text/css">
+   <link rel="stylesheet" href="{{ settings_app.MEDIA_URL }}style.css" type="text/css">
+   {% block extra_css %}{% endblock %}
+   {% block javascripts %}{% endblock %}
 </head>
-
 <body>
+<div id="custom-doc" class="yui-t7">
+   <div id="hd" role="banner">
+        <h1><a href="{{ settings_app.APP_URL }}">Brown University Libraries Staff</a></h1>
+   </div>
+   {% block header_alert %}{% endblock %}
+   {% block navigation %}{% endblock %}
+   <div id="bd" role="main">
+  <div class="yui-g">
+     <div id="main-navigation">
+        <h5><a href="{{ settings_app.APP_URL }}">Tech Services Reports</a></h5>
+   </div>
 
-    <div id="wrapper">
 
-        <div id="header">
-            <p class="top_header_links">
-                <a href="http://library.brown.edu/libweb/proxy.php">Off-Campus Access</a> &nbsp;&nbsp;&#124;&nbsp;&nbsp;
-                <a href="http://library.brown.edu/libweb/atoz.php">Library A&ndash;Z</a> <!-- &nbsp;&nbsp;&#124;&nbsp;&nbsp; -->
-                {% if logout_url %}&nbsp;&nbsp;&#124;&nbsp;&nbsp;<a href="{{ logout_url }}">Log-out</a>{% endif %}
-            </p>
 
-            <div class="BUhomelink">
-                <a href="http://www.brown.edu"><img src="//library.brown.edu/images/spacer.gif" width="50" alt="Brown University Homepage" title="Brown University Homepage" /></a>
-            </div>
+  <!-- YOUR DATA GOES HERE -->
+  {% block content %}{% endblock %}
+  </div>
 
-            <div class="BULhomelink">
-                <a href="http://library.brown.edu/"><img src="//library.brown.edu/images/spacer.gif" width="440" height="30" alt="Brown University Library Homepage" title="Brown University Library Homepage" /></a>
-            </div>
-
-        </div> <!-- end div#header -->
-
-        <div class="content-wrapper findit-core">
-
-            <div class="large-content findit-core">
-                <h3>app x</h3>
-
-                <div style="margin:2em;">
-                    {% block content %}
-                    {% endblock content %}
-                </div>
-
-            </div> <!-- end div.large-content findit-core -->
-
-        </div> <!-- end div.content-wrapper findit-core -->
-
-    </div> <!-- end div#wrapper -->
-
+  </div>
+   <div id="ft" role="contentinfo"><p>BUL Staff</p></div>
+</div>
+{% block footer_javascripts %}{% endblock %}
 </body>
-
 </html>
