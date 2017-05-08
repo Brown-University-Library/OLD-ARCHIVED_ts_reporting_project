@@ -1,0 +1,328 @@
+
+html {background-color: #F0F0F0; }
+body {
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-size: normal;
+}
+
+div#custom-doc {
+	width: 1024px;
+}
+
+
+div.yui-g {
+    padding: 1em;
+    padding-left: 2em;
+}
+div#doc3 {margin:0; padding:0;}
+div#bd {
+	border:1px solid #BBBBBB;
+	padding-bottom: 2em;
+	border-top: none;
+}
+
+div#hd {
+	background-color: #3A1E1A;
+	color: white;
+	height: 3em;
+	}
+
+div#hd img {
+	margin:0;
+	padding: 0;
+}
+
+	
+div#hd a:visited {text-decoration: none; color:white;}
+div#hd a:hover {text-decoration: underline;}
+div#hd h1 {
+    padding: 0;
+    padding-top: 0; 
+    clear: both;
+    color: white;
+    padding: .5em;
+	font-weight: normal;
+}
+
+h1 a { 
+	color: white;
+}
+
+
+div#bd {width: 100%; 
+	background-color: white;
+	margin-left: auto; 
+	margin-right: auto;
+	font-size: 14px;
+	min-height: 600px;
+}
+
+div#ft {
+	background-color: #3A1E1A;
+	width: 1026px;
+} 
+
+div#ft p {
+	margin: 0;
+	padding: 0;
+	color: white;
+	font-size: x-small;
+	padding: .25em;
+	margin-left: 1em;
+}
+
+
+#custom-doc {
+	width: 95%;
+	min-width: 650px;
+}
+
+a {
+   text-decoration: none;
+}
+
+a:hover {
+         text-decoration: underline;
+}
+
+em {
+	
+}
+h1, h2, h3 {
+	font-weight:bold;
+	color:#3A1E1A;
+	
+}
+
+h1 {
+	font-size: 1.3em;
+}
+
+h2 {
+	font-size: 1.2em;
+	margin-top: .5em;
+	margin-bott: .5em;
+}
+
+h3 {
+	font-size: 1em;
+	padding: 0;
+	margin-left: 1em;
+}
+
+th {
+	background-color:#EEEEEE;
+	font-weight: bold;
+}
+
+.logged-in-user {
+	color: white;
+	float: right;
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+	
+}
+table td, table th { border: 1px solid black; padding: 5px; }
+
+fieldset {padding: 10px;
+    width: 60%;
+    margin-left:auto;
+    margin-right: auto;
+    margin-top: 20px;
+}
+
+h3.report-divider {
+	margin: 1em;
+	margin-top: 2em;
+}
+
+span#report-updates {
+	width: 20%;
+	margin-left:auto;
+	margin-right:auto;
+	color: green;
+	font-size: small;
+}
+
+span.gchart img {
+  padding: 1em;
+  display: inline;
+}
+
+span.report-download {
+	font-size: small;
+}
+#main-navigation {
+	border-bottom: 1px solid;
+	margin-bottom: 1em;
+}
+
+#main-navigation h5 a {
+	color: #3A1E1A;
+	font-weight: bold;
+}
+
+#main-navigation h5 a:visited {
+	text-decoration: none;
+	color: #3A1E1A;
+}
+
+h2.report-header {
+	text-align: center;
+	padding: .5em;
+}
+
+h3.date-range {
+	padding: .5em;
+}
+
+#summary {
+	border: 1px solid;
+	padding: .5em;
+	margin: .5em;
+	width: 30em;
+}
+
+ul.summary, ul.summary-by-format {
+	margin-left: 1em;
+	margin-top: .5em;
+	padding-bottom: .5em;
+}
+
+.report-download a {
+	margin-left: 1em;
+	font-variant: small-caps;
+	font-weight: normal;
+}
+
+h5.index {
+	font-size: 1em;
+	padding: .25em;
+	margin-left: .5em;
+	margin-top: .5em;
+}
+
+h4.report-type {
+	font-size: 1.2em;
+	border-bottom: 1px solid;
+	width: 10em;
+}
+
+.last-updated {
+	float: right;
+	font-size: small;
+	font-variant: small-caps;
+	font-weight:normal;
+	color: black;
+}
+
+div#accessions {
+	float:left;
+	display: inline;
+	width: 40%;
+}
+
+div#cataloging {
+	float: right;
+	display: inline;
+	width: 40%;
+}
+
+div.report-totals {
+	margin-left: 1em;
+	font-style: italic;
+}
+
+tr.total {
+	font-weight: bold;
+}
+
+/*Date picker*/
+/*Reports*/
+ul.report-list {
+	margin-left: 3em;
+}
+span.report-download {
+  font-size: small;
+  margin-left: 2em;
+}
+
+table.report-results{
+	margin-left: 1em;
+	/*width: 80%;
+	table-layout:fixed;*/
+}
+
+table.report-results tr th {
+}
+
+form.report-dates {
+	align: middle;
+}
+
+form.report-dates fieldset {
+	border: 2px solid #3A1E1A;;
+	padding: 2em;
+}
+
+form.report-dates legend {
+	font-size: 1.25em;
+	color: #3A1E1A;
+}
+
+form.report-dates input {
+	border: 1px solid;
+}
+
+fieldset input.submit {
+	margin-top: 1em;
+	padding: .2em;
+}
+
+#date-widget {
+	float: right;
+	margin:0;
+	padding:1em;
+	display: inline;
+}
+
+h3.format-divider {
+	padding: 1em;
+}
+
+div#charts {
+	width: 95%;
+	margin: 1em;
+	margin-left:auto;
+	margin-right:auto;
+	border: 1px solid grey;
+	
+}
+
+img.chart {
+	display: inline;
+}
+
+div.chart-wrapper {
+}
+
+table.extended {
+}
+
+table.extended th {
+	max-width: 75px;
+	overflow: hidden;
+}
+
+#report-date-picker {
+	display: none;
+	margin-top: 2em;
+	clear: left;
+}
+
+#ui-datepicker-div {
+	display: none;
+}
