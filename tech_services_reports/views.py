@@ -37,7 +37,7 @@ def index( request, response_format=None ):
     # context = RequestContext( request )
     context = {}
     params = request.GET
-    if params.has_key( 'format' ):
+    if 'format' in params.keys():
         requested_format = params['format']
     else:
         requested_format = None
