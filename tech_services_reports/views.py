@@ -22,21 +22,10 @@ def hi( request ):
     return HttpResponse( '<p>hi</p> <p>( %s )</p>' % now )
 
 
-# def index( request ):
-#     """ Returns simplest response. """
-#     now = datetime.datetime.now()
-#     return HttpResponse( '<p>index</p> <p>( %s )</p>' % now )
-
-
 # @bul_login
 def index( request, response_format=None ):
     log.debug( 'starting index()' )
 
-    # import time
-    # from datetime import date
-    # from django.db import connection, transaction
-    # from django.template import loader, RequestContext
-    # context = RequestContext( request )
     context = { 'STATIC_URL': project_settings.STATIC_URL }
     params = request.GET
     if 'format' in params.keys():
@@ -75,3 +64,8 @@ def index( request, response_format=None ):
     log.debug( 'context, ```{}```'.format(pprint.pformat(context)) )
     index_resp = render( request, u'tech_services_reports_templates/index.html', context )
     return index_resp
+
+
+def accessions( request, year, month ):
+    msg = '<p>will return info for `{yr}` and `{mo}`</p>'.format( yr=year, mo=month )
+    return HttpResponse( msg )
