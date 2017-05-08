@@ -24,8 +24,8 @@
 <html>
 <head>
    <title>{% block title %}BUL Staff{% endblock %}</title>
-   <link rel="stylesheet" href="{{ settings_app.MEDIA_URL }}reset-fonts-grids.css" type="text/css">
-   <link rel="stylesheet" href="{{ settings_app.MEDIA_URL }}style.css" type="text/css">
+   <link rel="stylesheet" href="{{ STATIC_URL }}css/reset-fonts-grids.css" type="text/css">
+   <link rel="stylesheet" href="{{ STATIC_URL }}css/style.css" type="text/css">
    {% block extra_css %}{% endblock %}
    {% block javascripts %}{% endblock %}
 </head>
