@@ -31,7 +31,7 @@ class DateMaker(object):
         acc_months = cache.get( 'acc_months_cached' )
         acc_month_lst = []
         if acc_months is None:
-            acc_months = Accession.objects.dates('created', 'month', order='DESC')
+            acc_months = Accession.objects.dates('created', 'month', order='DESC')  # grabs list of accession date-objects, one-per-month
             cache.set( 'acc_months_cached', acc_months, 60*60*24 )  # 1 day
         for date_obj in acc_months:
             link = '{sch}://{hst}{url}{yr}/{mo}/'.format( sch=scheme, hst=host, url=reverse('accessions'), yr=date_obj.year, mo=date_obj.month )
@@ -46,7 +46,7 @@ class DateMaker(object):
         cat_months = cache.get( 'cat_months_cached' )
         cat_month_lst = []
         if cat_months is None:
-            cat_months = CatEdit.objects.dates('created', 'month', order='DESC')
+            cat_months = CatEdit.objects.dates('edit_date', 'month', order='DESC')  # grabs list of cataloging date-objects, one-per-month
             cache.set( 'cat_months_cached', cat_months, 60*60*24 )  # 1 day
         for date_obj in cat_months:
             link = '{sch}://{hst}{url}{yr}/{mo}/'.format( sch=scheme, hst=host, url=reverse('cataloging'), yr=date_obj.year, mo=date_obj.month )
@@ -60,7 +60,7 @@ class DateMaker(object):
         acc_years = cache.get( 'acc_years_cached' )
         acc_years_lst = []
         if acc_years is None:
-            acc_years = Accession.objects.dates('created', 'year', order='DESC')
+            acc_years = Accession.objects.dates('created', 'year', order='DESC')  # grabs list of accession date-objects, one-per-year
             cache.set( 'acc_years_cached', acc_years, 60*60*24 )
         for date_obj in acc_years:
             link = '{sch}://{hst}{url}{yr}/'.format( sch=scheme, hst=host, url=reverse('accessions'), yr=date_obj.year )
@@ -74,7 +74,7 @@ class DateMaker(object):
         cat_years = cache.get( 'cat_years_cached' )
         cat_years_lst = []
         if cat_years is None:
-            cat_years = CatEdit.objects.dates('created', 'year', order='DESC')
+            cat_years = CatEdit.objects.dates('edit_date', 'year', order='DESC')  # grabs list of cataloging date-objects, one-per-year
             cache.set( 'cat_years_cached', cat_years, 60*60*24 )
         for date_obj in cat_years:
             link = '{sch}://{hst}{url}{yr}/'.format( sch=scheme, hst=host, url=reverse('cataloging'), yr=date_obj.year )
