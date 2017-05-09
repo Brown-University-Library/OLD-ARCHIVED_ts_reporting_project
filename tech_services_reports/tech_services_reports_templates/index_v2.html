@@ -41,11 +41,9 @@
 
 <h5 class="index">Accessions by calendar year </h5>
 <ul class="summary">
-    {% for year in acc_years %}
+    {% for entry in acc_years %}
     <li>
-        {% for key_year, value_link in year.items %}
-        <a href="{{ value_link }}">{{ key_year }}</a>
-        {% endfor %}
+        <a href="{{ entry.link }}">{{ entry.year }}</a>
     </li>
     {% endfor %}
 </ul>

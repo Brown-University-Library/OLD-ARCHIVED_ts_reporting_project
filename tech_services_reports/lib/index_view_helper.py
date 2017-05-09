@@ -26,7 +26,7 @@ class DateMaker(object):
         return context
 
     def get_acc_months_v2( self, scheme, host ):
-        """ Returns accession monthly dates.
+        """ Returns accession monthly date info.
             Called by make_context() """
         acc_months = cache.get( 'acc_months_cached' )
         acc_month_lst = []
@@ -34,25 +34,43 @@ class DateMaker(object):
             acc_months = Accession.objects.dates('created', 'month', order='DESC')
             cache.set( 'acc_months_cached', acc_months, 60*60*24 )  # 1 day
         for date_obj in acc_months:
-            link = '{sch}://{hst}{url}{yr}/{mo}'.format( sch=scheme, hst=host, url=reverse('accessions'), yr=date_obj.year, mo=date_obj.month )
+            link = '{sch}://{hst}{url}{yr}/{mo}/'.format( sch=scheme, hst=host, url=reverse('accessions'), yr=date_obj.year, mo=date_obj.month )
             acc_month_lst.append( { 'month': date_obj.month, 'month_name': calendar.month_name[date_obj.month], 'year': date_obj.year, 'link': link } )
         # log.debug( 'type(acc_months), `{typ}`; acc_months, ```{val}```'.format( typ=type(acc_months), val=acc_months) )
         log.debug( 'acc_month_lst, ```{}```'.format(pprint.pformat(acc_month_lst)) )
         return acc_month_lst
 
+
+
     def get_acc_years_v2( self, scheme, host ):
-        """ Returns accession year dates.
+        """ Returns accession year date info.
             Called by make_context() """
         acc_years = cache.get( 'acc_years_cached' )
         acc_years_lst = []
         if acc_years is None:
             acc_years = Accession.objects.dates('created', 'year', order='DESC')
             cache.set( 'acc_years_cached', acc_years, 60*60*24 )
-        for year in acc_years:
-            acc_years_lst.append( { year.year: '{sch}://{hst}{url}{yr}/'.format(
-                sch=scheme, hst=host, url=reverse('accessions'), yr=year.year) } )
+        for date_obj in acc_years:
+            link = '{sch}://{hst}{url}{yr}/'.format( sch=scheme, hst=host, url=reverse('accessions'), yr=date_obj.year )
+            acc_years_lst.append( {'year': date_obj.year, 'link': link} )
         log.debug( 'acc_years_lst, ```{}```'.format(pprint.pformat(acc_years_lst)) )
         return acc_years_lst
+
+
+
+    # def get_acc_years_v2( self, scheme, host ):
+    #     """ Returns accession year dates.
+    #         Called by make_context() """
+    #     acc_years = cache.get( 'acc_years_cached' )
+    #     acc_years_lst = []
+    #     if acc_years is None:
+    #         acc_years = Accession.objects.dates('created', 'year', order='DESC')
+    #         cache.set( 'acc_years_cached', acc_years, 60*60*24 )
+    #     for year in acc_years:
+    #         acc_years_lst.append( { year.year: '{sch}://{hst}{url}{yr}/'.format(
+    #             sch=scheme, hst=host, url=reverse('accessions'), yr=year.year) } )
+    #     log.debug( 'acc_years_lst, ```{}```'.format(pprint.pformat(acc_years_lst)) )
+    #     return acc_years_lst
 
     def get_cat_years_v2( self, scheme, host ):
         """ Returns catalog year dates.
