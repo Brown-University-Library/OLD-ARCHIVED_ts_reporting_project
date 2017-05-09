@@ -42,10 +42,10 @@ class DateMaker(object):
             cache.set( 'acc_years_cached', acc_years, 60*60*24 )
         for year in acc_years:
             # acc_years_lst.append( year.year )
-            acc_years_lst.append( { year.year: '{url}{yr}/'.format(url=reverse('index_v2_url'), yr=year.year) } )
+            acc_years_lst.append( { year.year: '{url}{yr}/'.format(url=reverse('accessions'), yr=year.year) } )
         log.debug( 'type(acc_years), `{typ}`; acc_years, ```{val}```'.format( typ=type(acc_years), val=pprint.pformat(acc_years)) )
         log.debug( 'acc_years_lst, ```{}```'.format(pprint.pformat(acc_years_lst)) )
-        return acc_years
+        return acc_years_lst
 
     def get_cat_months( self ):
         """ Returns cataloging monthly dates.

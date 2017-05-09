@@ -16,8 +16,9 @@ urlpatterns = [
 
     url( r'^admin/', include(admin.site.urls) ),
 
-    url( r'^stats/accessions/(?P<year>.*)/(?P<month>.*)$',  ts_views.accessions, name='accessions' ),
-    url( r'^stats/cataloging/(?P<year>.*)/(?P<month>.*)$',  ts_views.cataloging, name='cataloging' ),
+    url( r'^stats/accessions/$',  RedirectView.as_view(pattern_name='index_url'), name='accessions' ),
+    url( r'^stats/accessions/(?P<year>.*)/(?P<month>.*)$',  ts_views.accessions, name='accessions_w_params' ),
+    url( r'^stats/cataloging/(?P<year>.*)/(?P<month>.*)$',  ts_views.cataloging, name='cataloging_w_params' ),
     url( r'^stats/$',  ts_views.index, name='index_url' ),
 
     url( r'^stats_v2/$',  ts_views.index_v2, name='index_v2_url' ),
