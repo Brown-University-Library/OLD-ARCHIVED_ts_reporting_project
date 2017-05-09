@@ -22,18 +22,6 @@ def hi( request ):
     return HttpResponse( '<p>hi</p> <p>( %s )</p>' % now )
 
 
-# def index( request ):
-#     log.debug( 'starting index()' )
-#     context = {
-#         'STATIC_URL': project_settings.STATIC_URL, 'acc_months': dt_mkr.get_acc_months(), 'acc_years': dt_mkr.get_acc_years(), 'cat_months': dt_mkr.get_cat_months(), 'cat_years': dt_mkr.get_cat_years() }
-#     if request.GET.get( 'format', None ) == 'json':
-#         jsn = json.dumps( context, sort_keys=True, indent=2 )
-#         resp = HttpResponse( jsn, content_type=u'application/javascript; charset=utf-8' )
-#     else:
-#         resp = render( request, u'tech_services_reports_templates/index.html', context )
-#     return resp
-
-
 def index( request ):
     log.debug( 'starting index()' )
     context = dt_mkr.make_context( request.scheme, request.get_host() )
@@ -41,7 +29,7 @@ def index( request ):
         jsn = json.dumps( context, sort_keys=True, indent=2 )
         resp = HttpResponse( jsn, content_type=u'application/javascript; charset=utf-8' )
     else:
-        resp = render( request, u'tech_services_reports_templates/index_v2.html', context )
+        resp = render( request, u'tech_services_reports_templates/index.html', context )
     return resp
 
 

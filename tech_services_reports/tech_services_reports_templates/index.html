@@ -1,7 +1,5 @@
 {% extends "tech_services_reports_templates/base.html" %}
 
-{% load report_tags %}
-
 {% block extra_css %}
  <link rel="stylesheet" type="text/css" media="screen, projection" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.0/themes/base/jquery-ui.css"/>
 {% endblock %}
@@ -33,17 +31,22 @@
 <h4 class="report-type">Accessions</h4>
 <h5 class="index">Accessions by month </h5>
 <ul class="summary">
-	{% for month in acc_months %}
-	<li>{% month_report_link month "accessions" %}</li>
-	{% endfor %}
+    {% for entry in acc_months %}
+    <li>
+        <a href="{{ entry.link }}">{{ entry.month_name }} {{ entry.year }}</a>
+    </li>
+    {% endfor %}
 </ul>
 
 <h5 class="index">Accessions by calendar year </h5>
 <ul class="summary">
-	{% for year in acc_years %}
-		<li>{% year_report_link year "accessions" %}</li>
-	{% endfor %}
+    {% for entry in acc_years %}
+    <li>
+        <a href="{{ entry.link }}">{{ entry.year }}</a>
+    </li>
+    {% endfor %}
 </ul>
+
 <h5 class="index">Tools</h5>
 <span id="report-updates"></span>
 <ul class="summary">
@@ -56,17 +59,22 @@
 <h4 class="report-type">Cataloging</h4>
 <h5 class="index">Cataloging by month </h5>
 <ul class="summary">
-	{% for month in cat_months %}
-	<li>{% month_report_link month "cataloging" %}</li>
-	{% endfor %}
+    {% for entry in cat_months %}
+    <li>
+        <a href="{{ entry.link }}">{{ entry.month_name }} {{ entry.year }}</a>
+    </li>
+    {% endfor %}
 </ul>
 
 <h5 class="index">Cataloging by calendar year </h5>
 <ul class="summary">
-	{% for year in cat_years %}
-		<li>{% year_report_link year "cataloging" %}</li>
-	{% endfor %}
+    {% for entry in cat_years %}
+    <li>
+        <a href="{{ entry.link }}">{{ entry.year }}</a>
+    </li>
+    {% endfor %}
 </ul>
+
 <h5 class="index">Tools</h5>
 <ul class="summary">
  <li><a href="#" onclick="javascript:custom_report('cataloging')">Custom date range report</a></li>
