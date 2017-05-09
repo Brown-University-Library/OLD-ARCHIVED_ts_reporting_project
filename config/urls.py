@@ -17,6 +17,7 @@ urlpatterns = [
     url( r'^admin/', include(admin.site.urls) ),
 
     url( r'^stats/accessions/(?P<year>.*)/(?P<month>.*)$',  ts_views.accessions, name='accessions' ),
+    url( r'^stats/cataloging/(?P<year>.*)/(?P<month>.*)$',  ts_views.cataloging, name='cataloging' ),
     url( r'^stats/$',  ts_views.index, name='index_url' ),
 
     url( r'^$',  RedirectView.as_view(pattern_name='index_url') ),
