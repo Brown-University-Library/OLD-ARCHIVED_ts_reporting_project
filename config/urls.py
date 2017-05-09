@@ -20,6 +20,8 @@ urlpatterns = [
     url( r'^stats/cataloging/(?P<year>.*)/(?P<month>.*)$',  ts_views.cataloging, name='cataloging' ),
     url( r'^stats/$',  ts_views.index, name='index_url' ),
 
+    url( r'^stats_v2/$',  ts_views.index_v2, name='index_v2_url' ),
+
     url( r'^$',  RedirectView.as_view(pattern_name='index_url') ),
 
     ]
