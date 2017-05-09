@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import logging
+import logging, pprint
 from django.core.cache import cache
 from tech_services_reports.models import Accession, CatEdit
 
@@ -18,7 +18,7 @@ class DateMaker(object):
         if acc_months is None:
             acc_months = Accession.objects.dates('created', 'month', order='DESC')
             cache.set( 'acc_months_cached', acc_months, 60*60*24 )  # 1 day
-        log.debug( 'type(acc_months), `{typ}`; acc_months, ```{val}```'.format( typ=type(acc_months), val=acc_months) )
+        # log.debug( 'type(acc_months), `{typ}`; acc_months, ```{val}```'.format( typ=type(acc_months), val=acc_months) )
         return acc_months
 
     def get_acc_years( self ):
@@ -28,6 +28,7 @@ class DateMaker(object):
         if acc_years is None:
             acc_years = Accession.objects.dates('created', 'year', order='DESC')
             cache.set( 'acc_years_cached', acc_years, 60*60*24 )
+        log.debug( 'type(acc_years), `{typ}`; acc_years, ```{val}```'.format( typ=type(acc_years), val=pprint.pformat(acc_years)) )
         return acc_years
 
     def get_cat_months( self ):
