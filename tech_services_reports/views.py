@@ -27,7 +27,7 @@ def index( request ):
     context = {
         'STATIC_URL': project_settings.STATIC_URL, 'acc_months': dt_mkr.get_acc_months(), 'acc_years': dt_mkr.get_acc_years(), 'cat_months': dt_mkr.get_cat_months(), 'cat_years': dt_mkr.get_cat_years() }
     if request.GET.get( 'format', None ) == 'json':
-        jsn = json.dumps( context, sort_keys=True, index=2 )
+        jsn = json.dumps( context, sort_keys=True, indent=2 )
         resp = HttpResponse( jsn, content_type=u'application/javascript; charset=utf-8' )
     else:
         resp = render( request, u'tech_services_reports_templates/index.html', context )
@@ -37,10 +37,10 @@ def index( request ):
 def index_v2( request ):
     log.debug( 'starting index_v2()' )
     context = {
-        'STATIC_URL': project_settings.STATIC_URL, 'acc_months': None, 'acc_years': dt_mkr.get_acc_years_v2(), 'cat_months': None, 'cat_years': None }
+        'STATIC_URL': project_settings.STATIC_URL, 'acc_months': None, 'acc_years': dt_mkr.get_acc_years_v2(request.scheme, request.get_host()), 'cat_months': None, 'cat_years': None }
     log.debug( 'context, ```{}```'.format(pprint.pformat(context)) )
     if request.GET.get( 'format', None ) == 'json':
-        jsn = json.dumps( context, sort_keys=True, index=2 )
+        jsn = json.dumps( context, sort_keys=True, indent=2 )
         resp = HttpResponse( jsn, content_type=u'application/javascript; charset=utf-8' )
     else:
         resp = render( request, u'tech_services_reports_templates/index_v2.html', context )

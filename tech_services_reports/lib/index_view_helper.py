@@ -32,7 +32,7 @@ class DateMaker(object):
         log.debug( 'type(acc_years), `{typ}`; acc_years, ```{val}```'.format( typ=type(acc_years), val=pprint.pformat(acc_years)) )
         return acc_years
 
-    def get_acc_years_v2( self ):
+    def get_acc_years_v2( self, scheme, host ):
         """ Returns accession year dates.
             Called by views.index() """
         acc_years = cache.get( 'acc_years_cached' )
@@ -41,8 +41,8 @@ class DateMaker(object):
             acc_years = Accession.objects.dates('created', 'year', order='DESC')
             cache.set( 'acc_years_cached', acc_years, 60*60*24 )
         for year in acc_years:
-            # acc_years_lst.append( year.year )
-            acc_years_lst.append( { year.year: '{url}{yr}/'.format(url=reverse('accessions'), yr=year.year) } )
+            acc_years_lst.append( { year.year: '{sch}://{hst}{url}{yr}/'.format(
+                sch=scheme, hst=host, url=reverse('accessions'), yr=year.year) } )
         log.debug( 'type(acc_years), `{typ}`; acc_years, ```{val}```'.format( typ=type(acc_years), val=pprint.pformat(acc_years)) )
         log.debug( 'acc_years_lst, ```{}```'.format(pprint.pformat(acc_years_lst)) )
         return acc_years_lst
