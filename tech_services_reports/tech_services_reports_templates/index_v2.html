@@ -31,6 +31,11 @@
 <h4 class="report-type">Accessions</h4>
 <h5 class="index">Accessions by month </h5>
 <ul class="summary">
+    {% for entry in acc_months %}
+    <li>
+        <a href="{{ entry.link }}">{{ entry.month_name }} {{ entry.year }}</a>
+    </li>
+    {% endfor %}
 
 </ul>
 
@@ -61,7 +66,13 @@
 
 <h5 class="index">Cataloging by calendar year </h5>
 <ul class="summary">
-
+    {% for year in cat_years %}
+    <li>
+        {% for key_year, value_link in year.items %}
+        <a href="{{ value_link }}">{{ key_year }}</a>
+        {% endfor %}
+    </li>
+    {% endfor %}
 </ul>
 <h5 class="index">Tools</h5>
 <ul class="summary">

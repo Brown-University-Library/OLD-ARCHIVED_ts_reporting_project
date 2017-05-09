@@ -36,9 +36,7 @@ def index( request ):
 
 def index_v2( request ):
     log.debug( 'starting index_v2()' )
-    context = {
-        'STATIC_URL': project_settings.STATIC_URL, 'acc_months': None, 'acc_years': dt_mkr.get_acc_years_v2(request.scheme, request.get_host()), 'cat_months': None, 'cat_years': None }
-    log.debug( 'context, ```{}```'.format(pprint.pformat(context)) )
+    context = dt_mkr.make_context( request.scheme, request.get_host() )
     if request.GET.get( 'format', None ) == 'json':
         jsn = json.dumps( context, sort_keys=True, indent=2 )
         resp = HttpResponse( jsn, content_type=u'application/javascript; charset=utf-8' )
