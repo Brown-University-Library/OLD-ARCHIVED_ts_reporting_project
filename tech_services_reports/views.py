@@ -37,7 +37,7 @@ def index( request ):
 def index_v2( request ):
     log.debug( 'starting index_v2()' )
     context = {
-        'STATIC_URL': project_settings.STATIC_URL, 'acc_months': dt_mkr.get_acc_months(), 'acc_years': dt_mkr.get_acc_years(), 'cat_months': dt_mkr.get_cat_months(), 'cat_years': dt_mkr.get_cat_years() }
+        'STATIC_URL': project_settings.STATIC_URL, 'acc_months': dt_mkr.get_acc_months(), 'acc_years': dt_mkr.get_acc_years_v2(), 'cat_months': dt_mkr.get_cat_months(), 'cat_years': dt_mkr.get_cat_years() }
     if request.GET.get( 'format', None ) == 'json':
         jsn = json.dumps( context, sort_keys=True, index=2 )
         resp = HttpResponse( jsn, content_type=u'application/javascript; charset=utf-8' )
