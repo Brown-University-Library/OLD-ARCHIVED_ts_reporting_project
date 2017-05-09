@@ -11,9 +11,10 @@ from keyword import iskeyword as _iskeyword
 import sys as _sys
 
 
-log = logging.getLogger( "processing" )
-log.debug( 'logger loaded' )
-
+plog = logging.getLogger( "processing" )
+plog.debug( 'processing logger loaded' )
+wlog = logging.getLogger( 'webapp' )
+wlog.debug( 'webapp logger loaded' )
 
 def namedtuple(typename, field_names, verbose=False, rename=False):
     """Returns a new subclass of tuple with named fields.
@@ -130,6 +131,7 @@ def namedtuple(typename, field_names, verbose=False, rename=False):
 ## {{{ http://code.activestate.com/recipes/523034/ (r1)
 try:
     from collections import defaultdict
+    wlog.debug( 'native defaultdict loaded' )
 except:
     class defaultdict(dict):
         def __init__(self, default_factory=None, *a, **kw):

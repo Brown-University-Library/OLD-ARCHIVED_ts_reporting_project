@@ -675,9 +675,13 @@ def count_bib(item):
 
 class AccessionReport(object):
     def __init__(self, start, end, period=None):
-        from models import Accession, SummaryAccession
+        import urllib.request
+        # from models import Accession, SummaryAccession
+        from tech_services_reports.models import Accession, SummaryAccession
         from django.db import connection
-        from helpers import defaultdict
+        # from helpers import defaultdict
+        # from tech_services_reports.helpers import defaultdict
+        from collections import defaultdict
         from itertools import chain
 
         self.connection = connection
@@ -691,7 +695,8 @@ class AccessionReport(object):
         #self.items = Accession.objects.all()
         self.total_items = len(self.items)
         # location_format_map = simplejson.load(urllib.urlopen(settings_app.LOCATION_FORMAT_URL))
-        location_format_map = json.loads(urllib.urlopen(settings_app.LOCATION_FORMAT_URL))
+        # location_format_map = json.loads(urllib.urlopen(settings_app.LOCATION_FORMAT_URL))
+        location_format_map = json.loads( urllib.request.urlopen(settings_app.LOCATION_FORMAT_URL).read() )
         self.location_format_map = location_format_map['result']['items']
         self.total_volumes = self.total_volumes(self.items)
         self.total_titles = self.total_titles(self.items)
@@ -784,7 +789,8 @@ class AccessionReport(object):
             loc = self._loc(item)
             cross[loc] += item.volumes
             total += item.volumes
-        sort = sorted(cross.iteritems(), key=itemgetter(1), reverse=True)
+        # sort = sorted(cross.iteritems(), key=itemgetter(1), reverse=True)
+        sort = sorted(cross.items(), key=itemgetter(1), reverse=True)
         return {'header': ['Building', 'Volumes'],
                 'data': sort,
                 'totals': [total]}
