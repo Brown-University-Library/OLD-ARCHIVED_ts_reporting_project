@@ -40,8 +40,6 @@ class DateMaker(object):
         log.debug( 'acc_month_lst, ```{}```'.format(pprint.pformat(acc_month_lst)) )
         return acc_month_lst
 
-
-
     def get_acc_years_v2( self, scheme, host ):
         """ Returns accession year date info.
             Called by make_context() """
@@ -58,20 +56,6 @@ class DateMaker(object):
 
 
 
-    # def get_acc_years_v2( self, scheme, host ):
-    #     """ Returns accession year dates.
-    #         Called by make_context() """
-    #     acc_years = cache.get( 'acc_years_cached' )
-    #     acc_years_lst = []
-    #     if acc_years is None:
-    #         acc_years = Accession.objects.dates('created', 'year', order='DESC')
-    #         cache.set( 'acc_years_cached', acc_years, 60*60*24 )
-    #     for year in acc_years:
-    #         acc_years_lst.append( { year.year: '{sch}://{hst}{url}{yr}/'.format(
-    #             sch=scheme, hst=host, url=reverse('accessions'), yr=year.year) } )
-    #     log.debug( 'acc_years_lst, ```{}```'.format(pprint.pformat(acc_years_lst)) )
-    #     return acc_years_lst
-
     def get_cat_years_v2( self, scheme, host ):
         """ Returns catalog year dates.
             Called by views.index() """
@@ -80,11 +64,13 @@ class DateMaker(object):
         if cat_years is None:
             cat_years = CatEdit.objects.dates('created', 'year', order='DESC')
             cache.set( 'cat_years_cached', cat_years, 60*60*24 )
-        for year in cat_years:
-            cat_years_lst.append( { year.year: '{sch}://{hst}{url}{yr}/'.format(
-                sch=scheme, hst=host, url=reverse('cataloging'), yr=year.year) } )
+        for date_obj in cat_years:
+            link = '{sch}://{hst}{url}{yr}/'.format( sch=scheme, hst=host, url=reverse('cataloging'), yr=date_obj.year )
+            cat_years_lst.append( {'year': date_obj.year, 'link': link} )
         log.debug( 'cat_years_lst, ```{}```'.format(pprint.pformat(cat_years_lst)) )
         return cat_years_lst
+
+
 
     ### OLD ###
 

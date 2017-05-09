@@ -64,11 +64,9 @@
 
 <h5 class="index">Cataloging by calendar year </h5>
 <ul class="summary">
-    {% for year in cat_years %}
+    {% for entry in cat_years %}
     <li>
-        {% for key_year, value_link in year.items %}
-        <a href="{{ value_link }}">{{ key_year }}</a>
-        {% endfor %}
+        <a href="{{ entry.link }}">{{ entry.year }}</a>
     </li>
     {% endfor %}
 </ul>
