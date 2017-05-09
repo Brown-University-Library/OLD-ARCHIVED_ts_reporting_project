@@ -1,0 +1,49 @@
+# -*- coding: utf-8 -*-
+
+import logging
+from django.core.cache import cache
+from tech_services_reports.models import Accession, CatEdit
+
+
+log = logging.getLogger("webapp")
+
+
+class DateMaker(object):
+    """ Prepares accession and catalog dates. """
+
+    def get_acc_months( self ):
+        """ Returns accession monthly dates.
+            Called by views.index() """
+        acc_months = cache.get( 'acc_months_cached' )
+        if acc_months is None:
+            acc_months = Accession.objects.dates('created', 'month', order='DESC')
+            cache.set( 'acc_months_cached', acc_months, 60*60*24 )  # 1 day
+        log.debug( 'type(acc_months), `{typ}`; acc_months, ```{val}```'.format( typ=type(acc_months), val=acc_months) )
+        return acc_months
+
+    def get_acc_years( self ):
+        """ Returns accession year dates.
+            Called by views.index() """
+        acc_years = cache.get( 'acc_years_cached' )
+        if acc_years is None:
+            acc_years = Accession.objects.dates('created', 'year', order='DESC')
+            cache.set( 'acc_years_cached', acc_years, 60*60*24 )
+        return acc_years
+
+    def get_cat_months( self ):
+        """ Returns cataloging monthly dates.
+            Called by views.index() """
+        cat_months = cache.get( 'cat_months_cached' )
+        if cat_months is None:
+            cat_months = CatEdit.objects.dates('edit_date', 'month', order='DESC')
+            cache.set( 'cat_months_cached', cat_months, 60*60*24 )
+        return cat_months
+
+    def get_cat_years( self ):
+        """ Returns cataloging year dates.
+            Called by views.index() """
+        cat_years = cache.get( 'cat_years_cached' )
+        if cat_years is None:
+            cat_years = CatEdit.objects.dates('edit_date', 'year', order='DESC')
+            cache.set( 'cat_years_cached', cat_years, 60*60*24 )
+        return cat_years

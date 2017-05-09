@@ -140,7 +140,7 @@ LOGGING = {
     },
     'handlers': {
         'webapp_handler': {
-            'level':'INFO',
+            'level': os.environ['TS_RPRT__WEBAPP_LOG_LEVEL'],
             'class':'logging.FileHandler',
             'filename': os.environ['TS_RPRT__WEBAPP_LOG_PATH'],
             'formatter': 'standard'
