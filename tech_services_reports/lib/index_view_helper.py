@@ -20,7 +20,7 @@ class DateMaker(object):
             'STATIC_URL': project_settings.STATIC_URL,
             'acc_months': self.get_acc_months_v2( scheme, host ),
             'acc_years': self.get_acc_years_v2( scheme, host ),
-            'cat_months': None,
+            'cat_months': self.get_cat_months_v2( scheme, host ),
             'cat_years': self.get_cat_years_v2( scheme, host ) }
         log.debug( 'context,```{}```'.format( pprint.pformat(context) ) )
         return context
@@ -40,6 +40,24 @@ class DateMaker(object):
         log.debug( 'acc_month_lst, ```{}```'.format(pprint.pformat(acc_month_lst)) )
         return acc_month_lst
 
+
+
+    def get_cat_months_v2( self, scheme, host ):
+        """ Returns catalog monthly date info.
+            Called by make_context() """
+        cat_months = cache.get( 'cat_months_cached' )
+        cat_month_lst = []
+        if cat_months is None:
+            cat_months = CatEdit.objects.dates('created', 'month', order='DESC')
+            cache.set( 'cat_months_cached', cat_months, 60*60*24 )  # 1 day
+        for date_obj in cat_months:
+            link = '{sch}://{hst}{url}{yr}/{mo}/'.format( sch=scheme, hst=host, url=reverse('cataloging'), yr=date_obj.year, mo=date_obj.month )
+            cat_month_lst.append( { 'month': date_obj.month, 'month_name': calendar.month_name[date_obj.month], 'year': date_obj.year, 'link': link } )
+        log.debug( 'cat_month_lst, ```{}```'.format(pprint.pformat(cat_month_lst)) )
+        return cat_month_lst
+
+
+
     def get_acc_years_v2( self, scheme, host ):
         """ Returns accession year date info.
             Called by make_context() """
@@ -53,8 +71,6 @@ class DateMaker(object):
             acc_years_lst.append( {'year': date_obj.year, 'link': link} )
         log.debug( 'acc_years_lst, ```{}```'.format(pprint.pformat(acc_years_lst)) )
         return acc_years_lst
-
-
 
     def get_cat_years_v2( self, scheme, host ):
         """ Returns catalog year dates.
