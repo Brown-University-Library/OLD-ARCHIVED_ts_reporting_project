@@ -10,11 +10,12 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from tech_services_reports import settings_app
 from tech_services_reports.lib.index_view_helper import DateMaker
-from tech_services_reports.lib.accession_report_view_helper import AccessionReport
+from tech_services_reports.lib.accession_report_view_helper import AccessionReport, AccessionReportViewHelper
 
 
 log = logging.getLogger("webapp")
 dt_mkr = DateMaker()
+accssn_rprt_hlpr = AccessionReportViewHelper()
 
 
 def hi( request ):
@@ -42,8 +43,8 @@ def accessions_report_v2( request, year2, month2 ):
     # log.debug( 'year, `{yr}`; month, `{mo}`'.format( yr=year2, mo=month2 ) )
     # msg = '<p>will return accession info for `{yr}` and `{mo}`</p>'.format( yr=year2, mo=month2 )
     # return HttpResponse( msg )
-
-    accssn_rprt = AccessionReport( start=None, end=None )
+    ( start, end, report_date_header ) = accssn_rprt_hlpr.set_dates( year2, month2 )
+    accssn_rprt = AccessionReport( start, end )
     context = accssn_rprt.make_context()
     if request.GET.get( 'format', None ) == 'json':
         jsn = json.dumps( context, sort_keys=True, indent=2 )

@@ -5,6 +5,7 @@ import datetime, io, logging, os, pprint
 import pymarc
 from django.test import TestCase
 from tech_services_reports.lib.marc_parser import FileParser, RecordParser
+from tech_services_reports.lib.accession_report_view_helper import AccessionReportViewHelper
 
 
 log = logging.getLogger(__name__)
@@ -142,3 +143,22 @@ class RootUrlTest( TestCase ):
 
     # end class RootUrlTest()
 
+
+class AccessionReportViewHelperTest( TestCase ):
+    """ Checks helpers for accession-report. """
+
+    def test_set_dates__good_month_and_year(self):
+        """ Checks returned start and end dates. """
+        hlpr = AccessionReportViewHelper()
+        self.assertEqual(
+            ( datetime.date(2014, 2, 1), datetime.date(2014, 2, 1), 'February 2014' ),
+            hlpr.set_dates( 2014, 2 )
+            )
+
+    def test_set_dates__year_only(self):
+        """ Checks returned start and end dates. """
+        hlpr = AccessionReportViewHelper()
+        self.assertEqual(
+            ( datetime.date(2014, 1, 1), datetime.date(2014, 12, 31), '2014 yearly total' ),
+            hlpr.set_dates( 2014 )
+            )

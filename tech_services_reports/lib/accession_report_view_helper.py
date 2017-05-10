@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import logging
+import datetime, logging
 import urllib.request
 from collections import defaultdict
 from itertools import chain
@@ -13,6 +13,35 @@ from tech_services_reports.models import Accession, SummaryAccession
 
 
 log = logging.getLogger("webapp")
+
+
+class AccessionReportViewHelper(object):
+
+    def set_dates( self, year_str, month_num_str=None ):
+        """ Called by views.accessions_report_v2() """
+        if not month_num_str:
+            ( year_num, month_num ) = ( int(year_str), 1 )
+            start = datetime.date( year_num, month_num, 1 )  # first day of year
+            end = datetime.date( year_num, 12, 31 )  # last day of year
+            report_date_header = '{} yearly total'.format( year_str )
+        else:
+            ( year_num, month_num ) = ( int(year_str), int(month_num_str) )
+            start = datetime.date( year_num, month_num, 1 )
+            end = self.last_day_of_month( start )
+            report_date_header = "{mo} {yr}".format( mo=start.strftime('%B'), yr=year_str )
+        return ( start, end, report_date_header )
+
+    def last_day_of_month( self, date_obj ):
+        """ Returns the last day of the month for any given Python date object.
+            Code from: http://stackoverflow.com/questions/42950/get-last-day-of-the-month-in-python
+            Called by set_dates() """
+        if date_obj.month == 12:
+            date_obj.replace( day=31 )
+        else:
+            date_obj.replace( month=date_obj.month+1, day=1 ) - datetime.timedelta( days=1 )
+        return date_obj
+
+    ## end class AccessionReportViewHelper()
 
 
 class AccessionReport(object):
