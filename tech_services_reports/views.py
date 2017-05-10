@@ -39,13 +39,8 @@ def index( request ):
 
 def accessions_report_v2( request, year2, month2 ):
     log.debug( 'starting accessions_report_v2()' )
-
-    # log.debug( 'year, `{yr}`; month, `{mo}`'.format( yr=year2, mo=month2 ) )
-    # msg = '<p>will return accession info for `{yr}` and `{mo}`</p>'.format( yr=year2, mo=month2 )
-    # return HttpResponse( msg )
-    ( start, end, report_date_header ) = accssn_rprt_hlpr.set_dates( year2, month2 )
-    accssn_rprt = AccessionReport( start, end )
-    context = accssn_rprt.make_context()
+    context = accssn_rprt_hlpr.make_context( year2, month2 )
+    log.debug( 'context, ```{}```'.format( pprint.pformat(context) ) )
     if request.GET.get( 'format', None ) == 'json':
         jsn = json.dumps( context, sort_keys=True, indent=2 )
         resp = HttpResponse( jsn, content_type=u'application/javascript; charset=utf-8' )

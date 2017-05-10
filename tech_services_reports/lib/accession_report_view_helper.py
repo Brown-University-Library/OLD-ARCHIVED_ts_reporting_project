@@ -18,6 +18,9 @@ log = logging.getLogger("webapp")
 
 class AccessionReportViewHelper(object):
 
+    def make_context( self, year_str, month_num_str ):
+        pass
+
     def set_dates( self, year_str, month_num_str=None ):
         """ Called by views.accessions_report_v2() """
         if not month_num_str:
