@@ -1,0 +1,289 @@
+{% extends "tech_services_reports_templates/base.html" %}
+{% load report_tags %}
+{% block javascripts %}
+<script>
+function download_report() {
+	var url = window.location.href.replace('#', '');
+	getParam = url.indexOf('?');
+	//Determine if GET params exists, if they do append the format param.
+	if (getParam == -1) {
+		csv_url = url + '?format=csv';
+	}
+	else {
+		csv_url = url + '&format=csv';
+	};
+	//return;
+	return window.location = csv_url;
+
+}
+</script>
+{% endblock %}
+{% block content %}
+
+
+
+<h2 class="report-header"> {{ report_header }} </h2>
+<h2>{{ report_date_header }}</h2>
+<span class="last-updated">Last updated: {{ last_updated }}</span>
+</h2>
+<div id="summary">
+	<ul class="summary">
+		<li>Total volumes: <em>{{ total_volumes }}</em>.</li>
+		<li>Total titles: <em>{{ total_titles }}</em>.</li>
+
+	</ul>
+	<span class="report-download"><a href="#" onclick="javascript:download_report()">Download details.</a></span>
+</div>
+
+<div id="charts">
+{% if by_format_chart_url %}
+<img class="chart" src="{{ by_format_chart_url|safe }}"/>
+{% endif %}
+{% if by_building_chart_url %}
+<img class="chart" src="{{ by_building_chart_url|safe }}"/>
+{% endif %}
+</div>
+
+<h3 class="report-divider">By bulding (volumes)</h3>
+{% summary_table building_count %}
+
+{% accession_table all_formats_acq_type acq_types locations %}
+
+{% for format in format_reports %}
+	{% accession_table format acq_types locations %}
+{% endfor %}
+
+
+{% accession_table serial_added_volumes acq_types locations %}
+
+{% endblock %}
+
+
+{% comment %}
+{% for format_report in format_reports %}
+	<h3 class="format-divider">{{ format_report.title }}</h3>
+	{% accessions_summary_table format_report.data %}
+{% endfor %}
+
+{% endblock %}
+{% endcomment %}
+
+
+
+{% comment %}
+{% for sorted_format in format_sort_order %}
+	{% for format, location_details in monthly_report.report.items %}
+		{% ifequal format sorted_format %}
+			<h3 class="format-divider">{{ format }} </h3>
+			<table class="report-results">
+				<tr>
+					<th></th>
+				{% for acq_type in settings_app.ACQ_TYPES %}
+					<th>{{ acq_type }}</th>
+					<th></th>
+				{% endfor %}
+				</tr>
+				<tr>
+					<th></th>
+				<!-- dynamically create volume title headers for each acq_type -->
+				{% for acq_type in settings_app.ACQ_TYPES %}
+					<th>Volumes</th>
+					<th>Titles</th>
+				{% endfor %}
+				</tr>
+
+				{% for sorted_location in location_sort_order %}
+					{% for location, accessions in location_details.items %}
+					{% ifequal sorted_location location %}
+							<tr>
+								<th>{{ location }}</th>
+								<!-- loop through each acq type and print count if available -->
+								{% for acq_type in settings_app.ACQ_TYPES %}
+									{% for acc_type, acc_count in accessions.items %}
+										{% ifequal acq_type acc_type %}
+
+											<td> {{ acc_count.volumes }}</td>
+											<td> {{ acc_count.titles }}</td>
+										{% endifequal %}
+									{% endfor %}
+								{% endfor %}
+							</tr>
+					{% endifequal %}
+					{% endfor %}
+				{% endfor %}
+			</table>
+		{% endifequal %}
+	{% endfor %}
+{% endfor %}
+{% endblock %}
+{% endcomment %}
+
+
+{% comment %}
+ "Book": {
+        "Sciences": {
+          "Gift Serial AV": {
+            "titles": 0,
+            "volumes": 1
+          },
+          "Exchange Serial AV": {
+            "titles": 0,
+            "volumes": 3
+          },
+          "Purchase Serial AV": {
+            "titles": 2,
+            "volumes": 29
+          },
+          "Purchase": {
+            "titles": 34,
+            "volumes": 41
+          }
+        },
+        "Annex": {
+          "Gift Serial AV": {
+            "titles": 0,
+            "volumes": 1
+          },
+          "Purchase Serial AV": {
+            "titles": 3,
+            "volumes": 20
+          },
+          "Purchase AV": {
+            "titles": 0,
+            "volumes": 1
+          },
+          "Gift": {
+            "titles": 6,
+            "volumes": 59
+          },
+          "Purchase": {
+            "titles": 59,
+            "volumes": 65
+          }
+        },
+        "Hay": {
+          "Purchase": {
+            "titles": 158,
+            "volumes": 199
+          },
+          "null": {
+            "titles": 6,
+            "volumes": 6
+          },
+          "Purchase Serial AV": {
+            "titles": 0,
+            "volumes": 4
+          },
+          "Gift": {
+            "titles": 21,
+            "volumes": 54
+          }
+        },
+        "Orwig": {
+          "Gift Serial AV": {
+            "titles": 0,
+            "volumes": 1
+          },
+          "Purchase AC/AV": {
+            "titles": 2,
+            "volumes": 2
+          },
+          "Purchase Serial AV": {
+            "titles": 0,
+            "volumes": 13
+          },
+          "Gift": {
+            "titles": 2,
+            "volumes": 18
+          },
+          "Purchase": {
+            "titles": 54,
+            "volumes": 60
+          }
+        },
+        "Rock": {
+          "Gift Serial AV": {
+            "titles": 0,
+            "volumes": 5
+          },
+          "Exchange Serial AV": {
+            "titles": 0,
+            "volumes": 1
+          },
+          "Gift": {
+            "titles": 74,
+            "volumes": 269
+          },
+          "Purchase": {
+            "titles": 923,
+            "volumes": 1125
+          },
+          "Purchase Serial AV": {
+            "titles": 28,
+            "volumes": 302
+          },
+          "Purchase AC/AV": {
+            "titles": 22,
+            "volumes": 37
+          },
+          "null": {
+            "titles": 1,
+            "volumes": 1
+          }
+        }
+      },
+<table class="report-results">
+	<tr>
+	<th></th>
+	<th>Employees</th>
+	<th>Hours</th>
+	</tr>
+
+	<tr>
+		<th>Vacation</th>
+		<td>{{ totals.vacation.count }}
+		<td>{{ totals.vacation.sum }}
+	</tr>
+	<tr>
+		<th>Sick</th>
+		<td>{{ totals.sick.count }}
+		<td>{{ totals.sick.sum }}
+	</tr>
+	<tr>
+		<th>Other</th>
+		<td>{{ totals.other.count }}
+		<td>{{ totals.other.sum }}
+	</tr>
+	<tr>
+		<th>Total</td>
+		<th>{{ totals.all_employees }}</th>
+		<th>{{ totals.all_hours }} </th>
+	</tr>
+
+</table>
+
+Online Serial: {
+-Online: {
+-Serials Solutions: {
+titles: 1360
+volumes: 1421
+}
+-Gift: {
+titles: 47
+volumes: 47
+}
+}
+}
+<h5>By format </h5>
+<ul>
+	{% for format in totals.formats %}
+	<li><a href="format/{{ format }}">{{ format }}</a> </li>
+	{% endfor %}
+</ul>
+<h5>By location </h5>
+<ul>
+	{% for location in totals.locations %}
+	<li><a href="location/{{ location}}">{{ location }}</a> </li>
+	{% endfor %}
+</ul>
+{% endcomment %}

@@ -27,6 +27,7 @@ def hi( request ):
 def index( request ):
     log.debug( 'starting index()' )
     context = dt_mkr.make_context( request.scheme, request.get_host() )
+    log.debug( 'type(context), `{}`'.format( type(context) ) )
     if request.GET.get( 'format', None ) == 'json':
         jsn = json.dumps( context, sort_keys=True, indent=2 )
         resp = HttpResponse( jsn, content_type=u'application/javascript; charset=utf-8' )
@@ -54,7 +55,8 @@ def accessions_report(request, year, month=None, start=None, end=None):
     from django.template import loader, Context, RequestContext
     from tech_services_reports.utility_code import AccessionReport, last_day_of_month, last_harvest
     from datetime import date
-    context = RequestContext(request)
+    # context = RequestContext(request)
+    context = {}
     report_format = request.GET.get('format', None)
     year = int(year)
     if start and end:
@@ -112,12 +114,14 @@ def accessions_report(request, year, month=None, start=None, end=None):
     #context['format_reports'] = format_reports
     context['settings_app'] = settings_app
     context['last_updated'] = ar.last_updated
+    log.debug( 'type(context), `{}`'.format( type(context) ) )
+    log.debug( 'context, ```````{}```````'.format(pprint.pformat(context)) )
 
     if report_format == 'csv':
         return accesssions_report_csv(request, context)
     else:
         # return render_to_response('accessions.html', context)
-        return render('tech_services_reports_templates/accessions.html', context)
+        return render(request, 'tech_services_reports_templates/accessions.html', context)
 
 
 def cataloging( request, year, month ):
