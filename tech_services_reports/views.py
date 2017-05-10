@@ -10,11 +10,11 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from tech_services_reports import settings_app
 from tech_services_reports.lib.index_view_helper import DateMaker
+from tech_services_reports.lib.accession_report_view_helper import AccessionReport
 
 
 log = logging.getLogger("webapp")
 dt_mkr = DateMaker()
-# acsn_rprt_mkr = AccessionReportMaker()
 
 
 def hi( request ):
@@ -38,16 +38,20 @@ def index( request ):
 
 def accessions_report_v2( request, year2, month2 ):
     log.debug( 'starting accessions_report_v2()' )
-    log.debug( 'year, `{yr}`; month, `{mo}`'.format( yr=year2, mo=month2 ) )
-    msg = '<p>will return accession info for `{yr}` and `{mo}`</p>'.format( yr=year2, mo=month2 )
-    return HttpResponse( msg )
-    # context = acsn_rprt_mkr.make_context()
-    # if request.GET.get( 'format', None ) == 'json':
-    #     jsn = json.dumps( context, sort_keys=True, indent=2 )
-    #     resp = HttpResponse( jsn, content_type=u'application/javascript; charset=utf-8' )
-    # else:
-    #     resp = render( request, u'tech_services_reports_templates/accessions.html', context )
-    # return resp
+
+    # log.debug( 'year, `{yr}`; month, `{mo}`'.format( yr=year2, mo=month2 ) )
+    # msg = '<p>will return accession info for `{yr}` and `{mo}`</p>'.format( yr=year2, mo=month2 )
+    # return HttpResponse( msg )
+
+    accssn_rprt = AccessionReport( start=None, end=None )
+    context = accssn_rprt.make_context()
+    if request.GET.get( 'format', None ) == 'json':
+        jsn = json.dumps( context, sort_keys=True, indent=2 )
+        resp = HttpResponse( jsn, content_type=u'application/javascript; charset=utf-8' )
+    else:
+        resp = render( request, u'tech_services_reports_templates/accessions_2.html', context )
+    return resp
+
 
 def accessions_report(request, year, month=None, start=None, end=None):
     log.debug( 'starting old accessions_report' )
