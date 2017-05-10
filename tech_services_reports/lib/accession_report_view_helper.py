@@ -9,6 +9,7 @@ from itertools import chain
 # from models import Accession, SummaryAccession
 # from tech_services_reports.helpers import defaultdict
 from django.db import connection
+from tech_services_reports import settings_app
 from tech_services_reports.models import Accession, SummaryAccession
 
 
