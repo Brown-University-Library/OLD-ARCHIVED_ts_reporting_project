@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import datetime, logging
+import datetime, json, logging
 import urllib.request
 from collections import defaultdict
 from itertools import chain
@@ -57,31 +57,11 @@ class AccessionReport(object):
         self.all_items = list(chain(self.items, self.summary_items))
         #self.items = Accession.objects.all()
         self.total_items = len(self.items)
-        # location_format_map = simplejson.load(urllib.urlopen(settings_app.LOCATION_FORMAT_URL))
-        # location_format_map = json.loads(urllib.urlopen(settings_app.LOCATION_FORMAT_URL))
         location_format_map = json.loads( urllib.request.urlopen(settings_app.LOCATION_FORMAT_URL).read() )
         self.location_format_map = location_format_map['result']['items']
         self.total_volumes = self.total_volumes(self.items)
         self.total_titles = self.total_titles(self.items)
         self.last_updated = Accession.objects.latest('created').created
-
-#        summary = defaultdict( int )
-#        for item in self.items:
-#            summary[item.location, item.acquisition_method] += 1
-#        acc = list( q for q,_ in summary.keys())
-#        table = []
-#        for q in sorted( acc ):
-#            table.append(q.location, q.acquisition_method, summary.count(q,'volumes'), summary.count(q,'titles'))
-#
-#        print table
-
-        #self.formats = self.formats()
-        #self.locations = self.locations()
-        #formats = []
-        #for item in self.items:
-        #    if item.format not in formats:
-        #        formats.append(item.format)
-        #self.unique_formats = formats
 
     def _loc(self, item):
         try:
