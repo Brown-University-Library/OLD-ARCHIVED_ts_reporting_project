@@ -1,5 +1,7 @@
 {% extends "tech_services_reports_templates/base.html" %}
+
 {% load report_tags %}
+
 {% block javascripts %}
 <script>
 function download_report() {
@@ -18,10 +20,8 @@ function download_report() {
 }
 </script>
 {% endblock %}
+
 {% block content %}
-
-
-
 <h2 class="report-header"> {{ report_header }} </h2>
 <h2>{{ report_date_header }}</h2>
 <span class="last-updated">Last updated: {{ last_updated }}</span>

@@ -2,9 +2,9 @@
 
 import datetime, json, logging, os, pprint
 
-# from django.conf import settings as project_settings
 # from django.core.urlresolvers import reverse
 # from tech_services_reports.lib.accessions_view_helper import AccessionReportMaker
+from django.conf import settings as project_settings
 from django.contrib.auth import logout
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
@@ -57,6 +57,7 @@ def accessions_report(request, year, month=None, start=None, end=None):
     from datetime import date
     # context = RequestContext(request)
     context = {}
+    context['STATIC_URL'] = project_settings.STATIC_URL
     report_format = request.GET.get('format', None)
     year = int(year)
     if start and end:
