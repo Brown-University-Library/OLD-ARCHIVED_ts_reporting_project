@@ -18,8 +18,47 @@ log = logging.getLogger("webapp")
 
 class AccessionReportViewHelper(object):
 
-    def make_context( self, year_str, month_num_str ):
-        pass
+    def make_context( self, year_str, month_num_str, scheme, host ):
+        """ Manages context creation.
+            Called by views.accessions_report_v2() """
+        context = self.initialize_context( scheme, host )
+         ( start, end, report_date_header ) = self.set_dates( year_str, month_num_str )
+         context = self.update_context_dates( start, end, report_date_header )
+         context['year'] = start.year
+
+        log.debug( 'context, ```{}```'.format( pprint.pformat(context) ) )
+        return context
+
+    def initialize_context( self, scheme, host ):
+        """ Sets initial vars.
+            Called by make_context() """
+        context = {
+            'STATIC_URL': project_settings.STATIC_URL,
+            'HOME_URL': '{sch}://{hst}{url}'.format( sch=scheme, hst=host, url=reverse('index_url') ),
+
+            'report_date_header': 'init',
+
+            'start': 'init',
+            'end': 'init',
+            'year': 'init',
+
+            'all_formats_acq_type': 'init',
+            'acq_types': 'init',
+            'building_count': 'init',
+            'total_titles': 'init',
+            'total_volumes': 'init',
+            'formats': 'init',
+            'locations': 'init',
+            'serial_added_volumes': 'init',
+            'format_reports': 'init',
+
+            'by_format_chart_url': 'init',
+            'by_building_chart_url': 'init',
+
+            'report_header': 'init',
+            'last_updated': 'init',
+            }
+        return context
 
     def set_dates( self, year_str, month_num_str=None ):
         """ Called by views.accessions_report_v2() """
@@ -44,6 +83,13 @@ class AccessionReportViewHelper(object):
         else:
             date_obj.replace( month=date_obj.month+1, day=1 ) - datetime.timedelta( days=1 )
         return date_obj
+
+    def update_context_dates( self, start, end, report_date_header ):
+        context['start'] = start
+        context['end'] = end
+        context['report_date_header'=report_date_header
+        return context
+
 
     ## end class AccessionReportViewHelper()
 
