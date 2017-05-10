@@ -3,6 +3,7 @@
 from __future__ import unicode_literals
 
 import os
+from collections import namedtuple
 
 
 #####################################################
@@ -19,3 +20,21 @@ OCLC_CODE = 'RBN'  # for determining cataloging type
 
 ITEM_ACC_NOTE = 'e'  # mappings for MARC record to database; these are subfields; value changed of 2011-March-30
 # ITEM_ACC_NOTE = 'n'  # original value
+
+
+#####################################################
+### for compiling total tables                    ###
+#####################################################
+
+# from helpers import namedtuple
+Acc = namedtuple('acc_summary', ['location',
+                                 'acquisition_method',
+                                 'count_type'
+                                 ],
+                                 verbose=False)
+AccTotal = namedtuple('acc_total',['param',
+                                 'param2',
+                                 ],
+                                 verbose=False)
+
+ACC_REPORT_HEADER = 'Accession Statistics -- Brown University Library'

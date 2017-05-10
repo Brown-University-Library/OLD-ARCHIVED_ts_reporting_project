@@ -3,16 +3,19 @@
 from __future__ import unicode_literals
 
 
-# from django.utils import simplejson as json
-import datetime, json, logging, time, re
+import datetime, json, logging, time, re, urllib
+from collections import defaultdict
 from datetime import date
-from tech_services_reports import settings_app
-# from django.utils import simplejson
-import urllib
-#from models import Bib, CatEdit, Item
-from operator import itemgetter, attrgetter
-from tech_services_reports.helpers import defaultdict
 from itertools import chain
+from operator import itemgetter, attrgetter
+
+# from django.utils import simplejson
+# from tech_services_reports.helpers import defaultdict
+# import urllib
+#from models import Bib, CatEdit, Item
+from django.utils.encoding import smart_text
+from tech_services_reports import settings_app
+from tech_services_reports.settings_app import Acc, AccTotal  # used by AccessionReport.all_formats_acq_type()
 
 
 log = logging.getLogger( "processing" )
@@ -797,7 +800,7 @@ class AccessionReport(object):
 
     def all_formats_acq_type(self, location=None, serial_added_only=False):
         #Get project wide named tuples.
-        from settings_app import Acc, AccTotal
+        # from settings_app import Acc, AccTotal
         cross = defaultdict(int)
         if not location and not serial_added_only:
             header = 'All formats by building.'
@@ -813,9 +816,12 @@ class AccessionReport(object):
 
         for item in items:
             loc = self._loc(item)
-            _k = Acc(location=unicode(loc),
-                     acquisition_method=unicode(item.acquisition_method),
-                     count_type=u'volumes')
+            # _k = Acc(location=unicode(loc),
+            #          acquisition_method=unicode(item.acquisition_method),
+            #          count_type=u'volumes')
+            _k = Acc(location=smart_text( loc ),
+                     acquisition_method=smart_text( item.acquisition_method ),
+                     count_type='volumes')
             cross[_k] += item.volumes
             _k = _k._replace(count_type='titles')
             cross[_k] += item.titles
@@ -830,7 +836,7 @@ class AccessionReport(object):
                 'data': cross}
 
     def by_format(self, format=None):
-        from settings_app import Acc, AccTotal
+        # from settings_app import Acc, AccTotal
         cross = defaultdict(int)
         if not format:
             header = 'All formats'
@@ -844,9 +850,12 @@ class AccessionReport(object):
 
         for item in items:
             loc = self._loc(item)
-            _k = Acc(location=unicode(loc),
-                     acquisition_method=unicode(item.acquisition_method),
-                     count_type=u'volumes')
+            # _k = Acc(location=unicode(loc),
+            #          acquisition_method=unicode(item.acquisition_method),
+            #          count_type=u'volumes')
+            _k = Acc(location=smart_text( loc ),
+                     acquisition_method=smart_text( item.acquisition_method ),
+                     count_type='volumes')
             cross[_k] += item.volumes
             _k = _k._replace(count_type='titles')
             cross[_k] += item.titles
@@ -858,7 +867,7 @@ class AccessionReport(object):
                 'data': cross}
 
     def by_format_chart(self, format=None):
-        from settings_app import Acc, AccTotal
+        # from settings_app import Acc, AccTotal
         cross = defaultdict(int)
         if not format:
             header = 'All formats'
@@ -870,7 +879,8 @@ class AccessionReport(object):
             items = chain(items, sum_items)
         for item in items:
             cross[item.format] += 1
-        sort = sorted(cross.iteritems(), key=itemgetter(1), reverse=True)
+        # sort = sorted(cross.iteritems(), key=itemgetter(1), reverse=True)
+        sort = sorted(cross.items(), key=itemgetter(1), reverse=True)
         return {'header': header,
                 'data': sort}
 

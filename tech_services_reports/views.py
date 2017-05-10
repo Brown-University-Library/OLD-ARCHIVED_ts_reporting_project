@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import unicode_literals
-
 import datetime, json, logging, os, pprint
+
 # from django.conf import settings as project_settings
-from django.contrib.auth import logout
 # from django.core.urlresolvers import reverse
+# from tech_services_reports.lib.accessions_view_helper import AccessionReportMaker
+from django.contrib.auth import logout
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
+from tech_services_reports import settings_app
 from tech_services_reports.lib.index_view_helper import DateMaker
-# from tech_services_reports.lib.accessions_view_helper import AccessionReportMaker
 
 
 log = logging.getLogger("webapp")
@@ -116,7 +116,8 @@ def accessions_report(request, year, month=None, start=None, end=None):
     if report_format == 'csv':
         return accesssions_report_csv(request, context)
     else:
-        return render_to_response('accessions.html', context)
+        # return render_to_response('accessions.html', context)
+        return render('tech_services_reports_templates/accessions.html', context)
 
 
 def cataloging( request, year, month ):
