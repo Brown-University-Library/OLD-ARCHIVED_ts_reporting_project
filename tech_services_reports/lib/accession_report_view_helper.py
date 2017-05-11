@@ -43,13 +43,10 @@ class AccessionReportViewHelper(object):
         context = {
             'STATIC_URL': project_settings.STATIC_URL,
             'HOME_URL': '{sch}://{hst}{url}'.format( sch=scheme, hst=host, url=reverse('index_url') ),
-
             'report_date_header': 'init',
-
             'start': 'init',
             'end': 'init',
             'year': 'init',
-
             'all_formats_acq_type': 'init',
             'acq_types': 'init',
             'building_count': 'init',
@@ -59,17 +56,16 @@ class AccessionReportViewHelper(object):
             'locations': 'init',
             'serial_added_volumes': 'init',
             'format_reports': 'init',
-
             'by_format_chart_url': 'init',
             'by_building_chart_url': 'init',
-
             'report_header': 'init',
             'last_updated': 'init',
             }
         return context
 
     def set_dates( self, year_str, month_num_str=None ):
-        """ Called by views.accessions_report_v2() """
+        """ Sets start and end dates from url vars.
+            Called by make_context() """
         if not month_num_str:
             ( year_num, month_num ) = ( int(year_str), 1 )
             start = datetime.date( year_num, month_num, 1 )  # first day of year
@@ -93,6 +89,8 @@ class AccessionReportViewHelper(object):
         return new_dt
 
     def update_context_dates( self, context, start, end, report_date_header ):
+        """ Adds start & end dates to intialized context.
+            Called by: make_context() """
         context['start'] = start
         context['end'] = end
         context['report_date_header'] = report_date_header
@@ -126,16 +124,9 @@ class AccessionReportViewHelper(object):
         chart_label = context['report_date_header']
         context['by_format_chart_url'] = accssn_rprt.gchart(
             accssn_rprt.by_format_chart(), chart_label, 'Accessions by format' )
-
-        # report_dct = { 'by_building': ar.building_summary() }
-        # context['by_building_chart_url'] = accssn_rprt.gchart(
-        #     report_dct['by_building'], chart_label, 'Accessions by location', color='3366CC' )
-
         context['by_building_chart_url'] = accssn_rprt.gchart(
             accssn_rprt.building_summary(), chart_label, 'Accessions by location', color='3366CC' )
-
         return context
-
 
     ## end class AccessionReportViewHelper()
 
@@ -251,8 +242,7 @@ class AccessionReport(object):
             items = self.items.filter(location=location)
             sum_items = self.summary_items.filter(location=location)
             items = chain(items, sum_items)
-
-        log.debug( 'items, ```{}```'.format( pprint.pformat(items) ) )
+        # log.debug( 'items, ```{}```'.format( pprint.pformat(items) ) )
         for item in items:
             loc = self._loc(item)
             # _k = Acc(location=unicode(loc),
@@ -331,8 +321,6 @@ class AccessionReport(object):
     def gchart(self, vals, period, name, color='438043'):
         return self.gchart_url(vals, period, name, color=color)
 
-
-
     def gchart_url(self, vals, period, name, color='438043'):
             data_labels = []
             data_values = []
@@ -365,6 +353,5 @@ class AccessionReport(object):
                           }
             #Remove line breaks and spaces from url.
             return chart_url.replace('\n', '').replace(' ', '')
-
 
     ## end class AccessionReport()
