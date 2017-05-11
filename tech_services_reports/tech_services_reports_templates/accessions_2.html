@@ -36,15 +36,20 @@ function download_report() {
 </div>
 
 <div id="charts">
-{% if by_format_chart_url %}
-<img class="chart" src="{{ by_format_chart_url|safe }}"/>
-{% endif %}
-{% if by_building_chart_url %}
-<img class="chart" src="{{ by_building_chart_url|safe }}"/>
-{% endif %}
+    {% if by_format_chart_url %}
+    <img class="chart" src="{{ by_format_chart_url|safe }}"/>
+    {% endif %}
+    {% if by_building_chart_url %}
+    <img class="chart" src="{{ by_building_chart_url|safe }}"/>
+    {% endif %}
 </div>
 
-<h3 class="report-divider">By bulding (volumes)</h3>
+<div id="building summary">
+<h3 class="report-divider">By building (volumes)</h3>
+    {% for format in building_totals %}
+    {% endfor %}
+<div>
+
 {% summary_table building_count %}
 
 {% accession_table all_formats_acq_type acq_types locations %}

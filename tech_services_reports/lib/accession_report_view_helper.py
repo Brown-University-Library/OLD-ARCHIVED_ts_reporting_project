@@ -24,6 +24,21 @@ class AccessionReportViewHelper(object):
 
     def make_context( self, year_str, month_num_str, scheme, host ):
         """ Manages context creation.
+            Called by views.accessions_report() """
+        ( start, end, report_date_header ) = self.set_dates( year_str, month_num_str )
+        context = self.update_context_dates( self.initialize_context(scheme, host), start, end, report_date_header )
+        context['year'] = start.year
+        accssn_rprt = AccessionReport( start, end )
+        context = self.update_context_with_report_data( context, accssn_rprt, start, end )
+        context = self.update_context_with_chart_data( context, accssn_rprt )
+        context['report_header'] = settings_app.ACC_REPORT_HEADER
+        context['settings_app'] = settings_app
+        context['last_updated'] = accssn_rprt.last_updated
+        log.debug( 'type(context), `{typ}`;\n context, ```````{val}```````'.format( typ=type(context), val=pprint.pformat(context) ) )
+        return context
+
+    def make_context_2( self, year_str, month_num_str, scheme, host ):
+        """ Manages context creation.
             Called by views.accessions_report_v2() """
         ( start, end, report_date_header ) = self.set_dates( year_str, month_num_str )
         context = self.update_context_dates( self.initialize_context(scheme, host), start, end, report_date_header )
@@ -249,6 +264,8 @@ class AccessionReport(object):
                 location=smart_text( loc ),
                 acquisition_method=smart_text( item.acquisition_method ),
                 count_type='volumes' )
+            # log.debug( '_k, ```{}```'.format(_k) )
+            log.debug( '_k._asdict(), ```{}```'.format(_k._asdict()) )
             cross[_k] += item.volumes
             _k = _k._replace(count_type='titles')
             cross[_k] += item.titles
