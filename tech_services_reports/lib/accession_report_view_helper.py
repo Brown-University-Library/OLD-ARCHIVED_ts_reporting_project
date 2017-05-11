@@ -245,12 +245,10 @@ class AccessionReport(object):
         # log.debug( 'items, ```{}```'.format( pprint.pformat(items) ) )
         for item in items:
             loc = self._loc(item)
-            # _k = Acc(location=unicode(loc),
-            #          acquisition_method=unicode(item.acquisition_method),
-            #          count_type=u'volumes')
-            _k = settings_app.Acc(location=smart_text( loc ),
-                     acquisition_method=smart_text( item.acquisition_method ),
-                     count_type='volumes')
+            _k = settings_app.Acc(
+                location=smart_text( loc ),
+                acquisition_method=smart_text( item.acquisition_method ),
+                count_type='volumes' )
             cross[_k] += item.volumes
             _k = _k._replace(count_type='titles')
             cross[_k] += item.titles
