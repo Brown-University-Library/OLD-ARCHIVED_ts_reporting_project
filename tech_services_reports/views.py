@@ -39,7 +39,7 @@ def index( request ):
 
 def accessions_report_v2( request, year2, month2 ):
     log.debug( 'starting accessions_report_v2()' )
-    context = accssn_rprt_hlpr.make_context( year2, month2 )
+    context = accssn_rprt_hlpr.make_context( year2, month2, request.scheme, request.get_host() )
     if request.GET.get( 'format', None ) == 'json':
         jsn = json.dumps( context, sort_keys=True, indent=2 )
         resp = HttpResponse( jsn, content_type=u'application/javascript; charset=utf-8' )

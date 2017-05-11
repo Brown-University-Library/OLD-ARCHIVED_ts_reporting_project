@@ -3,7 +3,7 @@
 from __future__ import unicode_literals
 
 
-import datetime, json, logging, time, re, urllib
+import datetime, json, logging, pprint, time, re, urllib
 from collections import defaultdict
 from datetime import date
 from itertools import chain
@@ -20,6 +20,8 @@ from tech_services_reports.settings_app import Acc, AccTotal  # used by Accessio
 
 log = logging.getLogger( "processing" )
 log.debug( 'loaded utility_code.py' )
+wlog = logging.getLogger( 'webapp' )
+wlog.debug( 'loaded utility_code.py' )
 
 
 #Brown specific
@@ -687,11 +689,13 @@ class AccessionReport(object):
         from collections import defaultdict
         from itertools import chain
 
+        wlog.debug( 'start, `{st}`; end, `{en}`'.format( st=start, en=end ) )
         self.connection = connection
 
         self.start = start
         self.end = end
         self.items = Accession.objects.filter(created__gte=start, created__lte=end)
+        wlog.debug( 'len(self.items), `{}`'.format( len(self.items) ) )
         self.summary_items = SummaryAccession.objects.filter(date__gte=start, date__lte=end)
         #Combine edits and summary edits
         self.all_items = list(chain(self.items, self.summary_items))
@@ -799,6 +803,7 @@ class AccessionReport(object):
                 'totals': [total]}
 
     def all_formats_acq_type(self, location=None, serial_added_only=False):
+        wlog.debug( 'starting; location, ```{loc}```; serial_added_only, `{ser}`'.format( loc=location, ser=serial_added_only ) )
         #Get project wide named tuples.
         # from settings_app import Acc, AccTotal
         cross = defaultdict(int)
@@ -814,6 +819,7 @@ class AccessionReport(object):
             sum_items = self.summary_items.filter(location=location)
             items = chain(items, sum_items)
 
+        wlog.debug( 'items, ```{}```'.format( pprint.pformat(items) ) )
         for item in items:
             loc = self._loc(item)
             # _k = Acc(location=unicode(loc),
@@ -832,8 +838,9 @@ class AccessionReport(object):
             cross[_tk] += item.volumes
         #sort = sorted(cross.iteritems(), key=itemgetter(0), reverse=True)
         #print sort
-        return {'header': header,
-                'data': cross}
+        return_data = {'header': header, 'data': cross}
+        wlog.debug( 'return_data, ```{}```'.format( pprint.pformat(return_data) ) )
+        return return_data
 
     def by_format(self, format=None):
         # from settings_app import Acc, AccTotal

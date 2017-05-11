@@ -147,11 +147,27 @@ class RootUrlTest( TestCase ):
 class AccessionReportViewHelperTest( TestCase ):
     """ Checks helpers for accession-report. """
 
+    def test_last_day_of_month__normal_month(self):
+        """ Checks for last day of month for given date-object. """
+        hlpr = AccessionReportViewHelper()
+        self.assertEqual(
+            datetime.date(2014, 3, 31),
+            hlpr.last_day_of_month( datetime.date(2014, 3, 1) )
+            )
+
+    def test_last_day_of_month__tricky_feb(self):
+        """ Checks for last day of month for given date-object. """
+        hlpr = AccessionReportViewHelper()
+        self.assertEqual(
+            datetime.date(2014, 2, 28),
+            hlpr.last_day_of_month( datetime.date(2014, 2, 1) )
+            )
+
     def test_set_dates__good_month_and_year(self):
         """ Checks returned start and end dates. """
         hlpr = AccessionReportViewHelper()
         self.assertEqual(
-            ( datetime.date(2014, 2, 1), datetime.date(2014, 2, 1), 'February 2014' ),
+            ( datetime.date(2014, 2, 1), datetime.date(2014, 2, 28), 'February 2014' ),
             hlpr.set_dates( 2014, 2 )
             )
 

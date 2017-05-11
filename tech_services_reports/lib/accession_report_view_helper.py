@@ -1,13 +1,16 @@
 # -*- coding: utf-8 -*-
 
-import datetime, json, logging
+import datetime, json, logging, pprint
 import urllib.request
 from collections import defaultdict
 from itertools import chain
+from operator import itemgetter, attrgetter
 
 # from helpers import defaultdict
 # from models import Accession, SummaryAccession
 # from tech_services_reports.helpers import defaultdict
+from django.conf import settings as project_settings
+from django.core.urlresolvers import reverse
 from django.db import connection
 from tech_services_reports import settings_app
 from tech_services_reports.models import Accession, SummaryAccession
@@ -22,10 +25,17 @@ class AccessionReportViewHelper(object):
         """ Manages context creation.
             Called by views.accessions_report_v2() """
         context = self.initialize_context( scheme, host )
-         ( start, end, report_date_header ) = self.set_dates( year_str, month_num_str )
-         context = self.update_context_dates( start, end, report_date_header )
-         context['year'] = start.year
-
+        ( start, end, report_date_header ) = self.set_dates( year_str, month_num_str )
+        log.debug( 'start, `{st}`; end, `{en}`'.format( st=start, en=end ) )
+        context = self.update_context_dates( context, start, end, report_date_header )
+        context['year'] = start.year
+        accssn_rprt = AccessionReport( start, end )
+        context = self.update_context_with_report_data( context, accssn_rprt, start, end )
+        context = self.update_context_with_chart_data( context, accssn_rprt )
+        context['report_header'] = settings_app.ACC_REPORT_HEADER
+        context['settings_app'] = settings_app
+        context['last_updated'] = accssn_rprt.last_updated
+        log.debug( 'type(context), `{}`'.format( type(context) ) )
         log.debug( 'context, ```{}```'.format( pprint.pformat(context) ) )
         return context
 
@@ -79,15 +89,53 @@ class AccessionReportViewHelper(object):
             Code from: http://stackoverflow.com/questions/42950/get-last-day-of-the-month-in-python
             Called by set_dates() """
         if date_obj.month == 12:
-            date_obj.replace( day=31 )
+            new_dt = date_obj.replace( day=31 )
         else:
-            date_obj.replace( month=date_obj.month+1, day=1 ) - datetime.timedelta( days=1 )
-        return date_obj
+            new_dt = date_obj.replace( month=date_obj.month+1, day=1 ) - datetime.timedelta( days=1 )
+        return new_dt
 
-    def update_context_dates( self, start, end, report_date_header ):
+    def update_context_dates( self, context, start, end, report_date_header ):
         context['start'] = start
         context['end'] = end
-        context['report_date_header'=report_date_header
+        context['report_date_header'] = report_date_header
+        return context
+
+    def update_context_with_report_data( self, context, accssn_rprt, start_date, end_date ):
+        """ Updates context from AccessionReport().
+            Called by make_context() """
+        context['all_formats_acq_type'] = accssn_rprt.all_formats_acq_type()
+        context['acq_types'] = accssn_rprt.acq_types()
+        context['building_count'] = accssn_rprt.building_summary()
+        context['total_titles'] = accssn_rprt.total_titles
+        context['total_volumes'] = accssn_rprt.total_volumes
+        context['formats'] = accssn_rprt.formats()
+        context['locations'] = accssn_rprt.locations()
+        context['serial_added_volumes'] = accssn_rprt.serial_added_volumes()
+        context['format_reports'] = self.make_format_reports( accssn_rprt )
+        return context
+
+    def make_format_reports( self, accssn_rprt ):
+        """ Creates format_report list.
+            Called by update_context_with_report_data() """
+        format_reports = []
+        for format in accssn_rprt.formats():
+            format_reports.append( accssn_rprt.by_format(format=format) )
+        return format_reports
+
+    def update_context_with_chart_data( self, context, accssn_rprt ):
+        """ Updates context with AccessionReport data for charting.
+            Called by make_context() """
+        chart_label = context['report_date_header']
+        context['by_format_chart_url'] = accssn_rprt.gchart(
+            accssn_rprt.by_format_chart(), chart_label, 'Accessions by format' )
+
+        # report_dct = { 'by_building': ar.building_summary() }
+        # context['by_building_chart_url'] = accssn_rprt.gchart(
+        #     report_dct['by_building'], chart_label, 'Accessions by location', color='3366CC' )
+
+        context['by_building_chart_url'] = accssn_rprt.gchart(
+            accssn_rprt.building_summary(), chart_label, 'Accessions by location', color='3366CC' )
+
         return context
 
 
@@ -97,11 +145,12 @@ class AccessionReportViewHelper(object):
 class AccessionReport(object):
 
     def __init__(self, start, end, period=None):
-
+        log.debug( 'start, `{st}`; end, `{en}`'.format( st=start, en=end ) )
         self.connection = connection  # from django.db import connection
         self.start = start
         self.end = end
         self.items = Accession.objects.filter(created__gte=start, created__lte=end)
+        log.debug( 'len(self.items), `{}`'.format( len(self.items) ) )
         self.summary_items = SummaryAccession.objects.filter(date__gte=start, date__lte=end)
         #Combine edits and summary edits
         self.all_items = list(chain(self.items, self.summary_items))
@@ -191,6 +240,7 @@ class AccessionReport(object):
     def all_formats_acq_type(self, location=None, serial_added_only=False):
         #Get project wide named tuples.
         # from settings_app import Acc, AccTotal
+        log.debug( 'starting; location, ```{loc}```; serial_added_only, `{ser}`'.format( loc=location, ser=serial_added_only ) )
         cross = defaultdict(int)
         if not location and not serial_added_only:
             header = 'All formats by building.'
@@ -204,26 +254,28 @@ class AccessionReport(object):
             sum_items = self.summary_items.filter(location=location)
             items = chain(items, sum_items)
 
+        log.debug( 'items, ```{}```'.format( pprint.pformat(items) ) )
         for item in items:
             loc = self._loc(item)
             # _k = Acc(location=unicode(loc),
             #          acquisition_method=unicode(item.acquisition_method),
             #          count_type=u'volumes')
-            _k = Acc(location=smart_text( loc ),
+            _k = settings_app.Acc(location=smart_text( loc ),
                      acquisition_method=smart_text( item.acquisition_method ),
                      count_type='volumes')
             cross[_k] += item.volumes
             _k = _k._replace(count_type='titles')
             cross[_k] += item.titles
             #Do totals by purchase type
-            _tk = AccTotal(param=item.acquisition_method, param2='titles')
+            _tk = settings_app.AccTotal(param=item.acquisition_method, param2='titles')
             cross[_tk] += item.titles
             _tk = _tk._replace(param2='volumes')
             cross[_tk] += item.volumes
         #sort = sorted(cross.iteritems(), key=itemgetter(0), reverse=True)
         #print sort
-        return {'header': header,
-                'data': cross}
+        return_data = {'header': header, 'data': cross}
+        log.debug( 'return_data, ```{}```'.format( pprint.pformat(return_data) ) )
+        return return_data
 
     def by_format(self, format=None):
         # from settings_app import Acc, AccTotal
@@ -243,13 +295,13 @@ class AccessionReport(object):
             # _k = Acc(location=unicode(loc),
             #          acquisition_method=unicode(item.acquisition_method),
             #          count_type=u'volumes')
-            _k = Acc(location=smart_text( loc ),
+            _k = settings_app.Acc(location=smart_text( loc ),
                      acquisition_method=smart_text( item.acquisition_method ),
                      count_type='volumes')
             cross[_k] += item.volumes
             _k = _k._replace(count_type='titles')
             cross[_k] += item.titles
-            _tk = AccTotal(param=item.acquisition_method, param2='titles')
+            _tk = settings_app.AccTotal(param=item.acquisition_method, param2='titles')
             cross[_tk] += item.titles
             _tk = _tk._replace(param2='volumes')
             cross[_tk] += item.volumes
@@ -279,6 +331,42 @@ class AccessionReport(object):
         return self.all_formats_acq_type(self, serial_added_only=True)
 
     def gchart(self, vals, period, name, color='438043'):
-        return gchart_url(vals, period, name, color=color)
+        return self.gchart_url(vals, period, name, color=color)
+
+
+
+    def gchart_url(self, vals, period, name, color='438043'):
+            data_labels = []
+            data_values = []
+            for label,val in vals['data']:
+                data_labels.append(label)
+                data_values.append(val)
+            low = 0
+            try:
+                high = data_values[0]
+            except IndexError:
+                return
+            data_values = "%s" % (','.join([str(d) for d in data_values]))
+            data_labels = '|'.join([l.replace(' ', '+') for l in data_labels])
+            range = "%s, %s" % (low, high)
+            chart_url = """http://chart.apis.google.com/chart?chs=450x300
+                   &cht=p
+                   &chco=%(color)s
+                   &chds=%(range)s
+                   &chd=t:%(data_values)s
+                   &chl=%(data_labels)s
+                   &chtt=%(period)s+%(chart_name)s
+                   &chma=40,40,40,40
+                   &chts=000000,18
+                   """ % {'range':range,
+                          'data_labels':data_labels,
+                          'data_values':data_values,
+                          'period': period.replace(' ', '+'),
+                          'color':color,
+                          'chart_name':name.replace(' ', '+')
+                          }
+            #Remove line breaks and spaces from url.
+            return chart_url.replace('\n', '').replace(' ', '')
+
 
     ## end class AccessionReport()
