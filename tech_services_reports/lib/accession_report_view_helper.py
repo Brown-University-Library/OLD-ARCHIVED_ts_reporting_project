@@ -25,10 +25,8 @@ class AccessionReportViewHelper(object):
     def make_context( self, year_str, month_num_str, scheme, host ):
         """ Manages context creation.
             Called by views.accessions_report_v2() """
-        context = self.initialize_context( scheme, host )
         ( start, end, report_date_header ) = self.set_dates( year_str, month_num_str )
-        log.debug( 'start, `{st}`; end, `{en}`'.format( st=start, en=end ) )
-        context = self.update_context_dates( context, start, end, report_date_header )
+        context = self.update_context_dates( self.initialize_context(scheme, host), start, end, report_date_header )
         context['year'] = start.year
         accssn_rprt = AccessionReport( start, end )
         context = self.update_context_with_report_data( context, accssn_rprt, start, end )
@@ -36,8 +34,7 @@ class AccessionReportViewHelper(object):
         context['report_header'] = settings_app.ACC_REPORT_HEADER
         context['settings_app'] = settings_app
         context['last_updated'] = accssn_rprt.last_updated
-        log.debug( 'type(context), `{}`'.format( type(context) ) )
-        log.debug( 'context, ```{}```'.format( pprint.pformat(context) ) )
+        log.debug( 'type(context), `{typ}`;\n context, ```````{val}```````'.format( typ=type(context), val=pprint.pformat(context) ) )
         return context
 
     def initialize_context( self, scheme, host ):
