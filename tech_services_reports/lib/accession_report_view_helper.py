@@ -12,6 +12,7 @@ from operator import itemgetter, attrgetter
 from django.conf import settings as project_settings
 from django.core.urlresolvers import reverse
 from django.db import connection
+from django.utils.encoding import smart_text
 from tech_services_reports import settings_app
 from tech_services_reports.models import Accession, SummaryAccession
 
