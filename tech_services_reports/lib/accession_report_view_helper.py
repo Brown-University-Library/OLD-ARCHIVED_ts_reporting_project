@@ -9,6 +9,7 @@ from operator import itemgetter, attrgetter
 # from helpers import defaultdict
 # from models import Accession, SummaryAccession
 # from tech_services_reports.helpers import defaultdict
+import requests
 from django.conf import settings as project_settings
 from django.core.cache import cache
 from django.core.urlresolvers import reverse
@@ -165,14 +166,16 @@ class AccessionReport(object):
         self.items = Accession.objects.filter(created__gte=start, created__lte=end)
         log.debug( 'len(self.items), `{}`'.format( len(self.items) ) )
         self.summary_items = SummaryAccession.objects.filter(date__gte=start, date__lte=end)
-        log.debug( 'grabbed summary_items' )
         #Combine edits and summary edits
         self.all_items = list(chain(self.items, self.summary_items))
-        log.debug( 'grabbed all_items' )
         #self.items = Accession.objects.all()
         self.total_items = len(self.items)
         log.debug( 'grabbed total_items' )
-        location_format_map = json.loads( urllib.request.urlopen(settings_app.LOCATION_FORMAT_URL).read() )
+
+        # location_format_map = json.loads( urllib.request.urlopen(settings_app.LOCATION_FORMAT_URL).read() )
+        r = requests.get( settings_app.LOCATION_FORMAT_URL )
+        location_format_map = r.json()
+
         log.debug( 'location_format_map prepared' )
         self.location_format_map = location_format_map['result']['items']
         self.total_volumes = self.total_volumes(self.items)
@@ -279,7 +282,7 @@ class AccessionReport(object):
                 acquisition_method=smart_text( item.acquisition_method ),
                 count_type='volumes' )
             # log.debug( '_k, ```{}```'.format(_k) )
-            log.debug( '_k._asdict(), ```{}```'.format(_k._asdict()) )
+            # log.debug( '_k._asdict(), ```{}```'.format(_k._asdict()) )
             cross[_k] += item.volumes
             _k = _k._replace(count_type='titles')
             cross[_k] += item.titles
