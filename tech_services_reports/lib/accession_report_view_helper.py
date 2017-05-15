@@ -170,10 +170,12 @@ class AccessionReport(object):
         #self.items = Accession.objects.all()
         self.total_items = len(self.items)
         location_format_map = json.loads( urllib.request.urlopen(settings_app.LOCATION_FORMAT_URL).read() )
+        log.debug( 'location_format_map prepared' )
         self.location_format_map = location_format_map['result']['items']
         self.total_volumes = self.total_volumes(self.items)
         self.total_titles = self.total_titles(self.items)
         self.last_updated = Accession.objects.latest('created').created
+        log.debug( '__init__() done' )
 
     def _loc(self, item):
         try:
