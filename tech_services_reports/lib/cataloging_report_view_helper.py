@@ -13,49 +13,64 @@ log = logging.getLogger("webapp")
 
 class CatalogingReportViewHelper(object):
 
+    # def make_context( self, year_str, month_num_str, scheme, host ):
+    #     """ Manages context creation.
+    #         Called by views.cataloging_report_v2() """
+    #     ( start, end, month_for_context ) = self.set_dates( year_str, month_num_str )
+    #     context = {}
+    #     context['STATIC_URL'] = project_settings.STATIC_URL
+    #     year = start.year
+    #     context['year'] = year
+    #     context['month'] = month_for_context
+    #     context['report_header'] = settings_app.CAT_STATS_REPORT_HEADER
+    #     context['start'] = start.strftime("%Y-%m-%d")
+    #     context['end'] = end.strftime("%Y-%m-%d")
+    #     cr = CatalogingReport(start, end)
+
+    #     context['by_format'] = cr.by_format()
+    #     context['by_format_and_type'] = cr.by_format_and_type()
+    #     context['by_cataloger'] = cr.by_cataloger()
+    #     context['by_edit_type'] = cr.by_edit_type()
+    #     context['by_cataloger_and_format'] = cr.by_cataloger_and_format()
+    #     context['by_cataloger_and_edit_type'] = cr.by_cataloger_and_edit_type()
+    #     context['total_cataloged'] = cr.total_cataloged
+    #     context['report'] = cr
+    #     context['last_updated'] = cr.last_updated
+
+    #     chart_label = ''
+    #     if context['month']:
+    #         chart_label += context['month']
+    #     chart_label += ' ' + str(year)
+
+    #     context['by_format_chart_url'] = cr.gchart(context['by_format'],
+    #                                      chart_label,
+    #                                      'Cataloging by format')
+    #     context['by_edit_type_chart_url'] = cr.gchart(context['by_edit_type'],
+    #                                      chart_label,
+    #                                      'Cataloging by type',
+    #                                      color='3366CC')
+    # #    context['by_cataloger_chart_url'] = cr.gchart(context['by_edit_type'],
+    # #                                     chart_label,
+    # #                                     'By edit type',
+    # #                                     color='3366CC')
+
+    #     log.debug( 'type(context), `{typ}`;\n context, ```````{val}```````'.format( typ=type(context), val=pprint.pformat(context) ) )
+    #     return context
+
+
+
     def make_context( self, year_str, month_num_str, scheme, host ):
         """ Manages context creation.
             Called by views.cataloging_report_v2() """
         ( start, end, month_for_context ) = self.set_dates( year_str, month_num_str )
-        context = {}
-        context['STATIC_URL'] = project_settings.STATIC_URL
-        year = start.year
-        context['year'] = year
-        context['month'] = month_for_context
-        context['report_header'] = settings_app.CAT_STATS_REPORT_HEADER
-        context['start'] = start.strftime("%Y-%m-%d")
-        context['end'] = end.strftime("%Y-%m-%d")
+        context = self.update_context_dates( start, end, month_for_context )
         cr = CatalogingReport(start, end)
-
-        context['by_format'] = cr.by_format()
-        context['by_format_and_type'] = cr.by_format_and_type()
-        context['by_cataloger'] = cr.by_cataloger()
-        context['by_edit_type'] = cr.by_edit_type()
-        context['by_cataloger_and_format'] = cr.by_cataloger_and_format()
-        context['by_cataloger_and_edit_type'] = cr.by_cataloger_and_edit_type()
-        context['total_cataloged'] = cr.total_cataloged
-        context['report'] = cr
-        context['last_updated'] = cr.last_updated
-
-        chart_label = ''
-        if context['month']:
-            chart_label += context['month']
-        chart_label += ' ' + str(year)
-
-        context['by_format_chart_url'] = cr.gchart(context['by_format'],
-                                         chart_label,
-                                         'Cataloging by format')
-        context['by_edit_type_chart_url'] = cr.gchart(context['by_edit_type'],
-                                         chart_label,
-                                         'Cataloging by type',
-                                         color='3366CC')
-    #    context['by_cataloger_chart_url'] = cr.gchart(context['by_edit_type'],
-    #                                     chart_label,
-    #                                     'By edit type',
-    #                                     color='3366CC')
-
+        context = self.update_context_data( context, cr )
+        context = self.update_context_charg_data( context, cr )
         log.debug( 'type(context), `{typ}`;\n context, ```````{val}```````'.format( typ=type(context), val=pprint.pformat(context) ) )
         return context
+
+
 
     def set_dates( self, year_str, month_num_str=None ):
         """ Sets start and end dates from url vars.
@@ -81,6 +96,47 @@ class CatalogingReportViewHelper(object):
         else:
             new_dt = date_obj.replace( month=date_obj.month+1, day=1 ) - datetime.timedelta( days=1 )
         return new_dt
+
+    def update_context_dates( self, start, end, month_for_context ):
+        """ Initializes and stores main date info.
+            Called by make_context() """
+        context = {}
+        context['STATIC_URL'] = project_settings.STATIC_URL
+        year = start.year
+        context['year'] = year
+        context['month'] = month_for_context
+        context['report_header'] = settings_app.CAT_STATS_REPORT_HEADER
+        context['start'] = start.strftime("%Y-%m-%d")
+        context['end'] = end.strftime("%Y-%m-%d")
+        return context
+
+    def update_context_data( self, context, cr ):
+        """ Updates context with CatalogingReport data.
+            Called by make_context() """
+        context['by_format'] = cr.by_format()
+        context['by_format_and_type'] = cr.by_format_and_type()
+        context['by_cataloger'] = cr.by_cataloger()
+        context['by_edit_type'] = cr.by_edit_type()
+        context['by_cataloger_and_format'] = cr.by_cataloger_and_format()
+        context['by_cataloger_and_edit_type'] = cr.by_cataloger_and_edit_type()
+        context['total_cataloged'] = cr.total_cataloged
+        context['report'] = cr
+        context['last_updated'] = cr.last_updated
+        return context
+
+    def update_context_charg_data( self, context, cr ):
+        """ Updates chart data.
+            Called by make_context() """
+        chart_label = ''
+        if context['month']:
+            chart_label += context['month']
+        # chart_label += ' ' + str(year)
+        chart_label += ' ' + str(context['year'])
+        context['by_format_chart_url'] = cr.gchart(
+            context['by_format'], chart_label, 'Cataloging by format')
+        context['by_edit_type_chart_url'] = cr.gchart(
+            context['by_edit_type'], chart_label, 'Cataloging by type', color='3366CC')
+        return context
 
     ## end class CatalogingReportViewHelper()
 
