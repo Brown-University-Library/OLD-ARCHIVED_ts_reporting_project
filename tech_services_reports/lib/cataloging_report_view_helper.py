@@ -20,6 +20,10 @@ class CatalogingReportViewHelper(object):
         context['year'] = start.year
         context['month'] = month_for_context
         context['report_header'] = settings_app.CAT_STATS_REPORT_HEADER
+        context['start'] = start.strftime("%Y-%m-%d")
+        context['end'] = end.strftime("%Y-%m-%d")
+
+
         log.debug( 'type(context), `{typ}`;\n context, ```````{val}```````'.format( typ=type(context), val=pprint.pformat(context) ) )
         return context
 
