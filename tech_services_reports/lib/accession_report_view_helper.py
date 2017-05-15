@@ -168,8 +168,10 @@ class AccessionReport(object):
         log.debug( 'grabbed summary_items' )
         #Combine edits and summary edits
         self.all_items = list(chain(self.items, self.summary_items))
+        log.debug( 'grabbed all_items' )
         #self.items = Accession.objects.all()
         self.total_items = len(self.items)
+        log.debug( 'grabbed total_items' )
         location_format_map = json.loads( urllib.request.urlopen(settings_app.LOCATION_FORMAT_URL).read() )
         log.debug( 'location_format_map prepared' )
         self.location_format_map = location_format_map['result']['items']
