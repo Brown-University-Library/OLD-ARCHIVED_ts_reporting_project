@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% load report_tags %}
+{% block extra_css %}
+	<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/themes/base/jquery-ui.css" type="text/css">
+{% endblock%}
+{% block javascripts%}
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.js"></script>
+	<script type="text/javascript" src="{{ settings_app.MEDIA_URL }}jquery.tablesorter.min.js"></script>
+	<script>
+	function download_report() {
+		var url = window.location.href.replace('#', '');
+		// strip off the leading '?'
+		searchString = url.substring(1);
+		var nvPairs = searchString.split("&");
+		if (nvPairs.length > 1) {
+			return window.location = url + '&format=csv';
+			//console.debug('params exists');
+		}
+		else {
+			return window.location = url + '?format=csv';
+			//console.debug('no params');
+		};
+	};
+	$(function() {
+		$( ".datepicker" ).datepicker();
+		$("#catbytype").tablesorter( {sortList: [[1,1]]} );
+	});
+
+
+	</script>
+{% endblock %}
+
+{% block content %}
+
+
+<h2 class="report-header"> {{ report_header }}</h2>
+
+<h3 class="date-range">	From {{ start }} to {{ end }}.
+<span class="report-download"><a href="#" onclick="javascript:download_report()">Download details.</a></span>
+<span class="last-updated">Last updated: {{ last_updated }}</span>
+</h3>
+
+{% comment %}
+<div id="date-widget">
+<form action="#" method="get" class="report-dates">
+<fieldset>
+    <legend>Change Dates:</legend>
+	<p>Start date: <input type="text" class="datepicker" name="start"></p>
+	<p>End date: <input type="text" class="datepicker" name="end"></p>
+	<input type="submit" value="Submit" class="submit"/>
+</fieldset>
+</form>
+</div>
+{% endcomment %}
+
+<div id="charts">
+{% if by_format_chart_url %}
+<img class="chart" src="{{ by_format_chart_url|safe }}"/>
+{% endif %}
+{% if by_edit_type_chart_url %}
+<img class="chart" src="{{ by_edit_type_chart_url|safe }}"/>
+{% endif %}
+</div>
+
+<div class="chart-wrapper">
+<h3 class="report-divider">By format</h3>
+{% summary_table by_format %}
+</div>
+
+<div class="chart-wrapper">
+<h3 class="report-divider">By cataloging edit type</h3>
+{% summary_table by_edit_type %}
+</div>
+
+<div class="chart-wrapper">
+<h3 class="report-divider">By format and type</h3>
+{% multi_summary_table by_format_and_type %}
+</div>
+
+
+<div class="chart-wrapper">
+<h3 class="report-divider">By cataloger</h3>
+{% summary_table by_cataloger %}
+</div>
+
+<div class="chart-wrapper">
+<h3 class="report-divider">By cataloger and edit type</h3>
+{% multi_summary_table by_cataloger_and_edit_type %}
+</div>
+
+<div class="chart-wrapper">
+<h3 class="report-divider">By cataloger and format</h3>
+{% multi_summary_table by_cataloger_and_format %}
+</div>
+
+{% endblock %}

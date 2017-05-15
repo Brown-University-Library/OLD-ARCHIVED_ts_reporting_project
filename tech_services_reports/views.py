@@ -122,10 +122,10 @@ def cataloging( request, year, month, start=None, end=None ):
     if format == 'csv':
         return cataloging_report_csv(request, context)
     else:
-        template = loader.get_template('cataloging.html')
-        response = HttpResponse(template.render(context))
-        return response
-
+        # template = loader.get_template('cataloging.html')
+        # response = HttpResponse(template.render(context))
+        # return response
+        return render(request, 'tech_services_reports_templates/cataloging.html', context)
 
 
 
