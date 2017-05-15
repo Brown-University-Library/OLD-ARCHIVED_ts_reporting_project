@@ -59,6 +59,76 @@ def accessions_report_v2( request, year2, month2 ):
     return resp
 
 
+def cataloging( request, year, month, start=None, end=None ):
+    from datetime import date, timedelta, datetime
+    from tech_services_reports.utility_code import CatalogingReport, last_day_of_month, last_harvest
+    from datetime import date
+    context = {}
+    year = int(year)
+    context['year'] = year
+    #Handle custom dates
+    if start and end:
+        context['month'] = None
+    #Do monthly/yearly reports
+    else:
+        if not month:
+            month = 1
+            start = date(year, month, 1)
+            #last day of the year
+            end = date(year, 12, 31)
+            context['month'] = None
+        else:
+            month = int(month)
+            start = date(year, month, 1)
+            #Get the end of the month dynamically.
+            end = last_day_of_month(start)
+            context['month'] = start.strftime('%B')
+
+    context['report_header'] = settings_app.CAT_STATS_REPORT_HEADER
+    context['settings_app'] = settings_app
+    format = request.GET.get('format', None)
+    params = request.GET
+    context['start'] = start.strftime("%Y-%m-%d")
+    context['end'] = end.strftime("%Y-%m-%d")
+
+    cr = CatalogingReport(start, end)
+    #context['by_type'] = cr.by_type()
+    context['by_format'] = cr.by_format()
+    context['by_format_and_type'] = cr.by_format_and_type()
+    context['by_cataloger'] = cr.by_cataloger()
+    context['by_edit_type'] = cr.by_edit_type()
+    context['by_cataloger_and_format'] = cr.by_cataloger_and_format()
+    context['by_cataloger_and_edit_type'] = cr.by_cataloger_and_edit_type()
+    context['total_cataloged'] = cr.total_cataloged
+    context['report'] = cr
+    context['last_updated'] = cr.last_updated
+
+    chart_label = ''
+    if context['month']:
+        chart_label += context['month']
+    chart_label += ' ' + str(year)
+
+    context['by_format_chart_url'] = cr.gchart(context['by_format'],
+                                     chart_label,
+                                     'Cataloging by format')
+    context['by_edit_type_chart_url'] = cr.gchart(context['by_edit_type'],
+                                     chart_label,
+                                     'Cataloging by type',
+                                     color='3366CC')
+#    context['by_cataloger_chart_url'] = cr.gchart(context['by_edit_type'],
+#                                     chart_label,
+#                                     'By edit type',
+#                                     color='3366CC')
+    if format == 'csv':
+        return cataloging_report_csv(request, context)
+    else:
+        template = loader.get_template('cataloging.html')
+        response = HttpResponse(template.render(context))
+        return response
+
+
+
+
 # def OLD_accessions_report(request, year, month=None, start=None, end=None):
 #     log.debug( 'starting old accessions_report' )
 #     log.debug( 'year, `{yr}`; month, `{mo}`; start, `{st}`; end, `{en}`'.format( yr=year, mo=month, st=start, en=end ) )
@@ -135,8 +205,4 @@ def accessions_report_v2( request, year2, month2 ):
 #         # return render_to_response('accessions.html', context)
 #         return render(request, 'tech_services_reports_templates/accessions.html', context)
 
-
-def cataloging( request, year, month ):
-    msg = '<p>will return cataloging info for `{yr}` and `{mo}`</p>'.format( yr=year, mo=month )
-    return HttpResponse( msg )
 
