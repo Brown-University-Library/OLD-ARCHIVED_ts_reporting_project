@@ -490,7 +490,8 @@ class CatalogingReport(object):
             v = self._value(ed)
             summary[cataloger] += v
             total += v
-        summary = sorted(summary.iteritems(), key=itemgetter(1), reverse=True)
+        # summary = sorted(summary.iteritems(), key=itemgetter(1), reverse=True)
+        summary = sorted(summary.items(), key=itemgetter(1), reverse=True)
         header = ['Cataloger', 'Count']
         report = {'header': header,
                 'data': summary,
@@ -510,7 +511,8 @@ class CatalogingReport(object):
                 ctype = ed.source
             summary[ctype.title()] += v
             total += v
-        summary = sorted(summary.iteritems(), key=itemgetter(1), reverse=True)
+        # summary = sorted(summary.iteritems(), key=itemgetter(1), reverse=True)
+        summary = sorted(summary.items(), key=itemgetter(1), reverse=True)
         header = ['Edit type', 'Count']
         report = {'header': header,
                 'data': summary,
