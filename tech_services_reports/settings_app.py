@@ -38,3 +38,5 @@ AccTotal = namedtuple('acc_total',['param',
                                  verbose=False)
 
 ACC_REPORT_HEADER = 'Accession Statistics -- Brown University Library'
+
+CAT_STATS_REPORT_HEADER = 'Cataloging Statistics -- Brown University Library'
