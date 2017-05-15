@@ -23,7 +23,7 @@ ITEM_ACC_NOTE = 'e'  # mappings for MARC record to database; these are subfields
 
 
 #####################################################
-### for compiling total tables                    ###
+### for Accession Report                          ###
 #####################################################
 
 # from helpers import namedtuple
@@ -39,4 +39,28 @@ AccTotal = namedtuple('acc_total',['param',
 
 ACC_REPORT_HEADER = 'Accession Statistics -- Brown University Library'
 
+
+#####################################################
+### for Cataloging Report                         ###
+#####################################################
+
 CAT_STATS_REPORT_HEADER = 'Cataloging Statistics -- Brown University Library'
+
+MAT_TYPE_MAP = {
+    'a': 'Book',
+    'c': 'Score',
+    'k': '2D-Graphic',
+    'r': '3D-Object',
+    'g': 'Audovisual',
+    'm': 'Computer File',
+    'o': 'Kit',
+    't': 'Manuscript',
+    'e': 'Map',
+    'f': 'Map, MSS.',
+    'p': 'Mixed Material',
+    'j': 'Music Record',
+    'c': 'Score',
+    'd': 'Score, MSS.',
+    's': 'Serial/Journal',
+    'i': 'Spoken Record'
+    }
