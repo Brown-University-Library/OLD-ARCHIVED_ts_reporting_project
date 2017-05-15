@@ -529,7 +529,8 @@ class CatalogingReport(object):
             mat_string = self._material_string(bib.mat_type)
             summary[mat_string] += v
             total += v
-        summary = sorted(summary.iteritems(), key=itemgetter(1), reverse=True)
+        # summary = sorted(summary.iteritems(), key=itemgetter(1), reverse=True)
+        summary = sorted(summary.items(), key=itemgetter(1), reverse=True)
         header = ['Format', 'Count']
         report = {'header': header,
                 'data': summary,
