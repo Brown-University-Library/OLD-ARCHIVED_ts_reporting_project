@@ -120,6 +120,7 @@ def cataloging( request, year, month, start=None, end=None ):
 #                                     chart_label,
 #                                     'By edit type',
 #                                     color='3366CC')
+    log.debug( 'context type, `{typ}`; context, ```````{val}```````'.format( typ=type(context), val=pprint.pformat(context) ) )
     if format == 'csv':
         return cataloging_report_csv(request, context)
     else:
