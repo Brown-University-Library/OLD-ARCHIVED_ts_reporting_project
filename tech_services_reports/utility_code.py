@@ -380,7 +380,7 @@ def jqueryUIDates(datestr):
 
 class CatalogingReport(object):
     def __init__(self, start, end, cataloger=None):
-        from models import CatEdit, SummaryCatEdit
+        from tech_services_reports.models import CatEdit, SummaryCatEdit
         from itertools import chain
         from django.db import connection
         self.connection = connection
