@@ -25,6 +25,14 @@ class CatalogingReportViewHelper(object):
         log.debug( 'type(context), `{typ}`;\n context, ```````{val}```````'.format( typ=type(context), val=pprint.pformat(context) ) )
         return context
 
+    def make_context_v2( self, year_str, month_num_str, scheme, host ):
+        """ TODO: prepare a json-serializable context.
+            Manages context creation.
+            Called by views.cataloging_report_v2() """
+        context = {}
+        log.debug( 'type(context), `{typ}`;\n context, ```````{val}```````'.format( typ=type(context), val=pprint.pformat(context) ) )
+        return context
+
     def set_dates( self, year_str, month_num_str=None ):
         """ Sets start and end dates from url vars.
             Called by make_context() """
