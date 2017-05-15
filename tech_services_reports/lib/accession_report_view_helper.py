@@ -168,15 +168,10 @@ class AccessionReport(object):
         self.summary_items = SummaryAccession.objects.filter(date__gte=start, date__lte=end)
         #Combine edits and summary edits
         self.all_items = list(chain(self.items, self.summary_items))
-        #self.items = Accession.objects.all()
         self.total_items = len(self.items)
-        log.debug( 'grabbed total_items' )
-
         # location_format_map = json.loads( urllib.request.urlopen(settings_app.LOCATION_FORMAT_URL).read() )
         r = requests.get( settings_app.LOCATION_FORMAT_URL )
         location_format_map = r.json()
-
-        log.debug( 'location_format_map prepared' )
         self.location_format_map = location_format_map['result']['items']
         self.total_volumes = self.total_volumes(self.items)
         self.total_titles = self.total_titles(self.items)
