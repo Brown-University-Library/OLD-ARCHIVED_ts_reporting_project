@@ -424,7 +424,7 @@ class CatalogingReport(object):
         """Check if this is a summary object or an individual object
         and set a value to increment."""
         v = 1
-        if dbobj._meta.module_name == 'summarycatedit':
+        if dbobj._meta.model_name == 'summarycatedit':
             v = dbobj.number
         return v
 
