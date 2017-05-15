@@ -3,6 +3,7 @@
 import datetime, json, logging, pprint
 
 from django.conf import settings as project_settings
+from tech_services_reports import settings_app
 
 
 log = logging.getLogger("webapp")
@@ -18,6 +19,7 @@ class CatalogingReportViewHelper(object):
         context['STATIC_URL'] = project_settings.STATIC_URL
         context['year'] = start.year
         context['month'] = month_for_context
+        context['report_header'] = settings_app.CAT_STATS_REPORT_HEADER
         log.debug( 'type(context), `{typ}`;\n context, ```````{val}```````'.format( typ=type(context), val=pprint.pformat(context) ) )
         return context
 
