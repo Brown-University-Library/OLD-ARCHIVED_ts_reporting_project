@@ -21,6 +21,8 @@ OCLC_CODE = 'RBN'  # for determining cataloging type
 ITEM_ACC_NOTE = 'e'  # mappings for MARC record to database; these are subfields; value changed of 2011-March-30
 # ITEM_ACC_NOTE = 'n'  # original value
 
+CACHED_ACCESSION_QUERY_SECONDS_TIMEOUT = int( os.environ['TS_RPRT__CACHED_ACCESSION_QUERY_SECONDS_TIMEOUT'] )  # short for production; long for development
+
 
 #####################################################
 ### for Accession Report                          ###

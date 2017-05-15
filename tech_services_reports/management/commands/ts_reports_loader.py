@@ -86,10 +86,11 @@ class Command(BaseCommand):
         if numbers is None:
             from tech_services_reports.models import Accession
             numbers = set([i.number for i in Accession.objects.all()])
-            cache.set( 'counted_items__numbers', numbers, 60*60*24 )  # db grab cached for a day
+            cache.set( 'counted_items__numbers', numbers, settings_app.CACHED_ACCESSION_QUERY_SECONDS_TIMEOUT )  # cache for development convenience
         log.info( 'that took, `{}`'.format( str(datetime.datetime.now()-timestamp) ) )
         log.debug( 'first three numbers, ```{three}```; number-count, `{count}`'.format(three=list(numbers)[0:2], count=len(numbers)) )
         return numbers
+
 
     def last_harvest(self):
         from tech_services_reports.models import Harvest
@@ -112,9 +113,11 @@ class Command(BaseCommand):
     #     d = this_record['907']['c']
     #     return convert_date(d)
 
+
     def get_bib_created( self, this_record ):
         dt = marc_parser.get_bib_created( this_record )
         return dt
+
 
     def summary(self, marc_filepath):
         """ Harvests data points from exported MARC fields.
@@ -294,8 +297,3 @@ class Command(BaseCommand):
 #            print>>sys.stderr, e
 #            e.type = 'Batch'
 #            e.save()
-
-
-
-
-
