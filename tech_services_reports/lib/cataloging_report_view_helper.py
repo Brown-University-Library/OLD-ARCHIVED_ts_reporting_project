@@ -12,52 +12,7 @@ log = logging.getLogger("webapp")
 
 
 class CatalogingReportViewHelper(object):
-
-    # def make_context( self, year_str, month_num_str, scheme, host ):
-    #     """ Manages context creation.
-    #         Called by views.cataloging_report_v2() """
-    #     ( start, end, month_for_context ) = self.set_dates( year_str, month_num_str )
-    #     context = {}
-    #     context['STATIC_URL'] = project_settings.STATIC_URL
-    #     year = start.year
-    #     context['year'] = year
-    #     context['month'] = month_for_context
-    #     context['report_header'] = settings_app.CAT_STATS_REPORT_HEADER
-    #     context['start'] = start.strftime("%Y-%m-%d")
-    #     context['end'] = end.strftime("%Y-%m-%d")
-    #     cr = CatalogingReport(start, end)
-
-    #     context['by_format'] = cr.by_format()
-    #     context['by_format_and_type'] = cr.by_format_and_type()
-    #     context['by_cataloger'] = cr.by_cataloger()
-    #     context['by_edit_type'] = cr.by_edit_type()
-    #     context['by_cataloger_and_format'] = cr.by_cataloger_and_format()
-    #     context['by_cataloger_and_edit_type'] = cr.by_cataloger_and_edit_type()
-    #     context['total_cataloged'] = cr.total_cataloged
-    #     context['report'] = cr
-    #     context['last_updated'] = cr.last_updated
-
-    #     chart_label = ''
-    #     if context['month']:
-    #         chart_label += context['month']
-    #     chart_label += ' ' + str(year)
-
-    #     context['by_format_chart_url'] = cr.gchart(context['by_format'],
-    #                                      chart_label,
-    #                                      'Cataloging by format')
-    #     context['by_edit_type_chart_url'] = cr.gchart(context['by_edit_type'],
-    #                                      chart_label,
-    #                                      'Cataloging by type',
-    #                                      color='3366CC')
-    # #    context['by_cataloger_chart_url'] = cr.gchart(context['by_edit_type'],
-    # #                                     chart_label,
-    # #                                     'By edit type',
-    # #                                     color='3366CC')
-
-    #     log.debug( 'type(context), `{typ}`;\n context, ```````{val}```````'.format( typ=type(context), val=pprint.pformat(context) ) )
-    #     return context
-
-
+    """ Prepares context for cataloging report view. """
 
     def make_context( self, year_str, month_num_str, scheme, host ):
         """ Manages context creation.
@@ -69,8 +24,6 @@ class CatalogingReportViewHelper(object):
         context = self.update_context_charg_data( context, cr )
         log.debug( 'type(context), `{typ}`;\n context, ```````{val}```````'.format( typ=type(context), val=pprint.pformat(context) ) )
         return context
-
-
 
     def set_dates( self, year_str, month_num_str=None ):
         """ Sets start and end dates from url vars.
@@ -142,6 +95,8 @@ class CatalogingReportViewHelper(object):
 
 
 class CatalogingReport(object):
+    """ Prepares cataloging data. """
+
     def __init__(self, start, end, cataloger=None):
         from tech_services_reports.models import CatEdit, SummaryCatEdit
         from itertools import chain
@@ -193,13 +148,6 @@ class CatalogingReport(object):
 
     def distinct_cat_types(self):
         return settings_app.DISTINCT_CAT_TYPES
-#        raw = [t.lower() for t in self._distinct('type')]
-#        spot = raw.index('catalog')
-#        raw.pop(spot)
-#        #Add from source field
-#        source = self._distinct('source')
-#        all = raw + source
-#        return all
 
     def _summary_csv(self, report):
         """Create list of rows that will be handled by a csv writer."""
@@ -454,6 +402,5 @@ class CatalogingReport(object):
                       }
         #Remove line breaks and spaces from url.
         return chart_url.replace('\n', '').replace(' ', '')
-
 
     ## end class CatalogingReport()
