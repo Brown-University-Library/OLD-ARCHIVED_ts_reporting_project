@@ -165,6 +165,7 @@ class AccessionReport(object):
         self.items = Accession.objects.filter(created__gte=start, created__lte=end)
         log.debug( 'len(self.items), `{}`'.format( len(self.items) ) )
         self.summary_items = SummaryAccession.objects.filter(date__gte=start, date__lte=end)
+        log.debug( 'grabbed summary_items' )
         #Combine edits and summary edits
         self.all_items = list(chain(self.items, self.summary_items))
         #self.items = Accession.objects.all()
