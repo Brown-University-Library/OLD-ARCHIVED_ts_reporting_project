@@ -13,15 +13,18 @@ class CatalogingReportViewHelper(object):
     def make_context( self, year_str, month_num_str, scheme, host ):
         """ Manages context creation.
             Called by views.cataloging_report_v2() """
-        ( start, end ) = self.set_dates( year_str, month_num_str )
+        ( start, end, month_for_context ) = self.set_dates( year_str, month_num_str )
         context = {}
         context['STATIC_URL'] = project_settings.STATIC_URL
+        context['year'] = start.year
+        context['month'] = month_for_context
         log.debug( 'type(context), `{typ}`;\n context, ```````{val}```````'.format( typ=type(context), val=pprint.pformat(context) ) )
         return context
 
     def set_dates( self, year_str, month_num_str=None ):
         """ Sets start and end dates from url vars.
             Called by make_context() """
+        month_for_context = None
         if not month_num_str:
             ( year_num, month_num ) = ( int(year_str), 1 )
             start = datetime.date( year_num, month_num, 1 )  # first day of year
@@ -30,7 +33,8 @@ class CatalogingReportViewHelper(object):
             ( year_num, month_num ) = ( int(year_str), int(month_num_str) )
             start = datetime.date( year_num, month_num, 1 )
             end = self.last_day_of_month( start )
-        return ( start, end )
+            month_for_context = start.strftime('%B')
+        return ( start, end, month_for_context )
 
     def last_day_of_month( self, date_obj ):
         """ Returns the last day of the month for any given Python date object.
