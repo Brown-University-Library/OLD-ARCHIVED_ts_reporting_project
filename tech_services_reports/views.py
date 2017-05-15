@@ -64,6 +64,7 @@ def cataloging( request, year, month, start=None, end=None ):
     from tech_services_reports.utility_code import CatalogingReport, last_day_of_month, last_harvest
     from datetime import date
     context = {}
+    context['STATIC_URL'] = project_settings.STATIC_URL
     year = int(year)
     context['year'] = year
     #Handle custom dates

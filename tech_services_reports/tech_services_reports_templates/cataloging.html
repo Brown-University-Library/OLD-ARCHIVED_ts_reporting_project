@@ -6,7 +6,8 @@
 {% block javascripts%}
 	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
 	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.js"></script>
-	<script type="text/javascript" src="{{ settings_app.MEDIA_URL }}jquery.tablesorter.min.js"></script>
+	<!-- <script type="text/javascript" src="{{ settings_app.MEDIA_URL }}jquery.tablesorter.min.js"></script>  -->
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.tablesorter.js"></script>
 	<script>
 	function download_report() {
 		var url = window.location.href.replace('#', '');
