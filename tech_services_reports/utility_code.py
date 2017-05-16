@@ -89,6 +89,7 @@ def pull_shib_info(request, data):
     #         pass
     # except ImportError:
     #     pass
+    wlog.debug( 'no test-user situation; data, ```{}```'.format(pprint.pformat(data)) )
     username = data.get('Shibboleth-eppn', None)
     netid = data.get('Shibboleth-brownNetId', None)
     #Quite now because user is not authenticated for some reason.
