@@ -57,12 +57,14 @@ bib_level_codes = {
 def pull_shib_info(request, data):
     """Pull information for the Shib request and get/create and login
     Django User object."""
+    wlog.debug( 'starting pull_shib_info()' )
     from django.contrib.auth.models import User
     from django.contrib.auth import login, get_backends
-    import settings_app
+    # import settings_app
+
+    wlog.debug( 'request.get_host(), ```{}```'.format( request.get_host() ) )
     try:
-        from settings_app import ENV
-        if ENV == 'testing':
+        if request.get_host() == '127.0.0.1':
             testing = True
             u = User.objects.get(username=settings_app.TEST_USER)
             backend = get_backends()[0]
@@ -73,6 +75,20 @@ def pull_shib_info(request, data):
             pass
     except ImportError:
         pass
+
+    # try:
+    #     from settings_app import ENV
+    #     if ENV == 'testing':
+    #         testing = True
+    #         u = User.objects.get(username=settings_app.TEST_USER)
+    #         backend = get_backends()[0]
+    #         u.backend = "%s.%s" % (backend.__module__, backend.__class__.__name__)
+    #         login(request, u)
+    #         return u
+    #     else:
+    #         pass
+    # except ImportError:
+    #     pass
     username = data.get('Shibboleth-eppn', None)
     netid = data.get('Shibboleth-brownNetId', None)
     #Quite now because user is not authenticated for some reason.

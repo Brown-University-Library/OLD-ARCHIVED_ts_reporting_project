@@ -103,3 +103,10 @@ CATALOGERS = {
     'Coutts': 'Coutts',
     'BSLW shelfready': 'Backstage Library Works',
     }
+
+
+#####################################################
+### for Admin edits                               ###
+#####################################################
+
+TEST_USER = os.environ['TS_RPRT__TEST_USER']
