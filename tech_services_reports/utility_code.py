@@ -106,6 +106,7 @@ def pull_shib_info(request, data):
         u.email = data.get('Shibboleth-mail', None)
         #Each login check super or staff status to allow for changes
         #to the setting fail.
+        log.debug( 'so far so good' )
         if netid in settings_app.SUPER_USERS:
             u.is_superuser = True
         if netid in settings_app.STAFF_USERS:

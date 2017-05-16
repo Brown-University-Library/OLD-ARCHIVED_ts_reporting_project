@@ -2,7 +2,7 @@
 
 from __future__ import unicode_literals
 
-import os
+import json, os
 from collections import namedtuple
 
 
@@ -110,3 +110,5 @@ CATALOGERS = {
 #####################################################
 
 TEST_USER = os.environ['TS_RPRT__TEST_USER']
+SUPER_USERS = json.loads( os.environ['TS_RPRT__SUPER_USERS_JSON'] )
+STAFF_USERS = json.loads( os.environ['TS_RPRT__STAFF_USERS_JSON'] )
