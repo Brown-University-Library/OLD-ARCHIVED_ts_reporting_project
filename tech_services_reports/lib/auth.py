@@ -3,7 +3,7 @@
 import copy, json, logging, pprint
 
 from django.contrib.auth import authenticate, get_backends, login
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from tech_services_reports import settings_app
 
 
@@ -69,15 +69,27 @@ class LoginDecoratorHelper(object):
         """ Grabs user object, updates and saves it.
             Called by manage_usr_obj() """
         usr, created = User.objects.get_or_create( username=username.replace('@brown.edu', '').strip() )
-        if netid in settings_app.SUPER_USERS: usr.is_superuser = True
-        if netid in settings_app.STAFF_USERS: usr.is_staff = True
+        if netid in settings_app.SUPER_USERS:
+            usr.is_superuser = True
+        if netid in settings_app.STAFF_USERS:
+            usr.is_staff = True
         if created:
-            usr.first_name = meta_dct.get( 'Shibboleth-givenName', '' )
-            usr.last_name = meta_dct.get( 'Shibboleth-sn', '' )
-            usr.email = meta_dct.get( 'Shibboleth-mail', None )
-            usr.set_unusable_password()
+            usr = self.update_created_user( usr, meta_dct )
         usr.save()
-        log.debug( 'user updated and saved.' )
+        log.debug( 'user updated and saved' )
+        return usr
+
+    def update_created_user( self, usr, meta_dct ):
+        """ Adds user to the default group.
+            Called by update_userobj() """
+        usr.first_name = meta_dct.get( 'Shibboleth-givenName', '' )
+        usr.last_name = meta_dct.get( 'Shibboleth-sn', '' )
+        usr.email = meta_dct.get( 'Shibboleth-mail', None )
+        usr.set_unusable_password()
+        usr.save()
+        grp = Group.objects.get( name='tech_services_reports' )
+        grp.user_set.add( usr )
+        log.debug( 'created user updated' )
         return usr
 
     ## end class LoginDecoratorHelper()
