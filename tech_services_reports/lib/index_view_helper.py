@@ -21,10 +21,8 @@ class DateMaker(object):
             'acc_months': self.get_acc_months( scheme, host ),
             'acc_years': self.get_acc_years( scheme, host ),
             'cat_months': self.get_cat_months( scheme, host ),
-            'cat_years': self.get_cat_years( scheme, host ),
-            'admin_edit_harvested_accession_data_url': reverse('admin:tech_services_reports_accession_changelist'),
-            'admin_edit_harvested_cat_data_url': reverse('admin:tech_services_reports_catedit_changelist')
-            }
+            'cat_years': self.get_cat_years( scheme, host ) }
+        context = self.add_admin_urls( context )
         log.debug( 'context,```{}```'.format( pprint.pformat(context) ) )
         return context
 
@@ -84,5 +82,14 @@ class DateMaker(object):
             cat_years_lst.append( {'year': date_obj.year, 'link': link} )
         log.debug( 'cat_years_lst, ```{}```'.format(pprint.pformat(cat_years_lst)) )
         return cat_years_lst
+
+    def add_admin_urls( self, context ):
+        """ Adds admin edit urls to context.
+            Called by make_context() """
+        context['admin_edit_summary_accession_data_url'] = reverse('admin:tech_services_reports_summaryaccession_changelist')
+        context['admin_edit_summary_cat_data_url'] = reverse('admin:tech_services_reports_summarycatedit_changelist')
+        context['admin_edit_harvested_accession_data_url'] = reverse('admin:tech_services_reports_accession_changelist')
+        context['admin_edit_harvested_cat_data_url'] = reverse('admin:tech_services_reports_catedit_changelist')
+        return context
 
     ## end class DateMaker()
