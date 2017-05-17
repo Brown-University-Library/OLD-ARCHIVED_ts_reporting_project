@@ -21,7 +21,10 @@ class DateMaker(object):
             'acc_months': self.get_acc_months( scheme, host ),
             'acc_years': self.get_acc_years( scheme, host ),
             'cat_months': self.get_cat_months( scheme, host ),
-            'cat_years': self.get_cat_years( scheme, host ) }
+            'cat_years': self.get_cat_years( scheme, host ),
+            'admin_edit_harvested_accession_data_url': reverse('admin:tech_services_reports_accession_changelist'),
+            'admin_edit_harvested_cat_data_url': reverse('admin:tech_services_reports_catedit_changelist')
+            }
         log.debug( 'context,```{}```'.format( pprint.pformat(context) ) )
         return context
 
