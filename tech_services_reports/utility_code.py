@@ -54,74 +54,74 @@ bib_level_codes = {
       'm': 'monograph',
 }
 
-def pull_shib_info(request, data):
-    """Pull information for the Shib request and get/create and login
-    Django User object."""
-    wlog.debug( 'starting pull_shib_info()' )
-    from django.contrib.auth.models import User
-    from django.contrib.auth import login, get_backends
-    # import settings_app
+# def pull_shib_info(request, data):
+#     """Pull information for the Shib request and get/create and login
+#     Django User object."""
+#     wlog.debug( 'starting pull_shib_info()' )
+#     from django.contrib.auth.models import User
+#     from django.contrib.auth import login, get_backends
+#     # import settings_app
 
-    wlog.debug( 'request.get_host(), ```{}```'.format( request.get_host() ) )
-    try:
-        if request.get_host() == '127.0.0.1':
-            testing = True
-            u = User.objects.get(username=settings_app.TEST_USER)
-            backend = get_backends()[0]
-            u.backend = "%s.%s" % (backend.__module__, backend.__class__.__name__)
-            login(request, u)
-            return u
-        else:
-            pass
-    except ImportError:
-        pass
+#     wlog.debug( 'request.get_host(), ```{}```'.format( request.get_host() ) )
+#     try:
+#         if request.get_host() == '127.0.0.1':
+#             testing = True
+#             u = User.objects.get(username=settings_app.TEST_USER)
+#             backend = get_backends()[0]
+#             u.backend = "%s.%s" % (backend.__module__, backend.__class__.__name__)
+#             login(request, u)
+#             return u
+#         else:
+#             pass
+#     except ImportError:
+#         pass
 
-    # try:
-    #     from settings_app import ENV
-    #     if ENV == 'testing':
-    #         testing = True
-    #         u = User.objects.get(username=settings_app.TEST_USER)
-    #         backend = get_backends()[0]
-    #         u.backend = "%s.%s" % (backend.__module__, backend.__class__.__name__)
-    #         login(request, u)
-    #         return u
-    #     else:
-    #         pass
-    # except ImportError:
-    #     pass
-    wlog.debug( 'no test-user situation; data, ```{}```'.format(pprint.pformat(data)) )
-    username = data.get('Shibboleth-eppn', None)
-    netid = data.get('Shibboleth-brownNetId', None)
-    wlog.debug( 'username, `{usr}`; netid, `{net}`'.format( usr=username, net=netid ) )
-    #Quite now because user is not authenticated for some reason.
-    if not username or not netid:
-        return
-    else:
-        #strip @brown.edu from username.
-        username = username.replace('@brown.edu', '').strip()
-        u, created = User.objects.get_or_create(username=username)
-        wlog.debug( 'u, ```{}```'.format(u) )
-        wlog.debug( 'created, ```{}```'.format(created) )
-        #Fill in user details after first login.
-        #if created:
-        u.first_name = data.get('Shibboleth-givenName', '')
-        u.last_name = data.get('Shibboleth-sn', '')
-        u.email = data.get('Shibboleth-mail', None)
-        #Each login check super or staff status to allow for changes
-        #to the setting fail.
-        log.debug( 'so far so good' )
-        if netid in settings_app.SUPER_USERS:
-            u.is_superuser = True
-        if netid in settings_app.STAFF_USERS:
-            u.is_staff = True
-        #Brute force login, see - http://djangosnippets.org/snippets/1552/
-        backend = get_backends()[0]
-        u.backend = "%s.%s" % (backend.__module__, backend.__class__.__name__)
-        login(request, u)
-        #Put garbage in the passward
-        u.set_unusable_password()
-        u.save()
-        return u
+#     # try:
+#     #     from settings_app import ENV
+#     #     if ENV == 'testing':
+#     #         testing = True
+#     #         u = User.objects.get(username=settings_app.TEST_USER)
+#     #         backend = get_backends()[0]
+#     #         u.backend = "%s.%s" % (backend.__module__, backend.__class__.__name__)
+#     #         login(request, u)
+#     #         return u
+#     #     else:
+#     #         pass
+#     # except ImportError:
+#     #     pass
+#     wlog.debug( 'no test-user situation; data, ```{}```'.format(pprint.pformat(data)) )
+#     username = data.get('Shibboleth-eppn', None)
+#     netid = data.get('Shibboleth-brownNetId', None)
+#     wlog.debug( 'username, `{usr}`; netid, `{net}`'.format( usr=username, net=netid ) )
+#     #Quite now because user is not authenticated for some reason.
+#     if not username or not netid:
+#         return
+#     else:
+#         #strip @brown.edu from username.
+#         username = username.replace('@brown.edu', '').strip()
+#         u, created = User.objects.get_or_create(username=username)
+#         wlog.debug( 'u, ```{}```'.format(u) )
+#         wlog.debug( 'created, ```{}```'.format(created) )
+#         #Fill in user details after first login.
+#         #if created:
+#         u.first_name = data.get('Shibboleth-givenName', '')
+#         u.last_name = data.get('Shibboleth-sn', '')
+#         u.email = data.get('Shibboleth-mail', None)
+#         #Each login check super or staff status to allow for changes
+#         #to the setting fail.
+#         log.debug( 'so far so good' )
+#         if netid in settings_app.SUPER_USERS:
+#             u.is_superuser = True
+#         if netid in settings_app.STAFF_USERS:
+#             u.is_staff = True
+#         #Brute force login, see - http://djangosnippets.org/snippets/1552/
+#         backend = get_backends()[0]
+#         u.backend = "%s.%s" % (backend.__module__, backend.__class__.__name__)
+#         login(request, u)
+#         #Put garbage in the passward
+#         u.set_unusable_password()
+#         u.save()
+#         return u
 
 
 def convert_date(datestr):
