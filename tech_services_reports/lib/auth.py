@@ -46,7 +46,7 @@ class LoginDecoratorHelper(object):
         ( username, netid ) = self.set_basics( request.get_host(), meta_dct )
         if not username or not netid:
             return
-        usr = self.update_userobj( username, netid )
+        usr = self.update_userobj( username, netid, meta_dct )
         backend = get_backends()[0]
         usr.backend = '{module}.{classname}'.format( module=backend.__module__, classname=backend.__class__.__name__ )
         login( request, usr )  #Brute force login, see - http://djangosnippets.org/snippets/1552/
@@ -65,16 +65,16 @@ class LoginDecoratorHelper(object):
         log.debug( 'username, `{usr}`; netid, `{net}`'.format( usr=username, net=netid ) )
         return ( username, netid )
 
-    def update_userobj( self, username, netid ):
+    def update_userobj( self, username, netid, meta_dct ):
         """ Grabs user object, updates and saves it.
             Called by manage_usr_obj() """
         usr, created = User.objects.get_or_create( username=username.replace('@brown.edu', '').strip() )
         if netid in settings_app.SUPER_USERS: usr.is_superuser = True
         if netid in settings_app.STAFF_USERS: usr.is_staff = True
         if created:
-            usr.first_name = data.get('Shibboleth-givenName', '')
-            usr.last_name = data.get('Shibboleth-sn', '')
-            usr.email = data.get('Shibboleth-mail', None)
+            usr.first_name = meta_dct.get( 'Shibboleth-givenName', '' )
+            usr.last_name = meta_dct.get( 'Shibboleth-sn', '' )
+            usr.email = meta_dct.get( 'Shibboleth-mail', None )
             usr.set_unusable_password()
         usr.save()
         log.debug( 'user updated and saved.' )
