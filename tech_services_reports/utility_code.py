@@ -92,6 +92,7 @@ def pull_shib_info(request, data):
     wlog.debug( 'no test-user situation; data, ```{}```'.format(pprint.pformat(data)) )
     username = data.get('Shibboleth-eppn', None)
     netid = data.get('Shibboleth-brownNetId', None)
+    wlog.debug( 'username, `{usr}`; netid, `{net}`'.format( usr=username, net=netid ) )
     #Quite now because user is not authenticated for some reason.
     if not username or not netid:
         return
@@ -99,6 +100,8 @@ def pull_shib_info(request, data):
         #strip @brown.edu from username.
         username = username.replace('@brown.edu', '').strip()
         u, created = User.objects.get_or_create(username=username)
+        wlog.debug( 'u, ```{}```'.format(u) )
+        wlog.debug( 'created, ```{}```'.format(created) )
         #Fill in user details after first login.
         #if created:
         u.first_name = data.get('Shibboleth-givenName', '')
