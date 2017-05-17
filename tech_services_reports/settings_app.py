@@ -109,6 +109,8 @@ CATALOGERS = {
 ### for Admin edits                               ###
 #####################################################
 
-TEST_USER = os.environ['TS_RPRT__TEST_USER']
+TEST_USERNAME = os.environ['TS_RPRT__TEST_USERNAME']
+TEST_NETID = os.environ['TS_RPRT__TEST_NETID']
+
 SUPER_USERS = json.loads( os.environ['TS_RPRT__SUPER_USERS_JSON'] )
 STAFF_USERS = json.loads( os.environ['TS_RPRT__STAFF_USERS_JSON'] )
