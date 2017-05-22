@@ -40,6 +40,7 @@ def index( request ):
     return resp
 
 
+@bul_login
 def accessions_report( request, year, month ):
     log.debug( 'starting accessions_report()' )
     context = accssn_rprt_hlpr.make_context( year, month, request.scheme, request.get_host() )
@@ -62,7 +63,7 @@ def accessions_report_v2( request, year2, month2 ):
         resp = render( request, u'tech_services_reports_templates/accessions_2.html', context )
     return resp
 
-
+@bul_login
 def cataloging_report( request, year, month ):
     log.debug( 'starting cataloging_report_v2' )
     context = ctlgng_rprt_hlpr.make_context( year, month, request.scheme, request.get_host() )
