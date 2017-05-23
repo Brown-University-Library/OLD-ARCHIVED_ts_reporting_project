@@ -75,16 +75,30 @@ def accessions_report_v2( request, year2, month2 ):
         resp = render( request, u'tech_services_reports_templates/accessions_2.html', context )
     return resp
 
+
 @bul_login
 def cataloging_report( request, year, month ):
-    log.debug( 'starting cataloging_report_v2' )
-    context = ctlgng_rprt_hlpr.make_context( year, month, request.scheme, request.get_host() )
+    log.debug( 'starting cataloging_report' )
+    ( start, end, report_date_header ) = ctlgng_rprt_hlpr.set_dates( year, month )
+    context = ctlgng_rprt_hlpr.make_context( start, end, report_date_header, request.scheme, request.get_host() )
     if request.GET.get( 'format', None ) == 'json':
         jsn = json.dumps( context, sort_keys=True, indent=2 )
         resp = HttpResponse( jsn, content_type=u'application/javascript; charset=utf-8' )
     else:
         resp = render( request, u'tech_services_reports_templates/cataloging.html', context )
     return resp
+
+
+# @bul_login
+# def cataloging_report( request, year, month ):
+#     log.debug( 'starting cataloging_report' )
+#     context = ctlgng_rprt_hlpr.make_context( year, month, request.scheme, request.get_host() )
+#     if request.GET.get( 'format', None ) == 'json':
+#         jsn = json.dumps( context, sort_keys=True, indent=2 )
+#         resp = HttpResponse( jsn, content_type=u'application/javascript; charset=utf-8' )
+#     else:
+#         resp = render( request, u'tech_services_reports_templates/cataloging.html', context )
+#     return resp
 
 
 def cataloging_report_v2( request, year, month ):
