@@ -40,6 +40,18 @@ def index( request ):
     return resp
 
 
+
+
+def custom_report( request ):
+    log.debug( 'starting custom-report' )
+    start = request.GET.get( 'start', None )
+    end = request.GET.get( 'end', None )
+    report_type = request.GET.get( 'report-type', None )
+    return HttpResponse( 'custom-report coming' )
+
+
+
+
 @bul_login
 def accessions_report( request, year, month ):
     log.debug( 'starting accessions_report()' )

@@ -27,6 +27,8 @@ urlpatterns = [
 
     url( r'^stats/$',  ts_views.index, name='index_url' ),
 
+    url( r'^custom_report/$',  ts_views.custom_report, name='custom_report_url' ),
+
     url( r'^$',  RedirectView.as_view(pattern_name='index_url') ),
 
     ]
