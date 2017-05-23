@@ -41,7 +41,8 @@ class AccessionReportViewHelper(object):
         return context
 
     def make_context_2( self, year_str, month_num_str, scheme, host ):
-        """ Manages context creation.
+        """ TODO: prepare a json-serializable context.
+            Manages context creation.
             Called by views.accessions_report_v2() """
         ( start, end, report_date_header ) = self.set_dates( year_str, month_num_str )
         context = self.update_context_dates( self.initialize_context(scheme, host), start, end, report_date_header )
