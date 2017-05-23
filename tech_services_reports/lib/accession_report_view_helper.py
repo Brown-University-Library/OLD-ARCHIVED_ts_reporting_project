@@ -24,10 +24,32 @@ log = logging.getLogger("webapp")
 
 class AccessionReportViewHelper(object):
 
-    def make_context( self, year_str, month_num_str, scheme, host ):
+    def set_dates( self, year_str, month_num_str=None ):
+        """ Sets start and end dates from url vars.
+            Called by views.accessions_report() """
+        if not month_num_str:
+            ( year_num, month_num ) = ( int(year_str), 1 )
+            start = datetime.date( year_num, month_num, 1 )  # first day of year
+            end = datetime.date( year_num, 12, 31 )  # last day of year
+            report_date_header = '{} yearly total'.format( year_str )
+        else:
+            ( year_num, month_num ) = ( int(year_str), int(month_num_str) )
+            start = datetime.date( year_num, month_num, 1 )
+            end = self.last_day_of_month( start )
+            report_date_header = "{mo} {yr}".format( mo=start.strftime('%B'), yr=year_str )
+        return ( start, end, report_date_header )
+
+    # def make_dates_from_params( self, rqst_dct ):
+    #     """ Sets start and end dates from url params.
+    #         Called by views.custom_report() on report-type=='accessions' """
+    #     start = datetime.datetime.strptime( rqst_dct['start'], "%m/%d/%Y" ).date()
+    #     end = datetime.datetime.strptime( rqst_dct['end'], "%m/%d/%Y" ).date()
+    #     return ( start, end )
+
+    def make_context( self, start, end, report_date_header, scheme, host ):
         """ Manages context creation.
             Called by views.accessions_report() """
-        ( start, end, report_date_header ) = self.set_dates( year_str, month_num_str )
+        # ( start, end, report_date_header ) = self.set_dates( year_str, month_num_str )
         context = self.update_context_dates( self.initialize_context(scheme, host), start, end, report_date_header )
         context['year'] = start.year
         # accssn_rprt = AccessionReport( start, end )
@@ -40,21 +62,38 @@ class AccessionReportViewHelper(object):
         log.debug( 'type(context), `{typ}`;\n context, ```````{val}```````'.format( typ=type(context), val=pprint.pformat(context) ) )
         return context
 
+    # def make_context( self, year_str, month_num_str, scheme, host ):
+    #     """ Manages context creation.
+    #         Called by views.accessions_report() """
+    #     ( start, end, report_date_header ) = self.set_dates( year_str, month_num_str )
+    #     context = self.update_context_dates( self.initialize_context(scheme, host), start, end, report_date_header )
+    #     context['year'] = start.year
+    #     # accssn_rprt = AccessionReport( start, end )
+    #     accssn_rprt = self.make_accession_report( start, end )
+    #     context = self.update_context_with_report_data( context, accssn_rprt, start, end )
+    #     context = self.update_context_with_chart_data( context, accssn_rprt )
+    #     context['report_header'] = settings_app.ACC_REPORT_HEADER
+    #     context['settings_app'] = settings_app
+    #     context['last_updated'] = accssn_rprt.last_updated
+    #     log.debug( 'type(context), `{typ}`;\n context, ```````{val}```````'.format( typ=type(context), val=pprint.pformat(context) ) )
+    #     return context
+
     def make_context_2( self, year_str, month_num_str, scheme, host ):
         """ TODO: prepare a json-serializable context.
             Manages context creation.
             Called by views.accessions_report_v2() """
-        ( start, end, report_date_header ) = self.set_dates( year_str, month_num_str )
-        context = self.update_context_dates( self.initialize_context(scheme, host), start, end, report_date_header )
-        context['year'] = start.year
-        accssn_rprt = AccessionReport( start, end )
-        context = self.update_context_with_report_data( context, accssn_rprt, start, end )
-        context = self.update_context_with_chart_data( context, accssn_rprt )
-        context['report_header'] = settings_app.ACC_REPORT_HEADER
-        context['settings_app'] = settings_app
-        context['last_updated'] = accssn_rprt.last_updated
-        log.debug( 'type(context), `{typ}`;\n context, ```````{val}```````'.format( typ=type(context), val=pprint.pformat(context) ) )
-        return context
+        # ( start, end, report_date_header ) = self.set_dates( year_str, month_num_str )
+        # context = self.update_context_dates( self.initialize_context(scheme, host), start, end, report_date_header )
+        # context['year'] = start.year
+        # accssn_rprt = AccessionReport( start, end )
+        # context = self.update_context_with_report_data( context, accssn_rprt, start, end )
+        # context = self.update_context_with_chart_data( context, accssn_rprt )
+        # context['report_header'] = settings_app.ACC_REPORT_HEADER
+        # context['settings_app'] = settings_app
+        # context['last_updated'] = accssn_rprt.last_updated
+        # log.debug( 'type(context), `{typ}`;\n context, ```````{val}```````'.format( typ=type(context), val=pprint.pformat(context) ) )
+        # return context
+        return HttpResponse( 'under construction' )
 
     def initialize_context( self, scheme, host ):
         """ Sets initial vars.
@@ -81,21 +120,6 @@ class AccessionReportViewHelper(object):
             'last_updated': 'init',
             }
         return context
-
-    def set_dates( self, year_str, month_num_str=None ):
-        """ Sets start and end dates from url vars.
-            Called by make_context() """
-        if not month_num_str:
-            ( year_num, month_num ) = ( int(year_str), 1 )
-            start = datetime.date( year_num, month_num, 1 )  # first day of year
-            end = datetime.date( year_num, 12, 31 )  # last day of year
-            report_date_header = '{} yearly total'.format( year_str )
-        else:
-            ( year_num, month_num ) = ( int(year_str), int(month_num_str) )
-            start = datetime.date( year_num, month_num, 1 )
-            end = self.last_day_of_month( start )
-            report_date_header = "{mo} {yr}".format( mo=start.strftime('%B'), yr=year_str )
-        return ( start, end, report_date_header )
 
     def last_day_of_month( self, date_obj ):
         """ Returns the last day of the month for any given Python date object.

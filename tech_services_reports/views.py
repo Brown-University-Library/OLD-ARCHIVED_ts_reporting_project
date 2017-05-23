@@ -8,6 +8,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
 from django.shortcuts import get_object_or_404, render
 from tech_services_reports import settings_app
+from tech_services_reports.lib import common
 from tech_services_reports.lib.accession_report_view_helper import AccessionReport, AccessionReportViewHelper
 from tech_services_reports.lib.auth import bul_login  # decorator
 from tech_services_reports.lib.cataloging_report_view_helper import CatalogingReportViewHelper
@@ -44,10 +45,17 @@ def index( request ):
 
 def custom_report( request ):
     log.debug( 'starting custom-report' )
-    start = request.GET.get( 'start', None )
-    end = request.GET.get( 'end', None )
     report_type = request.GET.get( 'report-type', None )
-    return HttpResponse( 'custom-report coming' )
+    log.debug( 'report_type, `{}`'.format(report_type) )
+    ( start, end ) = common.make_dates_from_params( request.GET )
+    report_date_header = 'From {st} to {en}.'.format( st=start, en=end )
+    if report_type == 'accessions':
+        context = accssn_rprt_hlpr.make_context( start, end, report_date_header, request.scheme, request.get_host() )
+        resp = render( request, u'tech_services_reports_templates/accessions.html', context )
+    elif report_type == 'cataloging':
+        context = ctlgng_rprt_hlpr.make_context( start, end, report_date_header, request.scheme, request.get_host() )
+        resp = render( request, u'tech_services_reports_templates/cataloging.html', context )
+    return resp
 
 
 
@@ -55,13 +63,26 @@ def custom_report( request ):
 @bul_login
 def accessions_report( request, year, month ):
     log.debug( 'starting accessions_report()' )
-    context = accssn_rprt_hlpr.make_context( year, month, request.scheme, request.get_host() )
+    ( start, end, report_date_header ) = accssn_rprt_hlpr.set_dates( year, month )
+    context = accssn_rprt_hlpr.make_context( start, end, report_date_header, request.scheme, request.get_host() )
     if request.GET.get( 'format', None ) == 'json':
         jsn = json.dumps( context, sort_keys=True, indent=2 )
         resp = HttpResponse( jsn, content_type=u'application/javascript; charset=utf-8' )
     else:
         resp = render( request, u'tech_services_reports_templates/accessions.html', context )
     return resp
+
+
+# @bul_login
+# def accessions_report( request, year, month ):
+#     log.debug( 'starting accessions_report()' )
+#     context = accssn_rprt_hlpr.make_context( year, month, request.scheme, request.get_host() )
+#     if request.GET.get( 'format', None ) == 'json':
+#         jsn = json.dumps( context, sort_keys=True, indent=2 )
+#         resp = HttpResponse( jsn, content_type=u'application/javascript; charset=utf-8' )
+#     else:
+#         resp = render( request, u'tech_services_reports_templates/accessions.html', context )
+#     return resp
 
 
 def accessions_report_v2( request, year2, month2 ):
@@ -87,18 +108,6 @@ def cataloging_report( request, year, month ):
     else:
         resp = render( request, u'tech_services_reports_templates/cataloging.html', context )
     return resp
-
-
-# @bul_login
-# def cataloging_report( request, year, month ):
-#     log.debug( 'starting cataloging_report' )
-#     context = ctlgng_rprt_hlpr.make_context( year, month, request.scheme, request.get_host() )
-#     if request.GET.get( 'format', None ) == 'json':
-#         jsn = json.dumps( context, sort_keys=True, indent=2 )
-#         resp = HttpResponse( jsn, content_type=u'application/javascript; charset=utf-8' )
-#     else:
-#         resp = render( request, u'tech_services_reports_templates/cataloging.html', context )
-#     return resp
 
 
 def cataloging_report_v2( request, year, month ):
