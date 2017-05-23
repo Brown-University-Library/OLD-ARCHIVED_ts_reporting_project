@@ -260,7 +260,7 @@ table.report-results{
 table.report-results tr th {
 }
 
-form.report-dates {
+/*form.report-dates {
 	align: middle;
 }
 
@@ -282,7 +282,7 @@ fieldset input.submit {
 	margin-top: 1em;
 	padding: .2em;
 }
-
+*/
 #date-widget {
 	float: right;
 	margin:0;
