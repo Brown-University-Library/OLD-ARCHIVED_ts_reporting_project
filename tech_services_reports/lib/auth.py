@@ -4,6 +4,7 @@ import copy, json, logging, pprint
 
 from django.contrib.auth import authenticate, get_backends, login
 from django.contrib.auth.models import User, Group
+from django.http import HttpResponseForbidden
 from tech_services_reports import settings_app
 
 
@@ -56,7 +57,8 @@ class LoginDecoratorHelper(object):
     def set_basics( self, host, meta_dct ):
         """ Grabs username and netid.
             Called by manage_usr_obj() """
-        if host == '127.0.0.1':
+        log.debug( 'host, ```{}```'.format(host) )
+        if host == '127.0.0.1' or host == '127.0.0.1:8000':
             username = settings_app.TEST_USERNAME
             netid = settings_app.TEST_NETID
         else:
