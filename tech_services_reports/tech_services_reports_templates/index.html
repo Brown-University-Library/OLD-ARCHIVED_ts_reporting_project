@@ -79,18 +79,38 @@
         {% endfor %}
     </ul>
 
+    <!--
     <h5 class="index">Tools</h5>
     <ul class="summary">
         <li><a href="#" onclick="javascript:custom_report('cataloging')">Custom date range report</a></li>
         <li><a href="{{ admin_edit_summary_cat_data_url }}">Add/edit summary cataloging edits</a></li>
         <li><a href="{{ admin_edit_harvested_cat_data_url }}">Edit harvested cataloging data</a></li>
     </ul>
+    -->
+
+    <h5 class="index">Tools</h5>
+    <ul class="summary">
+        <li><a href="{{ admin_edit_summary_cat_data_url }}">Add/edit summary cataloging edits</a></li>
+        <li><a href="{{ admin_edit_harvested_cat_data_url }}">Edit harvested cataloging data</a></li>
+    </ul>
+
+
+    <form action="{{ custom_report_url }}" method="get" class="foo-report-dates">
+    <fieldset>
+        <legend>Custom Cataloging Date Range Report</legend>
+        <p>Start date: <input type="text" class="datepicker" name="start"></p>
+        <p>End date: <input type="text" class="datepicker" name="end"></p>
+        <input type="hidden" name="report-type" value="cataloging" />
+        <input type="submit" value="Submit" />
+    </fieldset>
+    </form>
+
 
 </div>
 
 
 <div id="report-date-picker">
-<form action="custom_report/" method="get" class="report-dates">
+<form action="/custom_reportfoo" method="get" class="report-dates">
 <fieldset>
     <legend>Custom Date Range Report</legend>
 	<p>Start date: <input type="text" class="datepicker" name="start"></p>

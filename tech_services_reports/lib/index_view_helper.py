@@ -21,7 +21,8 @@ class DateMaker(object):
             'acc_months': self.get_acc_months( scheme, host ),
             'acc_years': self.get_acc_years( scheme, host ),
             'cat_months': self.get_cat_months( scheme, host ),
-            'cat_years': self.get_cat_years( scheme, host ) }
+            'cat_years': self.get_cat_years( scheme, host ),
+            'custom_report_url': reverse('custom_report_url') }
         context = self.add_admin_urls( context )
         log.debug( 'context,```{}```'.format( pprint.pformat(context) ) )
         return context
