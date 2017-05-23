@@ -171,7 +171,8 @@ class AccessionReportViewHelper(object):
     def update_context_with_chart_data( self, context, accssn_rprt ):
         """ Updates context with AccessionReport data for charting.
             Called by make_context() """
-        chart_label = context['report_date_header']
+        # chart_label = context['report_date_header']
+        chart_label = ''
         context['by_format_chart_url'] = accssn_rprt.gchart(
             accssn_rprt.by_format_chart(), chart_label, 'Accessions by format' )
         context['by_building_chart_url'] = accssn_rprt.gchart(

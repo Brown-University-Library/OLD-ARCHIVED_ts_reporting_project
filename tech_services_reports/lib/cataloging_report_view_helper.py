@@ -36,7 +36,7 @@ class CatalogingReportViewHelper(object):
         context = self.update_context_dates( start, end, report_date_header )
         cr = CatalogingReport(start, end)
         context = self.update_context_data( context, cr )
-        context = self.update_context_charg_data( context, cr )
+        context = self.update_context_chart_data( context, cr )
         log.debug( 'type(context), `{typ}`;\n context, ```````{val}```````'.format( typ=type(context), val=pprint.pformat(context) ) )
         return context
 
@@ -85,14 +85,29 @@ class CatalogingReportViewHelper(object):
         context['last_updated'] = cr.last_updated
         return context
 
-    def update_context_charg_data( self, context, cr ):
+    # def update_context_chart_data( self, context, cr ):
+    #     """ Updates chart data.
+    #         Called by make_context() """
+    #     chart_label = ''
+    #     if context['report_date_header']:
+    #         log.debug( 'cataloging report_date_header, ```{}```'.format( context['report_date_header'] ) )
+    #         chart_label += context['report_date_header']
+    #     # chart_label += ' ' + str(year)
+    #     chart_label += ' ' + str(context['year'])
+    #     context['by_format_chart_url'] = cr.gchart(
+    #         context['by_format'], chart_label, 'Cataloging by format')
+    #     context['by_edit_type_chart_url'] = cr.gchart(
+    #         context['by_edit_type'], chart_label, 'Cataloging by type', color='3366CC')
+    #     return context
+
+    def update_context_chart_data( self, context, cr ):
         """ Updates chart data.
             Called by make_context() """
         chart_label = ''
-        if context['report_date_header']:
-            chart_label += context['report_date_header']
-        # chart_label += ' ' + str(year)
-        chart_label += ' ' + str(context['year'])
+        # if context['report_date_header']:
+        #     log.debug( 'cataloging report_date_header, ```{}```'.format( context['report_date_header'] ) )
+        #     chart_label += context['report_date_header']
+        # chart_label += ' ' + str(context['year'])
         context['by_format_chart_url'] = cr.gchart(
             context['by_format'], chart_label, 'Cataloging by format')
         context['by_edit_type_chart_url'] = cr.gchart(
