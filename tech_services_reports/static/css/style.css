@@ -327,3 +327,44 @@ table.extended th {
 #ui-datepicker-div {
 	display: none;
 }
+
+/* For main landing page - start */
+
+form {
+    border: 0;
+}
+
+fieldset {
+    margin-left: 0em;
+    margin-top: 0;
+}
+
+legend {
+    border: 0;
+    margin-top: 0;
+}
+
+label{
+    clear: left;
+    display: inline-block;
+    float: left;
+    margin-bottom: .5em;
+    text-align: right;
+    width: 100px;
+}
+
+input {
+    display: inline-block;
+    float: left;
+    width: 100px;
+}
+
+.custom_submit_button {
+  display: inline-block;
+  float: center;
+  margin-left: 25%;
+  margin-top: .25em;
+  text-align: center;
+}
+
+/* For main landing page - end */
