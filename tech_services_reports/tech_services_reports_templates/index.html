@@ -73,19 +73,44 @@
 
         fieldset {
             align: left;
+            margin-top: 0;
             margin-left: 0em;
         }
 
-        fieldset.p {
+/*        fieldset.p {
             align: left;
             margin-left: -4.6em;
             border: 0;
-        }
+        }*/
 
         legend {
             border: 0;
+            margin-top: 0;
             /*margin-left: -4.6em;*/
         }
+
+label{
+    display: inline-block;
+    float: left;
+    clear: left;
+    width: 100px;
+    text-align: right;
+    margin-bottom: .5em;
+}
+input {
+  display: inline-block;
+  float: left;
+      width: 100px;
+
+}
+#accession_submit_button {
+  text-align: center;
+  display: inline-block;
+  float: center;
+  margin-top: .25em;
+  margin-left: 25%;
+
+}
 
 
     </style>
@@ -99,12 +124,16 @@
     </ul>
     <form action="{{ custom_report_url }}" method="get" class="foo-report-dates">
     <fieldset>
-        <legend>Custom Accession Date Range Report</legend>
-        <p>Start date: <input type="text" class="datepicker" name="start"></p>
-        <p>End date: <input type="text" class="datepicker" name="end"></p>
+        <legend>Accession Date Range Report:</legend>
+        <label for="start_date">Start date:</label><input type="text" class="datepicker" name="start">
+        <label for="end_date">End date:</label>
+        <input type="text" class="datepicker" name="end">
         <input type="hidden" name="report-type" value="accessions" />
-        <input type="submit" value="Submit" />
+        <div id="accession_submit_button">
+            <input type="submit" value="Submit" />
+        </div>
     </fieldset>
+
     </form>
 
 </div>
@@ -150,11 +179,17 @@
 
     <form action="{{ custom_report_url }}" method="get" class="foo-report-dates">
     <fieldset>
-        <legend>Custom Cataloging Date Range Report</legend>
-        <p>Start date: <input type="text" class="datepicker" name="start"></p>
-        <p>End date: <input type="text" class="datepicker" name="end"></p>
+        <legend>Cataloging Date Range Report:</legend>
+
+        <label for="start_date">Start date:</label><input type="text" class="datepicker" name="start">
+        <label for="end_date">End date:</label>
+        <input type="text" class="datepicker" name="end">
         <input type="hidden" name="report-type" value="cataloging" />
-        <input type="submit" value="Submit" />
+        <div id="accession_submit_button">
+            <input type="submit" value="Submit" />
+        </div>
+
+
     </fieldset>
     </form>
 
