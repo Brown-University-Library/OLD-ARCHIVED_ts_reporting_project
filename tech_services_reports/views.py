@@ -54,6 +54,18 @@ def accessions_report( request, year, month ):
     return resp
 
 
+
+
+def accessions_report_csv( request ):
+    log.debug( 'starting accessions_report_csv' )
+    ( start, end ) = common.make_dates_from_params( request.GET )
+    report_date_header = 'From {st} to {en}.'.format( st=start, en=end )
+    context = accssn_rprt_hlpr.make_context( start, end, report_date_header, request.scheme, request.get_host() )
+    return HttpResponse( 'in_progress' )
+
+
+
+
 @bul_login
 def cataloging_report( request, year, month ):
     log.debug( 'starting cataloging_report' )
