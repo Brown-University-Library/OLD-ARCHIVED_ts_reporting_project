@@ -41,25 +41,6 @@ def index( request ):
     return resp
 
 
-
-
-def custom_report( request ):
-    log.debug( 'starting custom-report' )
-    report_type = request.GET.get( 'report-type', None )
-    log.debug( 'report_type, `{}`'.format(report_type) )
-    ( start, end ) = common.make_dates_from_params( request.GET )
-    report_date_header = 'From {st} to {en}.'.format( st=start, en=end )
-    if report_type == 'accessions':
-        context = accssn_rprt_hlpr.make_context( start, end, report_date_header, request.scheme, request.get_host() )
-        resp = render( request, u'tech_services_reports_templates/accessions.html', context )
-    elif report_type == 'cataloging':
-        context = ctlgng_rprt_hlpr.make_context( start, end, report_date_header, request.scheme, request.get_host() )
-        resp = render( request, u'tech_services_reports_templates/cataloging.html', context )
-    return resp
-
-
-
-
 @bul_login
 def accessions_report( request, year, month ):
     log.debug( 'starting accessions_report()' )
@@ -73,16 +54,37 @@ def accessions_report( request, year, month ):
     return resp
 
 
-# @bul_login
-# def accessions_report( request, year, month ):
-#     log.debug( 'starting accessions_report()' )
-#     context = accssn_rprt_hlpr.make_context( year, month, request.scheme, request.get_host() )
-#     if request.GET.get( 'format', None ) == 'json':
-#         jsn = json.dumps( context, sort_keys=True, indent=2 )
-#         resp = HttpResponse( jsn, content_type=u'application/javascript; charset=utf-8' )
-#     else:
-#         resp = render( request, u'tech_services_reports_templates/accessions.html', context )
-#     return resp
+@bul_login
+def cataloging_report( request, year, month ):
+    log.debug( 'starting cataloging_report' )
+    ( start, end, report_date_header ) = ctlgng_rprt_hlpr.set_dates( year, month )
+    context = ctlgng_rprt_hlpr.make_context( start, end, report_date_header, request.scheme, request.get_host() )
+    if request.GET.get( 'format', None ) == 'json':
+        jsn = json.dumps( context, sort_keys=True, indent=2 )
+        resp = HttpResponse( jsn, content_type=u'application/javascript; charset=utf-8' )
+    else:
+        resp = render( request, u'tech_services_reports_templates/cataloging.html', context )
+    return resp
+
+
+@bul_login
+def custom_report( request ):
+    log.debug( 'starting custom-report' )
+    report_type = request.GET.get( 'report-type', None )
+    ( start, end ) = common.make_dates_from_params( request.GET )
+    report_date_header = 'From {st} to {en}.'.format( st=start, en=end )
+    if report_type == 'accessions':
+        context = accssn_rprt_hlpr.make_context( start, end, report_date_header, request.scheme, request.get_host() )
+        resp = render( request, u'tech_services_reports_templates/accessions.html', context )
+    elif report_type == 'cataloging':
+        context = ctlgng_rprt_hlpr.make_context( start, end, report_date_header, request.scheme, request.get_host() )
+        resp = render( request, u'tech_services_reports_templates/cataloging.html', context )
+    return resp
+
+
+###########################
+## future TODO refactors ##
+###########################
 
 
 def accessions_report_v2( request, year2, month2 ):
@@ -94,19 +96,6 @@ def accessions_report_v2( request, year2, month2 ):
         resp = HttpResponse( jsn, content_type=u'application/javascript; charset=utf-8' )
     else:
         resp = render( request, u'tech_services_reports_templates/accessions_2.html', context )
-    return resp
-
-
-@bul_login
-def cataloging_report( request, year, month ):
-    log.debug( 'starting cataloging_report' )
-    ( start, end, report_date_header ) = ctlgng_rprt_hlpr.set_dates( year, month )
-    context = ctlgng_rprt_hlpr.make_context( start, end, report_date_header, request.scheme, request.get_host() )
-    if request.GET.get( 'format', None ) == 'json':
-        jsn = json.dumps( context, sort_keys=True, indent=2 )
-        resp = HttpResponse( jsn, content_type=u'application/javascript; charset=utf-8' )
-    else:
-        resp = render( request, u'tech_services_reports_templates/cataloging.html', context )
     return resp
 
 
