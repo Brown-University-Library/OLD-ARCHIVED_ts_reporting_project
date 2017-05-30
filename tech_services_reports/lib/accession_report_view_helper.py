@@ -170,8 +170,8 @@ class AccessionReportViewHelper(object):
         """ Prepares csv download url.
             Called by make_context() """
         ## create start=month-day-year and end dates
-        start_str = context['start'].strftime( '%m-%d-%Y' )
-        end_str = context['end'].strftime( '%m-%d-%Y' )
+        start_str = context['start'].strftime( '%m/%d/%Y' )
+        end_str = context['end'].strftime( '%m/%d/%Y' )
         ## create url
         csv_url_root = reverse( 'accessions_csv' )
         url = '{rt}?start={st}&end={en}'.format( rt=csv_url_root, st=start_str, en=end_str )
