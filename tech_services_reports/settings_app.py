@@ -43,6 +43,13 @@ ACC_REPORT_HEADER = 'Accession Statistics -- Brown University Library'
 
 
 #####################################################
+### for Accession Report CSV                      ###
+#####################################################
+
+ACC_COUNT_TYPES = [ 'volumes', 'titles' ]
+
+
+#####################################################
 ### for Cataloging Report                         ###
 #####################################################
 
