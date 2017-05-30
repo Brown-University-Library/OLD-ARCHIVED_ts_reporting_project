@@ -39,16 +39,15 @@ class AccessionReportViewHelper(object):
     def make_context( self, start, end, report_date_header, scheme, host ):
         """ Manages context creation.
             Called by views.accessions_report() """
-        # ( start, end, report_date_header ) = self.set_dates( year_str, month_num_str )
         context = self.update_context_dates( self.initialize_context(scheme, host), start, end, report_date_header )
         context['year'] = start.year
-        # accssn_rprt = AccessionReport( start, end )
         accssn_rprt = self.make_accession_report( start, end )
         context = self.update_context_with_report_data( context, accssn_rprt, start, end )
         context = self.update_context_with_chart_data( context, accssn_rprt )
         context['report_header'] = settings_app.ACC_REPORT_HEADER
         context['settings_app'] = settings_app
         context['last_updated'] = accssn_rprt.last_updated
+        context['csv_url'] = self.get_csv_url( context )
         log.debug( 'type(context), `{typ}`;\n context, ```````{val}```````'.format( typ=type(context), val=pprint.pformat(context) ) )
         return context
 
@@ -166,6 +165,11 @@ class AccessionReportViewHelper(object):
         del context[ 'settings_app' ]
         log.debug( 'context after temp deletions, ```{}```'.format(pprint.pformat(context)) )
         return context
+
+    def get_csv_url( self, context ):
+        """ Prepares csv download url.
+            Called by make_context() """
+        return 'foo'
 
     ## end class AccessionReportViewHelper()
 
