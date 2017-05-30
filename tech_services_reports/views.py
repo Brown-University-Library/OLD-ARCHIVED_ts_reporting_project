@@ -14,6 +14,7 @@ from tech_services_reports.lib.auth import bul_login  # decorator
 from tech_services_reports.lib.cataloging_report_view_helper import CatalogingReportViewHelper
 from tech_services_reports.lib.index_view_helper import DateMaker
 from tech_services_reports.lib.accession_csv_helper import AccessionCSVwriter
+from tech_services_reports.lib.cataloging_csv_helper import CatalogingCSVwriter
 
 
 log = logging.getLogger("webapp")
