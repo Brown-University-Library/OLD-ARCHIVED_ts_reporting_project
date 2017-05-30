@@ -116,20 +116,6 @@ class CatalogingReportViewHelper(object):
         log.debug( 'csv_url, ```{}```'.format(url) )
         return url
 
-    # def get_csv_url( self, context ):
-    #     """ Prepares csv download url.
-    #         TODO: look into why these date-types are different from the accession date-types.
-    #         Called by make_context() """
-    #     log.debug( 'initial context, ```{}```'.format( pprint.pformat(context) ) )
-    #     start_dt = datetime.datetime.strptime( context['start'], '%Y-%m-%d' )
-    #     end_dt = datetime.datetime.strptime( context['end'], '%Y-%m-%d' )
-    #     start_str = start_dt.strftime( '%m/%d/%Y' )
-    #     end_str = end_dt.strftime( '%m/%d/%Y' )
-    #     csv_url_root = reverse( 'cataloging_csv' )
-    #     url = '{rt}?start={st}&end={en}'.format( rt=csv_url_root, st=start_str, en=end_str )
-    #     log.debug( 'csv_url, ```{}```'.format(url) )
-    #     return url
-
     ## end class CatalogingReportViewHelper()
 
 
@@ -152,7 +138,6 @@ class CatalogingReport(object):
         self.total_edited = len(self.edits)
         self.total_cataloged = self.total_edited
         self.last_updated = CatEdit.objects.latest('edit_date').edit_date
-
 
     def _material_string(self, mat_type):
         """Returns full mat type string."""

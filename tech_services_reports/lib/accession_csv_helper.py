@@ -129,5 +129,4 @@ class AccessionCSVwriter( object ):
 
         ## end def get_csv_response()
 
-
     ## end class AccessionCSVwriter()
