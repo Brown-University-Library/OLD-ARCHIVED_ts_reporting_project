@@ -47,6 +47,7 @@ def accessions_report( request, year, month ):
     ( start, end, report_date_header ) = accssn_rprt_hlpr.set_dates( year, month )
     context = accssn_rprt_hlpr.make_context( start, end, report_date_header, request.scheme, request.get_host() )
     if request.GET.get( 'format', None ) == 'json':
+        context = accssn_rprt_hlpr.update_context_for_jsn( context )
         jsn = json.dumps( context, sort_keys=True, indent=2 )
         resp = HttpResponse( jsn, content_type=u'application/javascript; charset=utf-8' )
     else:

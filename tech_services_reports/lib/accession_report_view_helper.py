@@ -153,6 +153,20 @@ class AccessionReportViewHelper(object):
             accssn_rprt.building_summary(), chart_label, 'Accessions by location', color='3366CC' )
         return context
 
+    def update_context_for_jsn( self, context ):
+        """ Temporarily deletes non-jsonable elements.
+            Eventually context-data should directly feed the templates.
+            Called by views.accessions_report() """
+        del context[ 'serial_added_volumes' ]
+        del context[ 'all_formats_acq_type' ]
+        del context[ 'start' ]
+        del context[ 'end' ]
+        del context[ 'format_reports' ]
+        del context[ 'last_updated' ]
+        del context[ 'settings_app' ]
+        log.debug( 'context after temp deletions, ```{}```'.format(pprint.pformat(context)) )
+        return context
+
     ## end class AccessionReportViewHelper()
 
 
