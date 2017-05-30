@@ -38,6 +38,7 @@ class CatalogingReportViewHelper(object):
         cr = CatalogingReport(start, end)
         context = self.update_context_data( context, cr )
         context = self.update_context_chart_data( context, cr )
+        context['HOME_URL'] = '{sch}://{hst}{url}'.format( sch=scheme, hst=host, url=reverse('index_url') )
         context['csv_url'] = self.get_csv_url( context )
         log.debug( 'type(context), `{typ}`;\n context, ```````{val}```````'.format( typ=type(context), val=pprint.pformat(context) ) )
         return context
@@ -101,30 +102,33 @@ class CatalogingReportViewHelper(object):
             context['by_edit_type'], chart_label, 'Cataloging by type', color='3366CC')
         return context
 
-    # def get_csv_url( self, context ):
-    #     """ Prepares csv download url.
-    #         Called by make_context() """
-    #     log.debug( 'initial context, ```{}```'.format( pprint.pformat(context) ) )
-    #     start_str = context['start'].strftime( '%m/%d/%Y' )
-    #     end_str = context['end'].strftime( '%m/%d/%Y' )
-    #     csv_url_root = reverse( 'cataloging_csv' )
-    #     url = '{rt}?start={st}&end={en}'.format( rt=csv_url_root, st=start_str, en=end_str )
-    #     log.debug( 'csv_url, ```{}```'.format(url) )
-    #     return url
-
     def get_csv_url( self, context ):
         """ Prepares csv download url.
             TODO: look into why these date-types are different from the accession date-types.
             Called by make_context() """
         log.debug( 'initial context, ```{}```'.format( pprint.pformat(context) ) )
-        start_dt = datetime.datetime.strptime( context['start'], '%Y-%m-%d' )
-        end_dt = datetime.datetime.strptime( context['end'], '%Y-%m-%d' )
-        start_str = start_dt.strftime( '%m/%d/%Y' )
-        end_str = end_dt.strftime( '%m/%d/%Y' )
+        # start_dt = datetime.datetime.strptime( context['start'], '%Y-%m-%d' )
+        # end_dt = datetime.datetime.strptime( context['end'], '%Y-%m-%d' )
+        # start_str = start_dt.strftime( '%m/%d/%Y' )
+        # end_str = end_dt.strftime( '%m/%d/%Y' )
         csv_url_root = reverse( 'cataloging_csv' )
-        url = '{rt}?start={st}&end={en}'.format( rt=csv_url_root, st=start_str, en=end_str )
+        url = '{rt}?start={st}&end={en}'.format( rt=csv_url_root, st=context['start'], en=context['end'] )
         log.debug( 'csv_url, ```{}```'.format(url) )
         return url
+
+    # def get_csv_url( self, context ):
+    #     """ Prepares csv download url.
+    #         TODO: look into why these date-types are different from the accession date-types.
+    #         Called by make_context() """
+    #     log.debug( 'initial context, ```{}```'.format( pprint.pformat(context) ) )
+    #     start_dt = datetime.datetime.strptime( context['start'], '%Y-%m-%d' )
+    #     end_dt = datetime.datetime.strptime( context['end'], '%Y-%m-%d' )
+    #     start_str = start_dt.strftime( '%m/%d/%Y' )
+    #     end_str = end_dt.strftime( '%m/%d/%Y' )
+    #     csv_url_root = reverse( 'cataloging_csv' )
+    #     url = '{rt}?start={st}&end={en}'.format( rt=csv_url_root, st=start_str, en=end_str )
+    #     log.debug( 'csv_url, ```{}```'.format(url) )
+    #     return url
 
     ## end class CatalogingReportViewHelper()
 

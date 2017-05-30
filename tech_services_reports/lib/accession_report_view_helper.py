@@ -169,14 +169,24 @@ class AccessionReportViewHelper(object):
     def get_csv_url( self, context ):
         """ Prepares csv download url.
             Called by make_context() """
-        ## create start=month-day-year and end dates
-        start_str = context['start'].strftime( '%m/%d/%Y' )
-        end_str = context['end'].strftime( '%m/%d/%Y' )
-        ## create url
+        start_str = context['start'].strftime( '%Y-%m-%d' )
+        end_str = context['end'].strftime( '%Y-%m-%d' )
         csv_url_root = reverse( 'accessions_csv' )
         url = '{rt}?start={st}&end={en}'.format( rt=csv_url_root, st=start_str, en=end_str )
         log.debug( 'csv_url, ```{}```'.format(url) )
         return url
+
+    # def get_csv_url( self, context ):
+    #     """ Prepares csv download url.
+    #         Called by make_context() """
+    #     ## create start=month-day-year and end dates
+    #     start_str = context['start'].strftime( '%m/%d/%Y' )
+    #     end_str = context['end'].strftime( '%m/%d/%Y' )
+    #     ## create url
+    #     csv_url_root = reverse( 'accessions_csv' )
+    #     url = '{rt}?start={st}&end={en}'.format( rt=csv_url_root, st=start_str, en=end_str )
+    #     log.debug( 'csv_url, ```{}```'.format(url) )
+    #     return url
 
     ## end class AccessionReportViewHelper()
 

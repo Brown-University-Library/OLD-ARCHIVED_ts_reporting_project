@@ -12,13 +12,24 @@
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.js"></script>
 
 <script>
+
     $(function() {
-    	$( ".datepicker" ).datepicker({
-    		changeMonth: true,
-    		changeYear: true,
-    		minDate: new Date(2011, 6 - 1, 1)
-    	});
+        $( ".datepicker" ).datepicker({
+            changeMonth: true,
+            changeYear: true,
+            dateFormat: "yy-mm-dd",
+            minDate: new Date(2011, 6 - 1, 1)
+        });
     });
+
+    // $(function() {
+    // 	$( ".datepicker" ).datepicker({
+    // 		changeMonth: true,
+    // 		changeYear: true,
+    // 		minDate: new Date(2011, 6 - 1, 1)
+    // 	});
+    // });
+
 </script>
 
 {% endblock %}

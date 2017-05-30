@@ -1,8 +1,11 @@
 {% extends "tech_services_reports_templates/base.html" %}
+
 {% load report_tags %}
+
 {% block extra_css %}
 	<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/themes/base/jquery-ui.css" type="text/css">
 {% endblock%}
+
 {% block javascripts%}
 	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
 	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.js"></script>
@@ -28,12 +31,10 @@
 		$("#catbytype").tablesorter( {sortList: [[1,1]]} );
 	});
 
-
 	</script>
 {% endblock %}
 
 {% block content %}
-
 
 <h2 class="report-header"> {{ report_header }}</h2>
 
