@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 
-import datetime, json, logging, pprint
+import csv, datetime, json, logging, pprint
+
+from django.http import HttpResponse
+from tech_services_reports import settings_app
+from tech_services_reports.lib.accession_report_view_helper import AccessionReport
 
 
 class AccessionCSVwriter( object ):
@@ -8,20 +12,16 @@ class AccessionCSVwriter( object ):
     def __init__( self ):
         pass
 
-    def write_data( self, context ):
+    def get_csv_response( self, context ):
 
-        from utility_code import AccessionReport
-        from tech_services_reports.helpers import namedtuple
-        from tech_services_reports.settings_app import Acc
-        from tech_services_reports.helpers import namedtuple
-        from tech_services_reports.settings_app import AccTotal
-        import csv
-        #report = context['report']
         header = context['report_header']
         header_details = "%s to %s" % (context['start'], context['end'])
     #    location_sort_order, format_sort_order = utility_code.load_sort_orders()
+
         #Prep CSV response with HTTP mimetype.
-        response = HttpResponse(mimetype='text/csv')
+        # response = HttpResponse(mimetype='text/csv')
+        response = HttpResponse( content_type='text/csv; charset=utf-8' )
+
         response['Content-Disposition'] = 'attachment; filename=accessions_%s.csv'\
                                          % header_details.replace(' to ', '_')
         rw = csv.writer(response, dialect='excel')
@@ -61,7 +61,7 @@ class AccessionCSVwriter( object ):
             this_row.append(location)
             for acq_type in context['acq_types']:
                 for count_type in settings_app.ACC_COUNT_TYPES:
-                    _k = Acc(location=location.title(),
+                    _k = settings_app.Acc(location=location.title(),
                              acquisition_method=acq_type.title(),
                              count_type=count_type)
                     try:
@@ -75,7 +75,7 @@ class AccessionCSVwriter( object ):
         total_row = ['Total']
         for acq_type in context['acq_types']:
             for count_type in settings_app.ACC_COUNT_TYPES:
-                _k = AccTotal(param=acq_type,
+                _k = settings_app.AccTotal(param=acq_type,
                           param2=count_type)
                 try:
                     v = report['data'][_k]
@@ -100,7 +100,7 @@ class AccessionCSVwriter( object ):
                 this_row.append(location)
                 for acq_type in context['acq_types']:
                     for count_type in settings_app.ACC_COUNT_TYPES:
-                        _k = Acc(location=location.title(),
+                        _k = settings_app.Acc(location=location.title(),
                          acquisition_method=acq_type.title(),
                          count_type=count_type)
                         try:
@@ -114,7 +114,7 @@ class AccessionCSVwriter( object ):
             total_row = ['Total']
             for acq_type in context['acq_types']:
                 for count_type in settings_app.ACC_COUNT_TYPES:
-                    _k = AccTotal(param=acq_type,
+                    _k = settings_app.AccTotal(param=acq_type,
                               param2=count_type)
                     try:
                         v = report['data'][_k]
@@ -127,6 +127,7 @@ class AccessionCSVwriter( object ):
 
         return response
 
-        ## end def write_data()
+        ## end def get_csv_response()
+
 
     ## end class AccessionCSVwriter()
