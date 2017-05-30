@@ -21,6 +21,7 @@ dt_mkr = DateMaker()
 accssn_rprt_hlpr = AccessionReportViewHelper()
 accssn_csv_wrtr = AccessionCSVwriter()
 ctlgng_rprt_hlpr = CatalogingReportViewHelper()
+ctlgng_csv_wrtr = CatalogingCSVwriter()
 
 
 def hi( request ):
@@ -78,6 +79,20 @@ def cataloging_report( request, year, month ):
     else:
         resp = render( request, u'tech_services_reports_templates/cataloging.html', context )
     return resp
+
+
+
+
+@bul_login
+def cataloging_report_csv( request ):
+    log.debug( 'starting cataloging_report_csv' )
+    ( start, end ) = common.make_dates_from_params( request.GET )
+    report_date_header = 'From {st} to {en}.'.format( st=start, en=end )
+    context = ctlgng_rprt_hlpr.make_context( start, end, report_date_header, request.scheme, request.get_host() )
+    resp = ctlgng_csv_wrtr.get_csv_response( context )
+    return resp
+
+
 
 
 @bul_login

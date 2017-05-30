@@ -21,6 +21,7 @@ urlpatterns = [
     url( r'^stats/accessions/(?P<year>.*)/(?P<month>.*)/$',  ts_views.accessions_report, name='accessions_w_params' ),
 
     url( r'^stats/cataloging/$',  RedirectView.as_view(pattern_name='index_url'), name='cataloging' ),  # exists only for a reverse() lookup
+    url( r'^stats/cataloging/csv/$',  ts_views.cataloging_report_csv, name='cataloging_csv' ),
     url( r'^stats/cataloging/(?P<year>.*)/(?P<month>.*)/$',  ts_views.cataloging_report, name='cataloging_w_params' ),
 
     url( r'^stats/$',  ts_views.index, name='index_url' ),
