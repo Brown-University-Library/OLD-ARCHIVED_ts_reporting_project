@@ -57,11 +57,10 @@ def accessions_report( request, year, month ):
     return resp
 
 
+@bul_login
 def accessions_report_csv( request ):
     log.debug( 'starting accessions_report_csv' )
     ( start, end ) = common.make_dates_from_params( request.GET )
-    log.debug( 'start, `{st}`; end, `{en}`'.format( st=start, en=end ) )
-    log.debug( 'type(start), `{}`'.format( type(start) ) )
     report_date_header = 'From {st} to {en}.'.format( st=start, en=end )
     context = accssn_rprt_hlpr.make_context( start, end, report_date_header, request.scheme, request.get_host() )
     resp = accssn_csv_wrtr.get_csv_response( context )
