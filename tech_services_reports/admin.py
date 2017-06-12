@@ -15,7 +15,7 @@ class AccessionAdmin(admin.ModelAdmin):
 
 class SummaryAccessionAdmin(admin.ModelAdmin):
     list_display = [ 'date', 'format', 'acquisition_method', 'volumes', 'titles', 'location' ]
-    search_fields = [ 'date', 'format', 'acquisition_method',    'location', 'format' ]
+    search_fields = [ 'date', 'format', 'acquisition_method', 'location', 'format' ]
     list_filter = [ 'date', 'format', 'acquisition_method', 'location', 'format' ]
     ordering = [ '-date' ]
 
@@ -27,8 +27,15 @@ class CatEditAdmin(admin.ModelAdmin):
     #list_filter = ('cat_type', 'level', 'mat_type')
 
 
+class SummaryCatEditAdmin(admin.ModelAdmin):
+    list_display = [ 'edit_date', 'mat_type', 'editor', 'type', 'source', 'number' ]
+    search_fields = [ 'edit_date', 'mat_type', 'editor', 'type', 'source' ]
+    list_filter = [ 'edit_date', 'mat_type', 'editor', 'type', 'source' ]
+    ordering = [ '-edit_date' ]
+
+
 admin.site.register( Harvest )
 admin.site.register( Accession, AccessionAdmin )
 admin.site.register( SummaryAccession, SummaryAccessionAdmin )
 admin.site.register( CatEdit, CatEditAdmin )
-admin.site.register( SummaryCatEdit )
+admin.site.register( SummaryCatEdit, SummaryCatEditAdmin )
