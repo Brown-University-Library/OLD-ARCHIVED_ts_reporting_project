@@ -21,16 +21,16 @@ class SummaryAccessionAdmin(admin.ModelAdmin):
 
 
 class CatEditAdmin(admin.ModelAdmin):
-    list_display = ('edit_date', 'editor', 'type', 'mat_type', 'source', 'bib')
-    list_filter = ('type', 'editor', 'mat_type', 'source')
-    search_fields = ('editor', 'bib', 'type', 'source')
-    #list_filter = ('cat_type', 'level', 'mat_type')
+    list_display = [ 'edit_date', 'editor', 'type', 'mat_type', 'source', 'bib' ]
+    search_fields = [ 'edit_date', 'editor', 'type', 'bib', 'source', 'bib' ]
+    list_filter = [ 'edit_date', 'editor', 'type', 'mat_type', 'source' ]
+    ordering = [ '-edit_date' ]
 
 
 class SummaryCatEditAdmin(admin.ModelAdmin):
-    list_display = [ 'edit_date', 'mat_type', 'editor', 'type', 'source', 'number' ]
-    search_fields = [ 'edit_date', 'mat_type', 'editor', 'type', 'source' ]
-    list_filter = [ 'edit_date', 'mat_type', 'editor', 'type', 'source' ]
+    list_display = [ 'edit_date', 'editor', 'type', 'mat_type', 'source', 'number' ]
+    search_fields = [ 'edit_date', 'editor', 'type', 'mat_type', 'source' ]
+    list_filter = [ 'edit_date', 'editor', 'type', 'mat_type', 'source' ]
     ordering = [ '-edit_date' ]
 
 
