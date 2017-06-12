@@ -7,9 +7,17 @@ from django.contrib import admin
 
 
 class AccessionAdmin(admin.ModelAdmin):
-    list_display = ('created', 'format', 'acquisition_method', 'volumes', 'titles')
+    list_display = [ 'created', 'number', 'format', 'acquisition_method', 'volumes', 'titles', 'location', 'serial_added_volume' ]
     search_fields = ('created', 'format', 'location', 'acquisition_method')
-    list_filter = ('acquisition_method', 'format', 'location')
+    list_filter = [ 'format', 'acquisition_method', 'location', 'serial_added_volume' ]
+    ordering = [ '-created' ]
+
+
+class SummaryAccessionAdmin(admin.ModelAdmin):
+    list_display = [ 'date', 'format', 'acquisition_method', 'volumes', 'titles', 'location' ]
+    search_fields = [ 'date', 'format', 'acquisition_method',    'location', 'format' ]
+    list_filter = [ 'date', 'format', 'acquisition_method', 'location', 'format' ]
+    ordering = [ '-date' ]
 
 
 class CatEditAdmin(admin.ModelAdmin):
@@ -19,8 +27,8 @@ class CatEditAdmin(admin.ModelAdmin):
     #list_filter = ('cat_type', 'level', 'mat_type')
 
 
-admin.site.register(Harvest)
-admin.site.register(Accession, AccessionAdmin)
-admin.site.register(SummaryAccession)
-admin.site.register(CatEdit, CatEditAdmin)
-admin.site.register(SummaryCatEdit)
+admin.site.register( Harvest )
+admin.site.register( Accession, AccessionAdmin )
+admin.site.register( SummaryAccession, SummaryAccessionAdmin )
+admin.site.register( CatEdit, CatEditAdmin )
+admin.site.register( SummaryCatEdit )

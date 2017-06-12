@@ -37,11 +37,9 @@ class Accession(models.Model):
 class SummaryAccession(models.Model):
     date = models.DateField()
     format = models.CharField(max_length=50)
-    location = models.CharField(max_length=50)
     volumes = models.IntegerField()
     titles = models.IntegerField()
     location = models.CharField(max_length=50)
-    format = models.CharField(max_length=50)
     acquisition_method = models.CharField(max_length=50)
 
     def save(self, *args, **kwargs):
