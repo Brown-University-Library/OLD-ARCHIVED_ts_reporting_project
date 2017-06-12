@@ -41,7 +41,8 @@ class AccessionReportViewHelper(object):
             Called by views.accessions_report() """
         context = self.update_context_dates( self.initialize_context(scheme, host), start, end, report_date_header )
         context['year'] = start.year
-        accssn_rprt = self.make_accession_report( start, end )
+        # accssn_rprt = self.make_accession_report( start, end )
+        accssn_rprt = AccessionReport( start, end )
         context = self.update_context_with_report_data( context, accssn_rprt, start, end )
         context = self.update_context_with_chart_data( context, accssn_rprt )
         context['report_header'] = settings_app.ACC_REPORT_HEADER
@@ -112,12 +113,12 @@ class AccessionReportViewHelper(object):
         context['report_date_header'] = report_date_header
         return context
 
-    def make_accession_report( self, start, end ):
-        accssn_rprt = cache.get( 'accssn_rprt_cached' )
-        if accssn_rprt is None:
-            accssn_rprt = AccessionReport( start, end )
-            cache.set( 'accssn_rprt_cached', accssn_rprt, 60*60*24 )  # 1 day
-        return accssn_rprt
+    # def make_accession_report( self, start, end ):
+    #     accssn_rprt = cache.get( 'accssn_rprt_cached' )
+    #     if accssn_rprt is None:
+    #         accssn_rprt = AccessionReport( start, end )
+    #         cache.set( 'accssn_rprt_cached', accssn_rprt, 60*60*24 )  # 1 day
+    #     return accssn_rprt
 
     def update_context_with_report_data( self, context, accssn_rprt, start_date, end_date ):
         """ Updates context from AccessionReport().
