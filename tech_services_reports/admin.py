@@ -15,14 +15,14 @@ class AccessionAdmin(admin.ModelAdmin):
 
 class SummaryAccessionAdmin(admin.ModelAdmin):
     list_display = [ 'date', 'format', 'acquisition_method', 'volumes', 'titles', 'location' ]
-    search_fields = [ 'date', 'format', 'acquisition_method', 'location', 'format' ]
-    list_filter = [ 'date', 'format', 'acquisition_method', 'location', 'format' ]
+    search_fields = [ 'date', 'format', 'acquisition_method', 'location' ]
+    list_filter = [ 'date', 'format', 'acquisition_method', 'location' ]
     ordering = [ '-date' ]
 
 
 class CatEditAdmin(admin.ModelAdmin):
     list_display = [ 'edit_date', 'editor', 'type', 'mat_type', 'source', 'bib' ]
-    search_fields = [ 'edit_date', 'editor', 'type', 'bib', 'source', 'bib' ]
+    search_fields = [ 'edit_date', 'editor', 'type', 'bib', 'source' ]
     list_filter = [ 'edit_date', 'editor', 'type', 'mat_type', 'source' ]
     ordering = [ '-edit_date' ]
 
