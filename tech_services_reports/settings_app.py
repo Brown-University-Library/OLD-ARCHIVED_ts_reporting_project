@@ -76,40 +76,7 @@ MAT_TYPE_MAP = {
 
 DISTINCT_CAT_TYPES = ['copy', 'original', 'enrich', 'batch']
 
-CATALOGERS = {
-    'TB':'Tatyana Badalyan',
-    'JJB':'Jennifer Betts',
-    'CGB':'Catherine Busselen',
-    'RJB':'Ray Butti',
-    'EASTUDENT':'East Asian Student',
-    'TE':'Timothy Engels',
-    'SF':'Barbara Filipac',
-    'CCG':'Christopher Geissler',
-    'PH':'Peter Harrington',
-    'JPH':'Patrick Hutchinson',
-    'JK':'Joanna Katsune',
-    'GDL':'Gayle Lynch',
-    'TM':'Toshiyuki Minami',
-    'SAM':'Sam Mizer',
-    'EM':'Ellen Moreau',
-    'RCN':'Richard Noble',
-    'DP':'Deb Peterson',
-    'NQ':'Ned Quist',
-    'RR':'Robert Rosa',
-    'HPS':'Howard Stone',
-    'JCT':'Joanne Tandy',
-    'GSY':'Gretchen Yealy',
-    'CASALINI': 'Casalini Libre',
-    'YBP': 'YBP',
-    'AUX AMATEURS': 'Aux Amateurs',
-    'KAE': 'Karen Eberhart',
-    'BC': 'Bill Corrente',
-    'WK': 'Wendy Korwin',
-    'TDN': 'Teresa Negrucci',
-    'YW': 'Yiwei Want',
-    'Coutts': 'Coutts',
-    'BSLW shelfready': 'Backstage Library Works',
-    }
+CATALOGERS = json.loads( os.environ['TS_RPRT__CATALOGERS_JSON'] )
 
 
 #####################################################
