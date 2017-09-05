@@ -28,6 +28,15 @@ def bul_login(func):
 class LoginDecoratorHelper(object):
     """ Handles login decorator code. """
 
+    def __init__( self ):
+        """ Sets env-vars.
+            Called by bul_login() """
+        self.EPPN_LABEL = os.environ['TS_RPRT__SHIB_EPPN']
+        self.NETID_LABEL = os.environ['TS_RPRT__SHIB_NETID']
+        self.NAME_FIRST_LABEL = os.environ['TS_RPRT__SHIB_NAME_FIRST']
+        self.NAME_LAST_LABEL = os.environ['TS_RPRT__SHIB_NAME_LAST']
+        self.EMAIL_LABEL = os.environ['TS_RPRT__SHIB_EMAIL']
+
     def prep_shib_dct( self, request_meta_dct ):
         """ Returns dct from shib-info.
             Called by bul_login() """
@@ -62,8 +71,8 @@ class LoginDecoratorHelper(object):
             username = settings_app.TEST_USERNAME
             netid = settings_app.TEST_NETID
         else:
-            username = meta_dct.get('Shibboleth-eppn', None)
-            netid = meta_dct.get('Shibboleth-brownNetId', None)
+            username = meta_dct.get( self.EPPN_LABEL, None )
+            netid = meta_dct.get( self.NETID_LABEL, None )
         log.debug( 'username, `{usr}`; netid, `{net}`'.format( usr=username, net=netid ) )
         return ( username, netid )
 
@@ -84,9 +93,9 @@ class LoginDecoratorHelper(object):
     def update_created_user( self, usr, meta_dct ):
         """ Adds user to the default group.
             Called by update_userobj() """
-        usr.first_name = meta_dct.get( 'Shibboleth-givenName', '' )
-        usr.last_name = meta_dct.get( 'Shibboleth-sn', '' )
-        usr.email = meta_dct.get( 'Shibboleth-mail', None )
+        usr.first_name = meta_dct.get( self.NAME_FIRST_LABEL, '' )
+        usr.last_name = meta_dct.get( self.NAME_LAST_LABEL, '' )
+        usr.email = meta_dct.get( self.EMAIL_LABEL, None )
         usr.set_unusable_password()
         usr.save()
         grp = Group.objects.get( name='tech_services_reports' )
