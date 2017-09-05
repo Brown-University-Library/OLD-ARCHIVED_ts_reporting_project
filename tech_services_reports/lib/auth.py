@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import copy, json, logging, pprint
+import copy, json, logging, os, pprint
 
 from django.contrib.auth import authenticate, get_backends, login
 from django.contrib.auth.models import User, Group
