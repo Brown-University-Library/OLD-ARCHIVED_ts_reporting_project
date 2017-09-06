@@ -179,3 +179,5 @@ LOGGING = {
 
 # docs <https://docs.djangoproject.com/en/1.10/topics/cache/>
 CACHES = json.loads( os.environ['TS_RPRT__CACHES_JSON'] )
+
+CSRF_TRUSTED_ORIGINS = json.loads( os.environ['TS_RPRT__CSRF_TRUSTED_ORIGINS_JSON'] )
