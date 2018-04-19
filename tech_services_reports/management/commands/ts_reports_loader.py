@@ -119,11 +119,35 @@ class Command(BaseCommand):
         return dt
 
 
+    def check_file( self, marc_filepath ):
+        """ Handles known api file-creation issues.
+            Called by summary()
+            Notes...
+            - brace-check handles api-contents like, eg, `{"code":123,"specificCode":0,"httpStatus":401,"name":"Unauthorized","description":"invalid_grant"}`
+            - brace-check also handles temporary hack for an `Invalid parameter` response.
+            - error-code check handles the common `Record not found` response.
+            """
+        with open( marc_filepath, 'r' ) as fh:  # normally marc files are opened with 'rb'
+            segment = fh.read( 20 )
+            validity = True
+            if segment[0] == '{':
+                validity = False
+            elif segment[0:10] == 'ErrorCode(':
+                validity = False
+            log.debug( 'validity, `%s`' % validity )
+            return validity
+
+
     def summary(self, marc_filepath):
         """ Harvests data points from exported MARC fields.
             Date counts will include the date of a given harvest. """
         log.debug( 'starting summary()' )
         log.info( 'reading MARC file, ```{}```'.format(marc_filepath) )
+
+        validity = self.check_file( marc_filepath )
+        if validity is False:
+            log.WARNING( 'file invalid; halting processing of ```%s```' % marc_filepath )
+            return
 
         #Dicts to store counts
         cataloging_edit_count = {}
