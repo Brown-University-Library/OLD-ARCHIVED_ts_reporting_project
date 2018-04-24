@@ -146,7 +146,7 @@ class Command(BaseCommand):
 
         validity = self.check_file( marc_filepath )
         if validity is False:
-            log.WARNING( 'file invalid; halting processing of ```%s```' % marc_filepath )
+            log.warning( 'file invalid; halting processing of ```%s```' % marc_filepath )
             return
 
         #Dicts to store counts
