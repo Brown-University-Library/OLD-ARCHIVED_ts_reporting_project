@@ -11,7 +11,7 @@ from collections import namedtuple
 #####################################################
 
 ## ts_reports_loader.py
-LOCATION_FORMAT_URL = 'https://library.brown.edu/services/location_format/v1/?data=dump'
+LOCATION_FORMAT_URL = os.environ['TS_RPRT__LOCATION_FORMAT_URL']
 
 BEGIN_YEAR = 2016  # for start of report processing
 BEGIN_MONTH = 1
