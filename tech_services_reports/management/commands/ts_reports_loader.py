@@ -148,7 +148,7 @@ class Command(BaseCommand):
         if validity is False:
             log.warning( 'file invalid; halting processing of ```%s```' % marc_filepath )
             db_fixture = []
-            print( json.dumps(db_fixture) )
+            print( json.dumps(db_fixture) )  # TODO: is this printed vs logged for a reason?
             return
 
         #Dicts to store counts
