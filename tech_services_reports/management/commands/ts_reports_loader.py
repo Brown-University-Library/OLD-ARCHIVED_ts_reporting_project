@@ -39,8 +39,9 @@ location_format_map = location_format_map['result']['items']
 # CAT_RE = re.compile('([0-9]{6})\,(\w+)\,(\w+)$')
 
 TODAY = datetime.date.today()
-#Number of days to go back for reports.
-CUTOFF_DAY_DELTA = datetime.timedelta(days=2)
+
+## Number of days to go back for reports. _Generally_ 7 days, to overlap with the twice-a-week exports.
+CUTOFF_DAY_DELTA = datetime.timedelta( days=settings_app.INSPECT_UPDATES_SINCE_DAYS )
 
 
 class Command(BaseCommand):

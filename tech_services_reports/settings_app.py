@@ -23,6 +23,8 @@ ITEM_ACC_NOTE = 'e'  # mappings for MARC record to database; these are subfields
 
 CACHED_ACCESSION_QUERY_SECONDS_TIMEOUT = int( os.environ['TS_RPRT__CACHED_ACCESSION_QUERY_SECONDS_TIMEOUT'] )  # short for production; long for development
 
+INSPECT_UPDATES_SINCE_DAYS = int( os.environ['TS_RPRT__INSPECT_UPDATES_SINCE_DAYS'] )
+
 
 #####################################################
 ### for Accession Report                          ###
