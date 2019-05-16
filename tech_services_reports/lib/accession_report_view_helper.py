@@ -183,6 +183,8 @@ class AccessionReportViewHelper(object):
 class AccessionReport(object):
 
     def __init__(self, start, end, period=None):
+        """ Makes db queries in preparation for counts, stores results to instance-attributes.
+            Called by AccessionReportViewHelper.make_context() """
         log.debug( 'start, `{st}`; end, `{en}`'.format( st=start, en=end ) )
         self.connection = connection  # from django.db import connection
         self.start = start
@@ -203,22 +205,31 @@ class AccessionReport(object):
         log.debug( '__init__() done' )
 
     def _loc(self, item):
+        """ Appears to return building name from item.location info.
+            Called by building_summary(), all_formats_acq_type(), by_format() """
         try:
             loc = self.location_format_map[item.location]['building']
         except KeyError:
             loc = item.location
+        log.debug( 'loc, `%s`' % loc )
         return loc
 
     def total_volumes(self, qset):
+        """ Totals and returns count of volumes.
+            Called by __init__() """
         total = 0
         for it in qset:
             total += it.volumes
+        log.debug( 'total, `%s`' % total )
         return total
 
     def total_titles(self, qset):
+        """ Totals and returns count of titles.
+            Called by __init__() """
         total = 0
         for it in qset:
             total += it.titles
+        log.debug( 'total, `%s`' % total )
         return total
 
     def _distinct(self, field):
@@ -278,6 +289,27 @@ class AccessionReport(object):
                 'totals': [total]}
 
     def all_formats_acq_type(self, location=None, serial_added_only=False):
+        """ Prepares counts for table on either items or items combined with summary-items, depending on parameters.
+            Called by AccessionReportViewHelper.update_context_with_report_data()
+            Returns back data like...
+                {
+                    'data':
+                        defaultdict(
+                            <class 'int'>, {
+                                acc_summary(location='Annex', acquisition_method='Gift', count_type='titles'): 10,
+                                acc_summary(location='Annex', acquisition_method='Gift', count_type='volumes'): 41,
+                                acc_summary(location='Annex', acquisition_method='Purchase', count_type='titles'): 49,
+                                acc_summary(location='Annex', acquisition_method='Purchase', count_type='volumes'): 73,
+                                acc_total(param='Gift', param2='titles'): 3867,
+                                acc_total(param='Gift', param2='volumes'): 3907,
+                                acc_summary(location='Hay', acquisition_method='Purchase', count_type='titles'): 60,
+                                [snip]
+                            }
+                        ),
+                    'header': 'All formats by building.'
+                }
+            defaultdict reference -- <https://docs.python.org/3/library/collections.html#collections.defaultdict>
+            """
         #Get project wide named tuples.
         # from settings_app import Acc, AccTotal
         log.debug( 'starting; location, ```{loc}```; serial_added_only, `{ser}`'.format( loc=location, ser=serial_added_only ) )
@@ -315,8 +347,11 @@ class AccessionReport(object):
         return_data = {'header': header, 'data': cross}
         log.debug( 'return_data, ```{}```'.format( pprint.pformat(return_data) ) )
         return return_data
+        ## end def all_formats_acq_type()
 
     def by_format(self, format=None):
+        """ Prepares counts for table. TODO: log output to better document. Looks very similar to all_formats_acq_type(), minus the location/building info.
+            Called by AccessionReportViewHelper.make_format_reports() """
         # from settings_app import Acc, AccTotal
         cross = defaultdict(int)
         if not format:
@@ -328,7 +363,6 @@ class AccessionReport(object):
                                       serial_added_volume=False)
             sum_items = self.summary_items.filter(format=format)
             items = chain(items, sum_items)
-
         for item in items:
             loc = self._loc(item)
             # _k = Acc(location=unicode(loc),
@@ -344,10 +378,16 @@ class AccessionReport(object):
             cross[_tk] += item.titles
             _tk = _tk._replace(param2='volumes')
             cross[_tk] += item.volumes
-        return {'header': header,
-                'data': cross}
+        # return {'header': header,
+        #         'data': cross}
+        return_data = {'header': header, 'data': cross}
+        log.debug( 'return_data, ```{}```'.format( pprint.pformat(return_data) ) )
+        return return_data
+        ## end def by_format()
 
     def by_format_chart(self, format=None):
+        """ Prepares counts for table. TODO: log output to better document. Looks very similar to all_formats_acq_type(), minus the location/building info.
+            Called by AccessionReportViewHelper.update_context_with_chart_data() """
         # from settings_app import Acc, AccTotal
         cross = defaultdict(int)
         if not format:
@@ -362,47 +402,62 @@ class AccessionReport(object):
             cross[item.format] += 1
         # sort = sorted(cross.iteritems(), key=itemgetter(1), reverse=True)
         sort = sorted(cross.items(), key=itemgetter(1), reverse=True)
-        return {'header': header,
-                'data': sort}
+        # return {'header': header,
+        #         'data': sort}
+        return_data = { 'header': header, 'data': sort }
+        log.debug( 'return_data, ```{}```'.format( pprint.pformat(return_data) ) )
+        return return_data
+        ## end def by_format_chart()
 
     def serial_added_volumes(self):
-        """Limit search to only serial added volumes."""
+        """ Prepares counts for table on either limiting search to only serial added volumes.
+            Called by AccessionReportViewHelper.update_context_with_report_data()
+            """
         return self.all_formats_acq_type(self, serial_added_only=True)
 
     def gchart(self, vals, period, name, color='438043'):
+        """ Builds url for chart image.
+            Called by AccessionReportViewHelper.update_context_with_chart_data() """
         return self.gchart_url(vals, period, name, color=color)
 
     def gchart_url(self, vals, period, name, color='438043'):
-            data_labels = []
-            data_values = []
-            for label,val in vals['data']:
-                data_labels.append(label)
-                data_values.append(val)
-            low = 0
-            try:
-                high = data_values[0]
-            except IndexError:
-                return
-            data_values = "%s" % (','.join([str(d) for d in data_values]))
-            data_labels = '|'.join([l.replace(' ', '+') for l in data_labels])
-            range = "%s, %s" % (low, high)
-            chart_url = """http://chart.apis.google.com/chart?chs=450x300
-                   &cht=p
-                   &chco=%(color)s
-                   &chds=%(range)s
-                   &chd=t:%(data_values)s
-                   &chl=%(data_labels)s
-                   &chtt=%(period)s+%(chart_name)s
-                   &chma=40,40,40,40
-                   &chts=000000,18
-                   """ % {'range':range,
-                          'data_labels':data_labels,
-                          'data_values':data_values,
-                          'period': period.replace(' ', '+'),
-                          'color':color,
-                          'chart_name':name.replace(' ', '+')
-                          }
-            #Remove line breaks and spaces from url.
-            return chart_url.replace('\n', '').replace(' ', '')
+        """ Unnecessary duplicate function to build url for chart image.
+            Called by gchart()
+            TODO: remove above gchart() function and rename this to gchart() """
+        data_labels = []
+        data_values = []
+        for label,val in vals['data']:
+            data_labels.append(label)
+            data_values.append(val)
+        low = 0
+        try:
+            high = data_values[0]
+        except IndexError:
+            return
+        data_values = "%s" % (','.join([str(d) for d in data_values]))
+        data_labels = '|'.join([l.replace(' ', '+') for l in data_labels])
+        range = "%s, %s" % (low, high)
+        chart_url = """http://chart.apis.google.com/chart?chs=450x300
+               &cht=p
+               &chco=%(color)s
+               &chds=%(range)s
+               &chd=t:%(data_values)s
+               &chl=%(data_labels)s
+               &chtt=%(period)s+%(chart_name)s
+               &chma=40,40,40,40
+               &chts=000000,18
+               """ % {'range':range,
+                      'data_labels':data_labels,
+                      'data_values':data_values,
+                      'period': period.replace(' ', '+'),
+                      'color':color,
+                      'chart_name':name.replace(' ', '+')
+                      }
+        #Remove line breaks and spaces from url.
+        # return chart_url.replace('\n', '').replace(' ', '')
+        return_url = chart_url.replace('\n', '').replace(' ', '')
+        log.debug( 'return_url, ```%s```' % return_url )
+        return return_url
+        ## end def gchart_url()
 
     ## end class AccessionReport()
